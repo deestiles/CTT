@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b1s01oalepedc"]
+
+[resource]
+resource_name = "Cloud_Mat_mat"
+depth_draw_mode = 1
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+uv1_scale = Vector3(1, 1, 0)

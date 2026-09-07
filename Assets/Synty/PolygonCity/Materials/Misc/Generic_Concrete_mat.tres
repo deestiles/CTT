@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://ilj0le7tm8ip"]
+
+[ext_resource type="Texture2D" uid="uid://bi5jclfewjqfs" path="res://Assets/Synty/PolygonCity/Textures/Generic_Concrete.png" id="1_he1vi"]
+
+[resource]
+resource_name = "Generic_Concrete_mat"
+depth_draw_mode = 1
+albedo_texture = ExtResource("1_he1vi")
+roughness = 0.8
+uv1_scale = Vector3(1, 1, 0)

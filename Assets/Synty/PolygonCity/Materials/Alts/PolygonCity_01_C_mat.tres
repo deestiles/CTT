@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://b1mev23ippsx6"]
+
+[ext_resource type="Texture2D" uid="uid://di1xfu67crhod" path="res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_C.png" id="1_3bk1x"]
+[ext_resource type="Texture2D" uid="uid://ciir6tfmo1m56" path="res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_Metallic.roughness.png" id="2_itvlw"]
+[ext_resource type="Texture2D" uid="uid://vyhb1oju6hav" path="res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_Normals.png" id="3_8flsm"]
+
+[resource]
+resource_name = "PolygonCity_01_C_mat"
+depth_draw_mode = 1
+albedo_texture = ExtResource("1_3bk1x")
+metallic_texture = ExtResource("2_itvlw")
+roughness_texture = ExtResource("2_itvlw")
+roughness_texture_channel = 3
+normal_enabled = true
+normal_texture = ExtResource("3_8flsm")
+uv1_scale = Vector3(1, 1, 0)

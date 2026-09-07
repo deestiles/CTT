@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://cdbegcbacuo6j"]
+
+[ext_resource type="Texture2D" uid="uid://d1yons6twld4c" path="res://Assets/Synty/PolygonCity/Textures/Road_03.png" id="1_l8sip"]
+[ext_resource type="Texture2D" uid="uid://dnce1vw58cles" path="res://Assets/Synty/PolygonCity/Textures/Road_01_Normals.png" id="2_w28kj"]
+
+[resource]
+resource_name = "Road_03_mat"
+depth_draw_mode = 1
+albedo_texture = ExtResource("1_l8sip")
+roughness = 0.842
+normal_enabled = true
+normal_texture = ExtResource("2_w28kj")
+uv1_scale = Vector3(1, 1, 0)

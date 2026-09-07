@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://road_demos/intersections/intersection_demo.tscn" id="1_district"]
+[ext_resource type="Script" path="res://scripts/chase/road_network_test.gd" id="2_script"]
+
+[node name="Pursuit" type="Node3D"]
+script = ExtResource("2_script")
+
+[node name="IntersectionDistrict" parent="." instance=ExtResource("1_district")]

@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dgc0b4bcxe4f3"]
+
+[ext_resource type="Texture2D" uid="uid://v4vs4y7i0vda" path="res://Assets/Synty/PolygonCity/Textures/Billboard_01.png" id="1_j72ey"]
+
+[resource]
+resource_name = "Billboard_01_mat"
+depth_draw_mode = 1
+albedo_texture = ExtResource("1_j72ey")
+roughness = 0.5
+uv1_scale = Vector3(1, 1, 0)

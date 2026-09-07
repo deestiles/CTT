@@ -1,0 +1,1464 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="1_qb7x8"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="2_o2pdb"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="3_ct2w6"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/thirdparty/textures/moon/MoonMap.png" id="4_nmdvt"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/textures/noise.jpg" id="5_xudhw"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/StarField.jpg" id="6_kqqya"]
+[ext_resource type="Texture2D" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/Milkyway.jpg" id="7_5vrpj"]
+[ext_resource type="Script" path="res://addons/sky_3d/src/Sky3D.gd" id="8_synkx"]
+[ext_resource type="Script" path="res://addons/sky_3d/src/SkyDome.gd" id="9_ubxvv"]
+[ext_resource type="Shader" path="res://addons/sky_3d/shaders/AtmFog.gdshader" id="10_d6edx"]
+[ext_resource type="Script" path="res://addons/sky_3d/src/TimeOfDay.gd" id="11_iov21"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_manager.gd" id="12_f65np"]
+[ext_resource type="PackedScene" path="res://addons/road-generator/custom_containers/4way_2x2.tscn" id="13_ofc36"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_container.gd" id="14_65nkk"]
+[ext_resource type="Material" path="res://addons/road-generator/resources/road_texture.material" id="15_naysb"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_point.gd" id="16_uo2or"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_lane.gd" id="17_86aln"]
+[ext_resource type="PackedScene" path="res://road_demos/demo_resources/actors/RoadActor.tscn" id="18_keniu"]
+[ext_resource type="Script" path="res://road_demos/demo_resources/actors/road_actor.gd" id="19_usy0v"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l3fj3"]
+shader = ExtResource("1_qb7x8")
+shader_parameter/sky_visible = null
+shader_parameter/color_correction = Vector2(0, 0.9)
+shader_parameter/ground_color = Color(0.3, 0.3, 0.3, 1)
+shader_parameter/horizon_offset = 0.0
+shader_parameter/atm_darkness = 0.5
+shader_parameter/atm_sun_intensity = 18.0
+shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
+shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
+shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
+shader_parameter/atm_level_params = Vector3(1, 0, 0)
+shader_parameter/atm_thickness = 0.7
+shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
+shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
+shader_parameter/sun_light_color = Color(1, 1, 1, 1)
+shader_parameter/sun_disk_color = Color(0.996094, 0.541334, 0.140076, 1)
+shader_parameter/sun_disk_intensity = 30.0
+shader_parameter/sun_disk_size = 0.02
+shader_parameter/atm_sun_mie_tint = Color(1, 1, 1, 1)
+shader_parameter/atm_sun_mie_intensity = 1.0
+shader_parameter/atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/moon_color = Color(1, 1, 1, 1)
+shader_parameter/moon_texture = ExtResource("4_nmdvt")
+shader_parameter/moon_texture_alignment = Vector3(7, 1.4, 4.8)
+shader_parameter/moon_texture_flip_u = false
+shader_parameter/moon_texture_flip_v = false
+shader_parameter/moon_size = 0.07
+shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
+shader_parameter/atm_moon_mie_intensity = 0.0
+shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/starmap_color = Color(0.709804, 0.709804, 0.709804, 0.854902)
+shader_parameter/starmap_texture = ExtResource("7_5vrpj")
+shader_parameter/starmap_flip_u = false
+shader_parameter/starmap_flip_v = false
+shader_parameter/starmap_alignment = Vector3(2.68288, -0.25891, 0.40101)
+shader_parameter/star_rotation_offset = 9.38899
+shader_parameter/star_rotation = -11.575003096696793
+shader_parameter/star_tilt = -1.2915436464758039
+shader_parameter/star_field_color = Color(1, 1, 1, 1)
+shader_parameter/star_field_texture = ExtResource("6_kqqya")
+shader_parameter/star_scintillation = 0.75
+shader_parameter/star_scintillation_speed = 0.01
+shader_parameter/noise_tex = ExtResource("5_xudhw")
+shader_parameter/clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
+shader_parameter/cirrus_visible = true
+shader_parameter/cirrus_intensity = 2.0
+shader_parameter/cirrus_coverage = 0.5
+shader_parameter/cirrus_thickness = 1.7
+shader_parameter/cirrus_absorption = 2.0
+shader_parameter/cirrus_sky_tint_fade = 0.5
+shader_parameter/cirrus_size = 1.0
+shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
+shader_parameter/cirrus_position1 = Vector2(0.0004714046, 0.0004714046)
+shader_parameter/cirrus_position2 = Vector2(0.0004714046, 0.0004714046)
+shader_parameter/cirrus_texture = ExtResource("2_o2pdb")
+shader_parameter/cumulus_visible = true
+shader_parameter/cumulus_intensity = 0.6
+shader_parameter/cumulus_coverage = 0.55
+shader_parameter/cumulus_thickness = 0.0243
+shader_parameter/cumulus_absorption = 2.0
+shader_parameter/cumulus_noise_freq = 2.7
+shader_parameter/cumulus_sky_tint_fade = null
+shader_parameter/cumulus_size = 0.5
+shader_parameter/cumulus_position = Vector2(0.0023570233, 0.0023570233)
+shader_parameter/cumulus_texture = ExtResource("3_ct2w6")
+shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
+shader_parameter/cumulus_mie_intensity = 1.0
+shader_parameter/show_azimuthal_grid = false
+shader_parameter/azimuthal_grid_color = Color(0.87058824, 0.72156864, 0.5294118, 1)
+shader_parameter/azimuthal_grid_rotation_offset = 0.03
+shader_parameter/show_equatorial_grid = false
+shader_parameter/equatorial_grid_color = Color(0, 0.75, 1, 1)
+shader_parameter/equatorial_grid_rotation_offset = 0.03
+shader_parameter/moon_matrix = Basis(0.9999937, 0.0033987733, 0.0009745826, -0.0014731394, 0.6510735, -0.7590131, -0.0032142387, 0.759007, 0.6510744)
+
+[sub_resource type="Sky" id="Sky_71jqx"]
+sky_material = SubResource("ShaderMaterial_l3fj3")
+
+[sub_resource type="Environment" id="Environment_wf51h"]
+background_mode = 2
+sky = SubResource("Sky_71jqx")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.72722656
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_exposure = 0.9
+tonemap_white = 6.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_vndpl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xf5f5"]
+render_priority = 100
+shader = ExtResource("10_d6edx")
+shader_parameter/color_correction = Vector2(0, 0.9)
+shader_parameter/sea_level = 0.0
+shader_parameter/fog_density = 0.0007
+shader_parameter/fog_rayleigh_depth = 0.115
+shader_parameter/fog_mie_depth = 0.0001
+shader_parameter/fog_falloff = 3.0
+shader_parameter/fog_start = 0.0
+shader_parameter/fog_end = 1000.0
+shader_parameter/sun_direction = Vector3(-0.32733786, 0.719899, 0.61204195)
+shader_parameter/moon_direction = Vector3(-0.0032142391, 0.75900704, 0.65107447)
+shader_parameter/atm_darkness = 0.5
+shader_parameter/atm_sun_intensity = 18.0
+shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
+shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
+shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
+shader_parameter/atm_level_params = Vector3(1, 0, -1)
+shader_parameter/atm_thickness = 0.7
+shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
+shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
+shader_parameter/atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/atm_sun_mie_tint = Color(1, 1, 1, 1)
+shader_parameter/atm_sun_mie_intensity = 1.0
+shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
+shader_parameter/atm_moon_mie_intensity = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_gscgl"]
+size = Vector2(2, 2)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_lnxr2"]
+size = Vector2(360, 360)
+
+[sub_resource type="Curve3D" id="Curve3D_bikea"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6, 0, 60.000004),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_mp8nk"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2, 0, 60.000004),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_vgonm"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 2, 0, 60.000004, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_km7v6"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 6, 0, 60.000004, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_awk5b"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6, 0, 59.999996),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_ya66a"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2, 0, 59.999996),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_1ikrc"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 2, 0, 59.999996, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_5i3v3"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 6, 0, 59.999996, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_jy3qr"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6.000003, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_mmsod"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2.0000026, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_s7toe"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 1.9999974, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_bhump"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 5.999997, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_tevoi"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6.000003, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_j2y06"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2.0000026, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_84u3w"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 1.9999974, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_v40bt"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 5.999997, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_sx0vh"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6, 0, 59.999996),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_7ih5o"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2, 0, 59.999996),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_b4sul"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 2, 0, 59.999996, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_4p4an"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 6, 0, 59.999996, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_jkaxp"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 60, 0, 0, -6, 0, 60.000004),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_7txbg"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 60, 0, 0, -2, 0, 60.000004),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_ghee0"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 2, 0, 60.000004, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_sd457"]
+_data = {
+"points": PackedVector3Array(60, 0, 0, 0, 0, -8, 6, 0, 60.000004, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_v8fc7"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_gb3l4"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_40h2y"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_26oys"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_umnce"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_bjrpd"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_eydqm"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_6wiqh"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_do0e4"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_4bbqq"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_ekyjo"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_6i7id"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_vyox0"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_c2mkx"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_uejg6"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_vmv4h"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_h75x1"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_0xsq1"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_km0xj"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_om60n"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_b7mmb"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -6, 0, 0, 0, 0, -8, 0, 0, 60, -6, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_kfjeh"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 8, -2, 0, 0, 0, 0, -8, 0, 0, 60, -2, 0, 60),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_pjfxe"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 2, 0, 60, 0, 0, 8, 0, 0, 0, 2, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_wos3g"]
+_data = {
+"points": PackedVector3Array(0, 0, 60, 0, 0, -8, 6, 0, 60, 0, 0, 8, 0, 0, 0, 6, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[node name="NativeGridDistrict" type="Node3D" unique_id=1116209979]
+metadata/streets_only = true
+
+[node name="Sky3D" type="WorldEnvironment" parent="." unique_id=508995948]
+environment = SubResource("Environment_wf51h")
+camera_attributes = SubResource("CameraAttributesPractical_vndpl")
+script = ExtResource("8_synkx")
+fog_enabled = false
+editor_time_enabled = false
+game_time_enabled = false
+current_time = 13.25
+tonemap_exposure = 0.9
+skydome_energy = 0.9
+sun_energy = 0.95
+wind_direction = 2.35619451204804
+
+[node name="SunLight" type="DirectionalLight3D" parent="Sky3D" unique_id=30396044]
+transform = Transform3D(0.8818047, 0.33951506, -0.32733786, 0, 0.69407886, 0.719899, 0.47161484, -0.6348103, 0.61204195, -0.32733786, 0.719899, 0.61204195)
+light_energy = 0.95
+shadow_enabled = true
+
+[node name="MoonLight" type="DirectionalLight3D" parent="Sky3D" unique_id=18968493]
+transform = Transform3D(0, -0.9999949, -0.0032142391, 0.65107787, -0.0024396428, 0.75900704, -0.759011, -0.00209272, 0.65107447, -0.0032142391, 0.75900704, 0.65107447)
+light_color = Color(0.572549, 0.776471, 0.956863, 1)
+light_energy = 0.0
+
+[node name="SkyDome" type="Node" parent="Sky3D" unique_id=366638441]
+script = ExtResource("9_ubxvv")
+exposure = 0.9
+sun_azimuth = -3.6327138
+sun_altitude = -0.76713955
+sun_light_energy = 0.95
+moon_azimuth = -3.1465294
+moon_altitude = -0.70900965
+fog_visible = false
+wind_direction = 2.35619451204804
+
+[node name="_FogMeshI" type="MeshInstance3D" parent="Sky3D/SkyDome" unique_id=1895941412]
+visible = false
+layers = 524288
+material_override = SubResource("ShaderMaterial_xf5f5")
+cast_shadow = 0
+custom_aabb = AABB(-1e+31, -1e+31, -1e+31, 2e+31, 2e+31, 2e+31)
+mesh = SubResource("QuadMesh_gscgl")
+
+[node name="TimeOfDay" type="Node" parent="Sky3D" unique_id=1577479989]
+script = ExtResource("11_iov21")
+editor_time_enabled = false
+game_time_enabled = false
+dome_path = NodePath("../SkyDome")
+current_time = 13.25
+
+[node name="Timer" type="Timer" parent="Sky3D/TimeOfDay" unique_id=2065359044]
+wait_time = 0.016
+
+[node name="ground" type="MeshInstance3D" parent="." unique_id=1569242941]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0)
+mesh = SubResource("PlaneMesh_lnxr2")
+
+[node name="RoadManager" type="Node3D" parent="." unique_id=850564388]
+script = ExtResource("12_f65np")
+auto_refresh = false
+
+[node name="Intersection_R0_C0" type="Node3D" parent="RoadManager" unique_id=1705968725 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, 92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_0_0"), NodePath("../Street_H_0_0")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Intersection_R0_C1" type="Node3D" parent="RoadManager" unique_id=1993564415 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_0_1"), NodePath("../Street_H_0_0"), NodePath("../Street_H_0_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([0, 0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_003"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([1, 1, 0])
+
+[node name="Intersection_R0_C2" type="Node3D" parent="RoadManager" unique_id=53452840 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, 92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_0_2"), NodePath("../Street_H_0_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_target_dirs = Array[int]([0, 0])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_003")])
+edge_rp_local_dirs = Array[int]([1, 1])
+
+[node name="Intersection_R1_C0" type="Node3D" parent="RoadManager" unique_id=1856144311 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, 0)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_0"), NodePath("../Street_V_0_0"), NodePath("../Street_H_1_0")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([0, 1, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([1, 0, 0])
+
+[node name="Intersection_R1_C1" type="Node3D" parent="RoadManager" unique_id=1110753859 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_1"), NodePath("../Street_V_0_1"), NodePath("../Street_H_1_0"), NodePath("../Street_H_1_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B"), NodePath("Edge_B"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([0, 1, 0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002"), NodePath("RP_003"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([1, 0, 1, 0])
+
+[node name="Intersection_R1_C2" type="Node3D" parent="RoadManager" unique_id=234395968 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, 0)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_2"), NodePath("../Street_V_0_2"), NodePath("../Street_H_1_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B"), NodePath("Edge_B")])
+edge_rp_target_dirs = Array[int]([0, 1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002"), NodePath("RP_003")])
+edge_rp_local_dirs = Array[int]([1, 0, 1])
+
+[node name="Intersection_R2_C0" type="Node3D" parent="RoadManager" unique_id=1044397753 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, -92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_0"), NodePath("../Street_H_2_0")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_B"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([1, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_002"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([0, 0])
+
+[node name="Intersection_R2_C1" type="Node3D" parent="RoadManager" unique_id=246902898 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_1"), NodePath("../Street_H_2_0"), NodePath("../Street_H_2_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_B"), NodePath("Edge_B"), NodePath("Edge_A")])
+edge_rp_target_dirs = Array[int]([1, 0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("RP_002"), NodePath("RP_003"), NodePath("RP_004")])
+edge_rp_local_dirs = Array[int]([0, 1, 0])
+
+[node name="Intersection_R2_C2" type="Node3D" parent="RoadManager" unique_id=697363154 node_paths=PackedStringArray("material_top_meshes") instance=ExtResource("13_ofc36")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, -92)
+script = ExtResource("14_65nkk")
+create_geo = false
+material_resource = ExtResource("15_naysb")
+material_top_meshes = [NodePath("4way_2x2/4way_2x2")]
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath("../Street_V_1_2"), NodePath("../Street_H_2_1")])
+edge_rp_targets = Array[NodePath]([NodePath("Edge_B"), NodePath("Edge_B")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("RP_002"), NodePath("RP_003")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Street_H_0_0" type="Node3D" parent="RoadManager" unique_id=1989235292]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R0_C0"), NodePath("../Intersection_R0_C1")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_0_0" unique_id=1267645837]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -76, 0, 92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_0_0/Edge_A" unique_id=475527811]
+curve = SubResource("Curve3D_bikea")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_0_0/Edge_A" unique_id=1471433942]
+curve = SubResource("Curve3D_mp8nk")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_0_0/Edge_A" unique_id=2085734266]
+curve = SubResource("Curve3D_vgonm")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_0_0/Edge_A" unique_id=1993937736]
+curve = SubResource("Curve3D_km7v6")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_0_0" unique_id=1296967851]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -16, 0, 92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_H_0_1" type="Node3D" parent="RoadManager" unique_id=360669654]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R0_C1"), NodePath("../Intersection_R0_C2")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_0_1" unique_id=1601450879]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 16, 0, 92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_0_1/Edge_A" unique_id=1663464339]
+curve = SubResource("Curve3D_awk5b")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_0_1/Edge_A" unique_id=1395763225]
+curve = SubResource("Curve3D_ya66a")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_0_1/Edge_A" unique_id=688578239]
+curve = SubResource("Curve3D_1ikrc")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_0_1/Edge_A" unique_id=269109614]
+curve = SubResource("Curve3D_5i3v3")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_0_1" unique_id=1185116596]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 76, 0, 92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_H_1_0" type="Node3D" parent="RoadManager" unique_id=172171068]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R1_C0"), NodePath("../Intersection_R1_C1")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_1_0" unique_id=555363278]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -76, 0, 0)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_1_0/Edge_A" unique_id=467131550]
+curve = SubResource("Curve3D_jy3qr")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_1_0/Edge_A" unique_id=1088963067]
+curve = SubResource("Curve3D_mmsod")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_1_0/Edge_A" unique_id=1479871504]
+curve = SubResource("Curve3D_s7toe")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_1_0/Edge_A" unique_id=617364102]
+curve = SubResource("Curve3D_bhump")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_1_0" unique_id=196421097]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -16, 0, 0)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_H_1_1" type="Node3D" parent="RoadManager" unique_id=1911442344]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R1_C1"), NodePath("../Intersection_R1_C2")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_1_1" unique_id=1047829561]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 16, 0, 0)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_1_1/Edge_A" unique_id=432465494]
+curve = SubResource("Curve3D_tevoi")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_1_1/Edge_A" unique_id=1805291054]
+curve = SubResource("Curve3D_j2y06")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_1_1/Edge_A" unique_id=335295838]
+curve = SubResource("Curve3D_84u3w")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_1_1/Edge_A" unique_id=844747672]
+curve = SubResource("Curve3D_v40bt")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_1_1" unique_id=931548008]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 76, 0, 0)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_H_2_0" type="Node3D" parent="RoadManager" unique_id=313983293]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R2_C0"), NodePath("../Intersection_R2_C1")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_2_0" unique_id=840049247]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -76, 0, -92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_2_0/Edge_A" unique_id=1676168203]
+curve = SubResource("Curve3D_sx0vh")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_2_0/Edge_A" unique_id=242336083]
+curve = SubResource("Curve3D_7ih5o")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_2_0/Edge_A" unique_id=2069207199]
+curve = SubResource("Curve3D_b4sul")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_2_0/Edge_A" unique_id=469532457]
+curve = SubResource("Curve3D_4p4an")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_2_0" unique_id=1268894758]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -16, 0, -92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_H_2_1" type="Node3D" parent="RoadManager" unique_id=1195007523]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R2_C1"), NodePath("../Intersection_R2_C2")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_004"), NodePath("RP_003")])
+edge_rp_target_dirs = Array[int]([0, 1])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([1, 0])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_H_2_1" unique_id=1553904828]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 16, 0, -92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_B")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_H_2_1/Edge_A" unique_id=1912654328]
+curve = SubResource("Curve3D_jkaxp")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_H_2_1/Edge_A" unique_id=403453537]
+curve = SubResource("Curve3D_7txbg")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_H_2_1/Edge_A" unique_id=2015399645]
+curve = SubResource("Curve3D_ghee0")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_H_2_1/Edge_A" unique_id=1351279939]
+curve = SubResource("Curve3D_sd457")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_H_2_1" unique_id=1482556058]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 76, 0, -92)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_A")
+
+[node name="Street_V_0_0" type="Node3D" parent="RoadManager" unique_id=837332349]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R0_C0"), NodePath("../Intersection_R1_C0")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_0_0" unique_id=170082608]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, 76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_0_0" unique_id=1560046718]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, 16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_0_0/Edge_B" unique_id=386580947]
+curve = SubResource("Curve3D_v8fc7")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_0_0/Edge_B" unique_id=570525443]
+curve = SubResource("Curve3D_gb3l4")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_0_0/Edge_B" unique_id=1390410047]
+curve = SubResource("Curve3D_40h2y")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_0_0/Edge_B" unique_id=998463865]
+curve = SubResource("Curve3D_26oys")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Street_V_0_1" type="Node3D" parent="RoadManager" unique_id=1044213805]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R0_C1"), NodePath("../Intersection_R1_C1")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_0_1" unique_id=1290661811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_0_1" unique_id=597509403]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_0_1/Edge_B" unique_id=442578374]
+curve = SubResource("Curve3D_umnce")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_0_1/Edge_B" unique_id=355331415]
+curve = SubResource("Curve3D_bjrpd")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_0_1/Edge_B" unique_id=1072466058]
+curve = SubResource("Curve3D_eydqm")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_0_1/Edge_B" unique_id=33469424]
+curve = SubResource("Curve3D_6wiqh")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Street_V_0_2" type="Node3D" parent="RoadManager" unique_id=1013375834]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R0_C2"), NodePath("../Intersection_R1_C2")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_0_2" unique_id=768950520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, 76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_0_2" unique_id=1885185633]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, 16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_0_2/Edge_B" unique_id=1564615549]
+curve = SubResource("Curve3D_do0e4")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_0_2/Edge_B" unique_id=426741025]
+curve = SubResource("Curve3D_4bbqq")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_0_2/Edge_B" unique_id=299223950]
+curve = SubResource("Curve3D_ekyjo")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_0_2/Edge_B" unique_id=981136613]
+curve = SubResource("Curve3D_6i7id")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Street_V_1_0" type="Node3D" parent="RoadManager" unique_id=1644190711]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R1_C0"), NodePath("../Intersection_R2_C0")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_1_0" unique_id=2103508636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, -16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_1_0" unique_id=1377495591]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92, 0, -76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_1_0/Edge_B" unique_id=1761482662]
+curve = SubResource("Curve3D_vyox0")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_1_0/Edge_B" unique_id=553321711]
+curve = SubResource("Curve3D_c2mkx")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_1_0/Edge_B" unique_id=1986707292]
+curve = SubResource("Curve3D_uejg6")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_1_0/Edge_B" unique_id=547783958]
+curve = SubResource("Curve3D_vmv4h")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Street_V_1_1" type="Node3D" parent="RoadManager" unique_id=121206910]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R1_C1"), NodePath("../Intersection_R2_C1")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_1_1" unique_id=1152343605]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_1_1" unique_id=1484000419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_1_1/Edge_B" unique_id=327313761]
+curve = SubResource("Curve3D_h75x1")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_1_1/Edge_B" unique_id=2021086146]
+curve = SubResource("Curve3D_0xsq1")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_1_1/Edge_B" unique_id=1412942169]
+curve = SubResource("Curve3D_km0xj")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_1_1/Edge_B" unique_id=1349759014]
+curve = SubResource("Curve3D_om60n")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="Street_V_1_2" type="Node3D" parent="RoadManager" unique_id=1608985238]
+script = ExtResource("14_65nkk")
+material_resource = ExtResource("15_naysb")
+use_lowpoly_preview = true
+generate_ai_lanes = true
+edge_containers = Array[NodePath]([NodePath("../Intersection_R1_C2"), NodePath("../Intersection_R2_C2")])
+edge_rp_targets = Array[NodePath]([NodePath("RP_001"), NodePath("RP_002")])
+edge_rp_target_dirs = Array[int]([1, 0])
+edge_rp_locals = Array[NodePath]([NodePath("Edge_A"), NodePath("Edge_B")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Edge_A" type="Node3D" parent="RoadManager/Street_V_1_2" unique_id=185866851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, -16)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+prior_pt_init = NodePath("../Edge_B")
+
+[node name="Edge_B" type="Node3D" parent="RoadManager/Street_V_1_2" unique_id=291589917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92, 0, -76)
+script = ExtResource("16_uo2or")
+traffic_dir = Array[int]([2, 2, 1, 1])
+lanes = Array[int]([2, 4, 4, 2])
+prior_mag = 8.0
+next_mag = 8.0
+next_pt_init = NodePath("../Edge_A")
+
+[node name="pR1_nR1" type="Path3D" parent="RoadManager/Street_V_1_2/Edge_B" unique_id=1378900408]
+curve = SubResource("Curve3D_b7mmb")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pR0_nR0")
+lane_next_tag = "R1"
+lane_prior_tag = "R1"
+metadata/_edit_lock_ = true
+
+[node name="pR0_nR0" type="Path3D" parent="RoadManager/Street_V_1_2/Edge_B" unique_id=1605439055]
+curve = SubResource("Curve3D_kfjeh")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pR1_nR1")
+lane_next_tag = "R0"
+lane_prior_tag = "R0"
+metadata/_edit_lock_ = true
+
+[node name="pF0_nF0" type="Path3D" parent="RoadManager/Street_V_1_2/Edge_B" unique_id=523488135]
+curve = SubResource("Curve3D_pjfxe")
+script = ExtResource("17_86aln")
+lane_right = NodePath("../pF1_nF1")
+lane_next_tag = "F0"
+lane_prior_tag = "F0"
+metadata/_edit_lock_ = true
+
+[node name="pF1_nF1" type="Path3D" parent="RoadManager/Street_V_1_2/Edge_B" unique_id=884936922]
+curve = SubResource("Curve3D_wos3g")
+script = ExtResource("17_86aln")
+lane_left = NodePath("../pF0_nF0")
+lane_next_tag = "F1"
+lane_prior_tag = "F1"
+metadata/_edit_lock_ = true
+
+[node name="vehicles" type="Node3D" parent="RoadManager" unique_id=1401634643]
+
+[node name="Player" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=488084327 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(-0.9992153, -0.029855244, -0.026024098, 0, 0.6570842, -0.75381714, 0.039605416, -0.75322574, -0.6565687, -77.59774, -1.4890596, 92.76673)
+script = ExtResource("19_usy0v")
+drive_state = 2
+acceleration = 3
+target_speed = 22
+
+[node name="Camera3D" type="Camera3D" parent="RoadManager/vehicles/Player" unique_id=66810817]
+transform = Transform3D(1, 0, 0, 0, 0.9781476, 0.2079117, 0, -0.2079117, 0.9781476, 0, 7, 13.5)
+current = true
+far = 600.0
+
+[node name="NOC1" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=1537557053 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(-0.99025357, 0.13736597, -0.022977414, 0, 0.16497937, 0.98629695, 0.13927443, 0.9766843, -0.16337144, -77.533806, 2.1627295, 93.705315)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC2" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=1946695260 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.000002, 3.7252903e-09, 94)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC3" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=1678614625 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -1.9999993)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC4" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=305055740 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, 0, -1.9999992)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC5" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=2142728605 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -3.7252903e-09, -94)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC6" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=1561055466 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -90)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC7" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=2022817747 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94, -7.450581e-09, 15.999998)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22
+
+[node name="NOC8" type="CharacterBody3D" parent="RoadManager/vehicles" unique_id=1417336238 groups=["cars"] instance=ExtResource("18_keniu")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 90, 0, -14.802158)
+velocity = Vector3(0, 0, -10.112078)
+script = ExtResource("19_usy0v")
+acceleration = 3
+target_speed = 22

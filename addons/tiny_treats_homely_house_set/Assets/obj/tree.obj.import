@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dqb6v7r5b6alc"
+path="res://.godot/imported/tree.obj-2327845dd5491f7492a348b56e21d71b.mesh"
+
+[deps]
+
+files=["res://.godot/imported/tree.obj-2327845dd5491f7492a348b56e21d71b.mesh"]
+
+source_file="res://addons/tiny_treats_homely_house_set/Assets/obj/tree.obj"
+dest_files=["res://.godot/imported/tree.obj-2327845dd5491f7492a348b56e21d71b.mesh", "res://.godot/imported/tree.obj-2327845dd5491f7492a348b56e21d71b.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

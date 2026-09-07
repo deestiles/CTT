@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://d1iyuyb2a4u3u"]
+
+[ext_resource type="ArrayMesh" uid="uid://6e1u6eyyh3q5" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_01.res" id="1_m5116"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_hpyhr"]
+[ext_resource type="ArrayMesh" uid="uid://d3vu40t8e2g38" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_01_Glass.res" id="3_hpyhr"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_uovos"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_m5116"]
+size = Vector3(4.9887695, 3.0298462, 5.5410156)
+
+[node name="SM_Bld_Shop_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_m5116")
+surface_material_override/0 = ExtResource("2_hpyhr")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5026855, 1.5066833, -2.2265625)
+shape = SubResource("BoxShape3D_m5116")
+
+[node name="SM_Bld_Shop_01_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_hpyhr")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_uovos")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/districts/downtown_grid.tscn" id="1_grid"]
+[ext_resource type="Script" path="res://scripts/chase/road_network_test.gd" id="2_chase"]
+
+[node name="GridStreetsTest" type="Node3D"]
+script = ExtResource("2_chase")
+exploration_mode = true
+exploration_traffic_count = 2
+
+[node name="IntersectionDistrict" parent="." instance=ExtResource("1_grid")]

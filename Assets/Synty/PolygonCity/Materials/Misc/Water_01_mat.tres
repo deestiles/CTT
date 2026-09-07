@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://doxw3mye6naa7"]
+
+[ext_resource type="Texture2D" uid="uid://fl7g06tpk0wq" path="res://Assets/Synty/PolygonCity/Textures/Generic_Water.png" id="2_r5kw5"]
+
+[resource]
+resource_name = "Water_01_mat"
+transparency = 1
+depth_draw_mode = 1
+albedo_color = Color(0.110137075, 0.299933, 0.31132078, 0.8509804)
+roughness = 0.8
+normal_enabled = true
+normal_texture = ExtResource("2_r5kw5")
+uv1_scale = Vector3(10, 10, 0)

@@ -1,0 +1,54 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_01.res" id="1_body"]
+[ext_resource type="Material" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_body_mat"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Glass.res" id="3_glass"]
+[ext_resource type="Material" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_Vehicle_01_mat.tres" id="4_glass_mat"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Plates.res" id="5_plates"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_SteeringW.res" id="6_steering"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Wheel_fl.res" id="7_wheel_fl"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Wheel_fr.res" id="8_wheel_fr"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Wheel_rl.res" id="9_wheel_rl"]
+[ext_resource type="ArrayMesh" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Veh_Car_Police_Wheel_rr.res" id="10_wheel_rr"]
+
+[node name="PolygonCityPoliceCar" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("1_body")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_glass")
+surface_material_override/0 = ExtResource("4_glass_mat")
+
+[node name="Plates" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("5_plates")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="SteeringWheel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.3399828, 0.94043165, 0, -0.94043165, 0.3399828, 0.3792947, 0.96719986, 0.51493424)
+mesh = ExtResource("6_steering")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="WheelFL" type="MeshInstance3D" parent="."]
+position = Vector3(0.74497676, 0.36143905, 1.6322663)
+mesh = ExtResource("7_wheel_fl")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="WheelFR" type="MeshInstance3D" parent="."]
+position = Vector3(-0.74497676, 0.36143905, 1.6322663)
+mesh = ExtResource("8_wheel_fr")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="WheelRL" type="MeshInstance3D" parent="."]
+position = Vector3(0.74497676, 0.36143905, -1.2497904)
+mesh = ExtResource("9_wheel_rl")
+surface_material_override/0 = ExtResource("2_body_mat")
+
+[node name="WheelRR" type="MeshInstance3D" parent="."]
+position = Vector3(-0.74497676, 0.36143905, -1.2497904)
+mesh = ExtResource("10_wheel_rr")
+surface_material_override/0 = ExtResource("2_body_mat")

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://8llnrf5wjsf"]
+
+[ext_resource type="ArrayMesh" uid="uid://cf6g8gn4gtl0d" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Env_Sidewalk_Corner_02.res" id="1_6xatu"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ybkv6"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gxqev"]
+size = Vector3(5, 0.1640916, 5)
+
+[node name="SM_Env_Sidewalk_Corner_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_6xatu")
+surface_material_override/0 = ExtResource("2_ybkv6")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, -0.082045786, -2.5)
+shape = SubResource("BoxShape3D_gxqev")

@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://df3vbxqslc53b"]
+
+[ext_resource type="Texture2D" uid="uid://vyhb1oju6hav" path="res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_Normals.png" id="1_hh75h"]
+
+[resource]
+resource_name = "Glass_01_mat"
+transparency = 1
+depth_draw_mode = 1
+albedo_color = Color(0.28507498, 0.43529412, 0.39135817, 0.43529412)
+roughness = 0.5
+normal_enabled = true
+normal_texture = ExtResource("1_hh75h")
+uv1_scale = Vector3(1, 1, 0)

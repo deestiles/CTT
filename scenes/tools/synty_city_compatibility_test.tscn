@@ -1,0 +1,110 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/tools/synty_city_compatibility_test.gd" id="1_script"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.08, 0.24, 0.48, 1)
+sky_horizon_color = Color(0.65, 0.79, 0.9, 1)
+ground_bottom_color = Color(0.08, 0.1, 0.12, 1)
+ground_horizon_color = Color(0.55, 0.65, 0.7, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.72, 0.78, 0.9, 1)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.13, 0.22, 0.15, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector3(70, 0.2, 70)
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(70, 0.2, 70)
+
+[node name="SyntyCityCompatibilityTest" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -35, 0)
+light_color = Color(1, 0.9, 0.78, 1)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.18, 0)
+mesh = SubResource("GroundMesh")
+
+[node name="GroundBody" type="StaticBody3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/GroundBody"]
+shape = SubResource("GroundShape")
+
+[node name="ImportedAssets" type="Node3D" parent="."]
+
+[node name="CameraRig" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 48.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Title" type="Label" parent="UI"]
+offset_left = 18.0
+offset_top = 16.0
+offset_right = 492.0
+offset_bottom = 49.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "SYNTY CITY — SCALE & STYLE TEST"
+
+[node name="Instructions" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 52.0
+offset_right = 480.0
+offset_bottom = 114.0
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 15
+text = "Arrow keys: orbit camera   •   Mouse wheel: zoom\nCheck modular intersection, corner seams, facing, and relative scale"
+
+[node name="TimeButton" type="Button" parent="UI"]
+offset_left = 20.0
+offset_top = 126.0
+offset_right = 152.0
+offset_bottom = 168.0
+theme_override_font_sizes/font_size = 16
+text = "TIME: DAY"
+
+[node name="BrakeButton" type="Button" parent="UI"]
+offset_left = 164.0
+offset_top = 126.0
+offset_right = 326.0
+offset_bottom = 168.0
+theme_override_font_sizes/font_size = 16
+text = "BRAKE TEST: OFF"
+
+[node name="ReverseButton" type="Button" parent="UI"]
+offset_left = 338.0
+offset_top = 126.0
+offset_right = 516.0
+offset_bottom = 168.0
+theme_override_font_sizes/font_size = 16
+text = "REVERSE TEST: OFF"

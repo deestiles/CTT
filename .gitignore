@@ -1,0 +1,21 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Generated builds, logs, editor/OS files, and local credentials
+/builds/
+/exports/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+
+# Blender recovery files (source .blend files remain versioned)
+*.blend1
+*.blend2
+*.blend@
+*.blend~

@@ -1,0 +1,186 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/map_builder/map_builder_test.gd" id="1"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.08, 0.13, 0.19, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.72, 0.8, 0.92, 1)
+ambient_light_energy = 0.65
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.16, 0.25, 0.18, 1)
+roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector2(500, 500)
+subdivide_width = 99
+subdivide_depth = 99
+
+[sub_resource type="StandardMaterial3D" id="PreviewMaterial"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.15, 0.85, 1, 0.42)
+
+[sub_resource type="BoxMesh" id="PreviewMesh"]
+size = Vector3(4.8, 0.25, 4.8)
+
+[sub_resource type="StandardMaterial3D" id="ArrowMaterial"]
+shading_mode = 0
+albedo_color = Color(0.1, 1, 0.92, 1)
+emission_enabled = true
+emission = Color(0.05, 0.8, 0.72, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxMesh" id="ArrowMesh"]
+material = SubResource("ArrowMaterial")
+size = Vector3(0.18, 0.06, 1.8)
+
+[node name="MapBuilderTest" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -35, 0)
+light_energy = 1.25
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("GroundMesh")
+
+[node name="PlacedItems" type="Node3D" parent="."]
+
+[node name="ValidationMarkers" type="Node3D" parent="."]
+
+[node name="Preview" type="MeshInstance3D" parent="."]
+material_override = SubResource("PreviewMaterial")
+mesh = SubResource("PreviewMesh")
+
+[node name="DirectionArrow" type="Node3D" parent="."]
+
+[node name="Shaft" type="MeshInstance3D" parent="DirectionArrow"]
+position = Vector3(0, 0, 0.25)
+mesh = SubResource("ArrowMesh")
+
+[node name="Left" type="MeshInstance3D" parent="DirectionArrow"]
+position = Vector3(-0.33, 0, -0.63)
+rotation_degrees = Vector3(0, -45, 0)
+scale = Vector3(1, 1, 0.52)
+mesh = SubResource("ArrowMesh")
+
+[node name="Right" type="MeshInstance3D" parent="DirectionArrow"]
+position = Vector3(0.33, 0, -0.63)
+rotation_degrees = Vector3(0, 45, 0)
+scale = Vector3(1, 1, 0.52)
+mesh = SubResource("ArrowMesh")
+
+[node name="Reverse" type="Node3D" parent="DirectionArrow"]
+position = Vector3(1.0, 0, 0)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="Shaft" type="MeshInstance3D" parent="DirectionArrow/Reverse"]
+position = Vector3(0, 0, 0.25)
+mesh = SubResource("ArrowMesh")
+
+[node name="Left" type="MeshInstance3D" parent="DirectionArrow/Reverse"]
+position = Vector3(-0.33, 0, -0.63)
+rotation_degrees = Vector3(0, -45, 0)
+scale = Vector3(1, 1, 0.52)
+mesh = SubResource("ArrowMesh")
+
+[node name="Right" type="MeshInstance3D" parent="DirectionArrow/Reverse"]
+position = Vector3(0.33, 0, -0.63)
+rotation_degrees = Vector3(0, 45, 0)
+scale = Vector3(1, 1, 0.52)
+mesh = SubResource("ArrowMesh")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 38, 42)
+current = true
+projection = 1
+size = 58.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Inventory" type="PanelContainer" parent="UI"]
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 220.0
+offset_bottom = 650.0
+
+[node name="Scroll" type="ScrollContainer" parent="UI/Inventory"]
+custom_minimum_size = Vector2(200, 620)
+
+[node name="Items" type="VBoxContainer" parent="UI/Inventory/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 7
+
+[node name="Title" type="Label" parent="UI"]
+offset_left = 238.0
+offset_top = 18.0
+offset_right = 620.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 22
+text = "POLYGON CITY MAP BUILDER"
+
+[node name="Selection" type="Label" parent="UI"]
+offset_left = 238.0
+offset_top = 54.0
+offset_right = 700.0
+offset_bottom = 80.0
+text = "SELECTED"
+
+[node name="Status" type="Label" parent="UI"]
+offset_left = 238.0
+offset_top = 86.0
+offset_right = 700.0
+offset_bottom = 112.0
+text = "VALID NETWORK"
+
+[node name="Help" type="Label" parent="UI"]
+offset_left = 238.0
+offset_top = 116.0
+offset_right = 700.0
+offset_bottom = 162.0
+text = "Drag an asset from the menu or left click to place   •   Drag placed straight roads to extend   •   Right click: erase   •   R: rotate   •   Wheel: zoom   •   Middle drag / arrows: pan"
+
+[node name="SavePanel" type="VBoxContainer" parent="UI"]
+offset_left = 490.0
+offset_top = 166.0
+offset_right = 706.0
+offset_bottom = 250.0
+theme_override_constants/separation = 6
+
+[node name="MapName" type="LineEdit" parent="UI/SavePanel"]
+layout_mode = 2
+placeholder_text = "Map name"
+text = "city_map"
+
+[node name="Actions" type="HBoxContainer" parent="UI/SavePanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Save" type="Button" parent="UI/SavePanel/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SAVE MAP"
+
+[node name="Load" type="Button" parent="UI/SavePanel/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LOAD MAP"
+
+[node name="Test" type="Button" parent="UI/SavePanel"]
+layout_mode = 2
+text = "TEST MAP"
+
+[node name="SaveConfirmation" type="ConfirmationDialog" parent="UI"]
+title = "Confirm Map Save"
+dialog_text = "Save this map?"
+ok_button_text = "SAVE MAP"
+cancel_button_text = "CANCEL"
