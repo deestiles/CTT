@@ -314,6 +314,12 @@
   // keyboard
   window.addEventListener("keydown", (e) => {
     if (e.target.tagName === "INPUT") return;
+    // Arrow keys pan the view around the map (bigger steps with Shift).
+    const panStep = (e.shiftKey ? 3 : 1) * Math.max(40, state.view.scale * 1.5);
+    if (e.key === "ArrowRight") { state.view.ox -= panStep; e.preventDefault(); draw(); return; }
+    if (e.key === "ArrowLeft") { state.view.ox += panStep; e.preventDefault(); draw(); return; }
+    if (e.key === "ArrowDown") { state.view.oy -= panStep; e.preventDefault(); draw(); return; }
+    if (e.key === "ArrowUp") { state.view.oy += panStep; e.preventDefault(); draw(); return; }
     if (e.key === "r" || e.key === "R") { state.turns = (state.turns + 1) % 4; $("rotdeg").textContent = state.turns * 90 + "°"; draw(); }
     else if (e.key === "1") setTool("place"); else if (e.key === "2") setTool("select"); else if (e.key === "3") setTool("erase");
     else if ((e.ctrlKey || e.metaKey) && e.key === "z") { doUndo(); }
