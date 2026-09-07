@@ -196,6 +196,14 @@ As of 2026-09-07:
 - Current headless output reports 142 generated lanes and 2 lanes without continuation (`Module_049_F0` and `Module_057_F0`). Determine whether these are intentional map boundaries; validation policy says playable networks should not contain accidental open ends.
 - Headless launch currently completes without GDScript errors, aside from local log/certificate warnings described above.
 
+### 2026-09-07 — Codex yield/watchdog correction
+
+- Branch: `codex/yield-watchdog-exemption`
+- Changed `scripts/chase/road_network_test.gd` so a civilian with `yielding_to_police=true` does not accumulate recovery stall time and cannot be recycled solely for being stopped.
+- This addresses the confirmed interaction where intentional `target_speed=0` curb yielding reached the civilian four-second stall threshold and reset its lane/offset state.
+- `tools/web_map_builder/` was already present as untracked concurrent work and was deliberately left untouched.
+- Headless smoke test passed without GDScript errors (environmental log/certificate warnings and the two previously known unlinked lanes remain). Owner visual testing remains required to confirm that the car holds its pulled-over position for the full police pass.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt

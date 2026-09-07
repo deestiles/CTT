@@ -1179,6 +1179,12 @@ func update_recovery_watchdog(delta: float) -> void:
 		var expects_motion := actor != player or Input.is_action_pressed("ui_up")
 		if actor in traffic and bool(actor.get_meta("stopped_for_signal", false)):
 			expects_motion = false
+		# A civilian yielding to an emergency vehicle is intentionally stationary.
+		# Never let the stall watchdog reinterpret that stop as a navigation fault
+		# and recycle the car while the police unit is passing.
+		var intentionally_yielding := actor in traffic and bool(actor.get_meta("yielding_to_police", false))
+		if intentionally_yielding:
+			expects_motion = false
 		if actor == backup:
 			expects_motion = backup_timer > 0.0
 		if expects_motion and moved < 0.18:
@@ -1193,7 +1199,7 @@ func update_recovery_watchdog(delta: float) -> void:
 			off_road = planar_vector_distance(actor.global_position, nearest_point) > 10.5
 		var overturned := actor.global_transform.basis.y.normalized().dot(Vector3.UP) < 0.35
 		var reversed := is_actor_reversed(actor, agent)
-		var stalled := float(recovery_stall_times[actor]) >= (5.0 if actor == player else 4.0)
+		var stalled := not intentionally_yielding and float(recovery_stall_times[actor]) >= (5.0 if actor == player else 4.0)
 		if float(recovery_cooldowns.get(actor, 0.0)) <= 0.0 and (off_map or off_road or overturned or reversed or stalled):
 			if actor in traffic:
 				recycle_traffic_to_safe_lane(actor, agent)
