@@ -272,10 +272,13 @@
   }
 
   // ================= INTERACTION =================
-  let panning = false, painting = false, panStart = null, lastPaintCell = null;
+  let panning = false, painting = false, rightErasing = false, panStart = null, lastPaintCell = null;
   canvas.addEventListener("mousedown", (e) => {
     if (e.button === 1 || (e.button === 0 && e.altKey)) { panning = true; panStart = { x: e.offsetX, y: e.offsetY, ox: state.view.ox, oy: state.view.oy }; e.preventDefault(); return; }
     const cell = pxToCell(e.offsetX, e.offsetY);
+    if (e.button === 2) { // right-click deletes, in any tool; hold and drag to erase a run
+      rightErasing = true; eraseAt(cell); lastPaintCell = cell; draw(); return;
+    }
     if (e.button === 0) {
       if (state.tool === "place") { painting = true; lastPaintCell = null; placeAt(cell); lastPaintCell = cell; }
       else if (state.tool === "erase") { painting = true; eraseAt(cell); lastPaintCell = cell; }
@@ -288,13 +291,13 @@
     state.hover = cell;
     $("coords").textContent = `cell (${cell.x}, ${cell.y})  ·  ${(cell.x * 5)}m, ${(cell.y * 5)}m`;
     if (panning) { state.view.ox = panStart.ox + (e.offsetX - panStart.x); state.view.oy = panStart.oy + (e.offsetY - panStart.y); draw(); return; }
-    if (painting && (!lastPaintCell || lastPaintCell.x !== cell.x || lastPaintCell.y !== cell.y)) {
-      if (state.tool === "place") placeAt(cell); else if (state.tool === "erase") eraseAt(cell);
+    if ((painting || rightErasing) && (!lastPaintCell || lastPaintCell.x !== cell.x || lastPaintCell.y !== cell.y)) {
+      if (rightErasing || state.tool === "erase") eraseAt(cell); else if (state.tool === "place") placeAt(cell);
       lastPaintCell = cell;
     }
     draw();
   });
-  window.addEventListener("mouseup", () => { panning = false; painting = false; });
+  window.addEventListener("mouseup", () => { panning = false; painting = false; rightErasing = false; });
   canvas.addEventListener("mouseleave", () => { state.hover = null; draw(); });
   canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   canvas.addEventListener("wheel", (e) => {
