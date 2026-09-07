@@ -8,6 +8,18 @@
   const byId = Object.fromEntries(catalog.map((d) => [d.id, d]));
   const LAYER_RANK = { surface: 0, structure: 1, prop: 2, vehicle: 3, character: 4 };
 
+  // Real top-down asset thumbnails (rendered by tools/render_thumbnails). Roads
+  // deliberately have none — their look is procedural, so the schematic is clearer.
+  const thumbs = {};
+  function loadThumbs(onchange) {
+    for (const def of catalog) {
+      if (def.category === "Roads") continue;
+      const img = new Image();
+      img.onload = () => { thumbs[def.id] = img; onchange(); };
+      img.src = "thumbs/" + def.id + ".png";
+    }
+  }
+
   const state = {
     items: [],                 // { id, cell:{x,y}, turns }
     name: "new_map",
@@ -132,6 +144,16 @@
   function drawItem(g, def, turns, px, py, s, showArrows) {
     const fp = rotatedFootprint(def, turns);
     const W = fp.w * s, H = fp.h * s;
+    const img = thumbs[def.id];
+    if (img) {
+      // Real prefab image, rotated to match the placed rotation.
+      g.save();
+      g.translate(px + W / 2, py + H / 2);
+      g.rotate((turns * Math.PI) / 2);
+      g.drawImage(img, -W / 2, -H / 2, W, H);
+      g.restore();
+      return;
+    }
     if (def.category === "Roads") {
       const kind = def.module_rules.kind;
       if (kind === "straight") drawStraightRoad(g, def, turns, px, py, W, H, s, showArrows);
@@ -524,6 +546,7 @@
 
   // ================= INIT =================
   buildPalette();
+  loadThumbs(() => { buildPalette(); draw(); });
   resizeCanvas();
   fitViewToBounds();
   refreshValidation();

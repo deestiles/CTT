@@ -52,6 +52,28 @@ don't have the repo use this Export/Import path and submit their JSON.
 To drive a map in the game: set `GameState.builder_map_name` to the map name (the
 in-engine **TEST MAP** flow does this), then run `scenes/chase/grid_streets_test.tscn`.
 
+## Asset thumbnails (real prefab images)
+
+Edged/mesh assets — sidewalks (incl. corners), buildings, lamps, traffic
+lights, vehicles, pedestrians — are drawn using **real top-down renders** of
+the actual Polygon City prefabs, so you can see how a piece looks and how a
+rotation will land. Roads keep the arrow/center-line schematic on purpose:
+every road id uses the same bare-road prefab, so its meaning is procedural, not
+in the mesh.
+
+The images live in `thumbs/<id>.png`. Regenerate them (e.g. after changing the
+catalog or the prefabs) with a **real renderer** — not `--headless`, which
+cannot capture pixels:
+
+```bash
+& 'C:\Users\deest\Downloads\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe' --path . --script res://tools/render_thumbnails/render_thumbnails.gd
+```
+
+It renders each non-road prefab from an orthographic top-down camera, auto-frames
+by the mesh bounds (so corner-pivoted pieces sit square), and writes transparent
+PNGs. They are kept in normal git (not LFS) via `thumbs/.gitattributes` because
+they are small and generated.
+
 ## Rules mirrored from the game
 
 `catalog.js` and `rules.js` are faithful ports of, and must stay in sync with:

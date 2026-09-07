@@ -120,7 +120,12 @@ class Handler(BaseHTTPRequestHandler):
         if not local.startswith(TOOL_DIR) or not os.path.isfile(local):
             self._send(404, {"error": "not found"})
             return
-        ctype = "text/html" if local.endswith(".html") else "application/javascript" if local.endswith(".js") else "text/plain"
+        ext = os.path.splitext(local)[1].lower()
+        ctype = {
+            ".html": "text/html", ".js": "application/javascript", ".css": "text/css",
+            ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg", ".svg": "image/svg+xml",
+        }.get(ext, "text/plain")
         with open(local, "rb") as f:
             data = f.read()
         self.send_response(200)

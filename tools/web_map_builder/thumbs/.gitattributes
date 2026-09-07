@@ -1,0 +1,2 @@
+# Generated top-down thumbnails are small; keep them in normal git, not LFS.
+*.png -filter -diff -merge -text
