@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Catch the Thief — Map Builder</title>
+<style>
+  :root {
+    --bg: #14171c; --panel: #1c2128; --panel2: #232a33; --line: #2d3540;
+    --ink: #e6ebf2; --dim: #93a0b0; --accent: #4aa3ff; --accent2: #2b6fbf;
+    --ok: #57d38c; --warn: #ffb648; --bad: #ff5a52;
+    --road: #3a4048; --sidewalk: #8d8577; --building: #6d5a86;
+    --police: #4aa3ff; --criminal: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 13px/1.45 system-ui, "Segoe UI", Roboto, sans-serif;
+    display: grid; grid-template-columns: 250px 1fr 268px; grid-template-rows: 46px 1fr 40px;
+    grid-template-areas: "top top top" "left canvas right" "left status right";
+    height: 100vh; overflow: hidden;
+  }
+  .top {
+    grid-area: top; background: var(--panel); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  }
+  .top .brand { font-weight: 700; letter-spacing: .3px; margin-right: 6px; }
+  .top .brand span { color: var(--accent); }
+  .spacer { flex: 1; }
+  button, select, input {
+    background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 10px; font: inherit; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent2); }
+  button.active { background: var(--accent2); border-color: var(--accent); }
+  button.primary { background: var(--accent2); border-color: var(--accent); }
+  button.ghost { background: transparent; }
+  input[type=text], input[type=number] { cursor: text; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: none; border-radius: 0; border-right: 1px solid var(--line); }
+  .seg button:last-child { border-right: none; }
+
+  .left { grid-area: left; background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; }
+  .right { grid-area: right; background: var(--panel); border-left: 1px solid var(--line); overflow-y: auto; padding: 12px; }
+  .canvas-wrap { grid-area: canvas; position: relative; overflow: hidden; background: #0f1216; }
+  canvas { display: block; }
+
+  .group { border-bottom: 1px solid var(--line); }
+  .group > h4 {
+    margin: 0; padding: 9px 12px; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--dim); cursor: pointer; display: flex; justify-content: space-between;
+  }
+  .assets { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px 8px 10px; }
+  .asset {
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 6px; cursor: grab; text-align: center; user-select: none;
+  }
+  .asset:hover { border-color: var(--accent2); }
+  .asset.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .asset canvas { margin: 0 auto; border-radius: 4px; background: #0f1216; }
+  .asset .nm { font-size: 10.5px; margin-top: 4px; color: var(--dim); line-height: 1.2; height: 26px; overflow: hidden; }
+  .asset .sz { font-size: 9px; color: var(--accent); }
+
+  .status { grid-area: status; background: var(--panel); border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 14px; padding: 0 14px; font-size: 12px; }
+  .pill { padding: 2px 8px; border-radius: 20px; font-weight: 600; font-size: 11px; }
+  .pill.ok { background: rgba(87,211,140,.15); color: var(--ok); }
+  .pill.bad { background: rgba(255,90,82,.15); color: var(--bad); }
+  .pill.warn { background: rgba(255,182,72,.15); color: var(--warn); }
+
+  .right h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--dim); }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: var(--dim); margin-bottom: 4px; }
+  .field input, .field select { width: 100%; }
+  .roles { display: flex; gap: 6px; }
+  .roles button { flex: 1; }
+  .roles button.police.active { background: var(--police); border-color: #7cc0ff; color: #06172a; }
+  .roles button.criminal.active { background: var(--criminal); border-color: #ffb0b0; color: #2a0808; }
+  .vstats { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; font-size: 12px; margin-bottom: 12px; }
+  .vstats .n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .vstats .n.bad { color: var(--bad); } .vstats .n.ok { color: var(--ok); }
+  .issues { font-size: 11.5px; color: var(--dim); max-height: 160px; overflow-y: auto; }
+  .issues .row { padding: 3px 0; border-bottom: 1px dashed var(--line); }
+  .hint { color: var(--dim); font-size: 11px; margin-top: 4px; }
+  .coords { position: absolute; left: 10px; bottom: 10px; background: rgba(0,0,0,.55);
+    padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--dim); pointer-events: none; }
+  .bridge { font-size: 11px; }
+  .bridge.on { color: var(--ok); } .bridge.off { color: var(--warn); }
+
+  dialog { background: var(--panel); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px; min-width: 320px; }
+  dialog::backdrop { background: rgba(0,0,0,.55); }
+  dialog h2 { margin: 0 0 12px; font-size: 16px; }
+  dialog .row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+  dialog .row label { width: 90px; color: var(--dim); font-size: 12px; }
+  dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .maplist { max-height: 200px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .maplist .m { padding: 8px 10px; border-bottom: 1px solid var(--line); cursor: pointer; display: flex; justify-content: space-between; }
+  .maplist .m:hover { background: var(--panel2); }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">Catch the Thief · <span>Map Builder</span></div>
+    <div class="seg" id="tools">
+      <button data-tool="place" class="active" title="Place (1)">Place</button>
+      <button data-tool="select" title="Select (2)">Select</button>
+      <button data-tool="erase" title="Erase (3)">Erase</button>
+    </div>
+    <button id="rotate" title="Rotate (R)">⟳ Rotate <span id="rotdeg" class="hint" style="margin-left:4px">0°</span></button>
+    <button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button>
+    <button id="redo" title="Redo (Ctrl+Y)">↷ Redo</button>
+    <div class="spacer"></div>
+    <button id="new">✚ New</button>
+    <button id="load">📂 Load</button>
+    <button id="save" class="primary">💾 Save</button>
+    <button id="export">⭳ Export</button>
+    <button id="import">⭱ Import</button>
+    <input type="file" id="fileInput" accept="application/json" hidden />
+  </div>
+
+  <div class="left" id="palette"></div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="grid"></canvas>
+    <div class="coords" id="coords">—</div>
+  </div>
+
+  <div class="right">
+    <h3>Map</h3>
+    <div class="field"><label>Name</label><input type="text" id="mapName" value="new_map" /></div>
+    <div class="field"><label>Author</label><input type="text" id="mapAuthor" placeholder="your name" /></div>
+    <div class="field">
+      <label>Playable as</label>
+      <div class="roles">
+        <button class="police active" data-role="police">Police</button>
+        <button class="criminal" data-role="criminal">Criminal</button>
+      </div>
+      <div class="hint">Select one or both. Determines which game modes can use this map.</div>
+    </div>
+
+    <h3>Validation</h3>
+    <div class="vstats" id="vstats"></div>
+    <div class="issues" id="issues"></div>
+
+    <h3 style="margin-top:14px">View</h3>
+    <div class="field">
+      <label><input type="checkbox" id="showArrows" checked style="width:auto;cursor:pointer" /> Lane direction arrows</label>
+      <label><input type="checkbox" id="showSpawns" style="width:auto;cursor:pointer" /> Spawn candidates</label>
+    </div>
+  </div>
+
+  <div class="status">
+    <span id="statusMsg" class="hint">Ready.</span>
+    <div class="spacer"></div>
+    <span id="bridge" class="bridge off">● bridge offline</span>
+    <span class="hint">| grid 5&nbsp;m | R rotate · scroll zoom · drag-middle pan</span>
+    <span id="validPill" class="pill warn">—</span>
+  </div>
+
+  <!-- New map dialog -->
+  <dialog id="newDialog">
+    <h2>New map</h2>
+    <div class="row"><label>Name</label><input type="text" id="nmName" value="new_map" /></div>
+    <div class="row"><label>Columns</label><input type="number" id="nmCols" value="24" min="4" max="200" /></div>
+    <div class="row"><label>Rows</label><input type="number" id="nmRows" value="24" min="4" max="200" /></div>
+    <div class="hint">Grid cells are 5&nbsp;m. A 24×24 map is 120&nbsp;m per side. You can place outside the guide box; it just marks the intended play area.</div>
+    <div class="actions">
+      <button id="nmCancel" class="ghost">Cancel</button>
+      <button id="nmCreate" class="primary">Create</button>
+    </div>
+  </dialog>
+
+  <!-- Load dialog -->
+  <dialog id="loadDialog">
+    <h2>Load map</h2>
+    <div id="mapList" class="maplist"><div class="hint" style="padding:10px">Loading…</div></div>
+    <div class="actions"><button id="loadCancel" class="ghost">Close</button></div>
+  </dialog>
+
+  <script src="catalog.js"></script>
+  <script src="rules.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
