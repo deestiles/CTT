@@ -204,6 +204,15 @@ As of 2026-09-07:
 - `tools/web_map_builder/` was already present as untracked concurrent work and was deliberately left untouched.
 - Headless smoke test passed without GDScript errors (environmental log/certificate warnings and the two previously known unlinked lanes remain). Owner visual testing remains required to confirm that the car holds its pulled-over position for the full police pass.
 
+### 2026-09-07 — Deterministic civilian-car curb-yield verification
+
+- Root cause of the continuing visible failure: the saved map's first spawn candidates are two-way road cells, and exploration enables only two NPC cars. The exploration placement code also preferred legacy `Street_H_*` lanes without builder one-way metadata. Consequently, neither visible civilian was eligible for the intentionally one-way-only behavior.
+- `scripts/chase/road_network_test.gd` now places the player and first civilian on a connected generated single-lane one-way route in builder-map exploration. The other civilian is placed on a separate distant lane.
+- Police-behind detection now uses the authoritative lane tangent rather than transient vehicle mesh orientation.
+- Straight-through one-way intersection lanes are eligible so a civilian stopped at a traffic signal can yield; curved lanes remain ineligible.
+- Added `tools/verify_npc_curb_yield.gd`. It deterministically places police behind a civilian and verifies detection, metadata, command persistence, physical lateral movement, and yield state.
+- Test result: PASS. At 11.5 m separation the civilian entered yield state, received a 2.9 m target offset, moved approximately 2.90 m from lane center, and remained yielding. The normal exploration scene also completed its headless smoke test without GDScript errors.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt

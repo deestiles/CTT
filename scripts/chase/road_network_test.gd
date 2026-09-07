@@ -330,6 +330,12 @@ func setup_exploration_mode(vehicles: Node) -> void:
 
 
 func place_exploration_player() -> void:
+	if $IntersectionDistrict.has_meta("builder_map"):
+		var builder_chain := _builder_one_way_test_chain(4)
+		if not builder_chain.is_empty():
+			_place_exploration_actor_on_lane(player, player_agent, builder_chain[0], 0.35)
+			last_forward = -player.global_transform.basis.z
+			return
 	# Use a known straight-street lane instead of nearest-lane selection. The
 	# nearest search only compares distance, so at a two-way road it may choose
 	# either direction and previously retained the car's old perpendicular pose.
@@ -358,6 +364,19 @@ func place_exploration_player() -> void:
 
 
 func place_exploration_traffic() -> void:
+	if $IntersectionDistrict.has_meta("builder_map"):
+		var builder_chain := _builder_one_way_test_chain(4)
+		if not builder_chain.is_empty() and not traffic.is_empty():
+			# Put the first civilian three five-metre modules ahead of the player on
+			# the same one-way route. This creates a real, repeatable curb-yield test.
+			var first_agent := traffic[0].get_node("road_lane_agent") as RoadLaneAgent
+			_place_exploration_actor_on_lane(traffic[0], first_agent, builder_chain[3], 0.5)
+			if traffic.size() > 1:
+				var second_agent := traffic[1].get_node("road_lane_agent") as RoadLaneAgent
+				var second_lane := _builder_lane_away_from(traffic[0].global_position, 24.0)
+				if is_instance_valid(second_lane):
+					_place_exploration_actor_on_lane(traffic[1], second_agent, second_lane, 0.5)
+			return
 	# Bind each test car to a known straight road. Nearest-lane assignment can
 	# select a perpendicular intersection lane when several paths overlap.
 	var street_names := [
@@ -394,6 +413,58 @@ func place_exploration_traffic() -> void:
 		if flat_heading.length_squared() > 0.001:
 			actor.look_at(actor.global_position + flat_heading.normalized(), Vector3.UP)
 		actor.set("velocity", Vector3.ZERO)
+
+
+func _builder_one_way_test_chain(required_segments: int) -> Array[RoadLane]:
+	var manager := $IntersectionDistrict/RoadManager
+	for node in manager.find_children("*", "RoadLane", true, false):
+		var start := node as RoadLane
+		if not is_instance_valid(start) or String(start.get_meta("road_kind", "")) != "straight":
+			continue
+		if not bool(start.get_meta("one_way", false)) or int(start.get_meta("same_direction_lane_count", 0)) != 1:
+			continue
+		var chain: Array[RoadLane] = [start]
+		var lane := start
+		while chain.size() < required_segments:
+			lane = lane.get_node_or_null(lane.lane_next) as RoadLane
+			if not is_instance_valid(lane) or String(lane.get_meta("road_kind", "")) != "straight":
+				break
+			if not bool(lane.get_meta("one_way", false)) or int(lane.get_meta("same_direction_lane_count", 0)) != 1:
+				break
+			chain.append(lane)
+		if chain.size() >= required_segments:
+			return chain
+	return []
+
+
+func _builder_lane_away_from(position: Vector3, minimum_distance: float) -> RoadLane:
+	for node in $IntersectionDistrict/RoadManager.find_children("*", "RoadLane", true, false):
+		var lane := node as RoadLane
+		if not is_instance_valid(lane) or String(lane.get_meta("road_kind", "")) != "straight":
+			continue
+		var midpoint := lane.to_global(lane.curve.sample_baked(lane.curve.get_baked_length() * 0.5))
+		if planar_vector_distance(midpoint, position) >= minimum_distance:
+			return lane
+	return null
+
+
+func _place_exploration_actor_on_lane(actor: Node3D, agent: RoadLaneAgent, lane: RoadLane, fraction: float) -> void:
+	agent.unassign_lane()
+	agent.assign_lane(lane)
+	var lane_length := lane.curve.get_baked_length()
+	var offset := clampf(lane_length * fraction, 0.25, maxf(0.25, lane_length - 0.25))
+	var road_position := lane.to_global(lane.curve.sample_baked(offset))
+	var heading_offset := minf(lane_length, offset + 1.0)
+	var road_heading := lane.to_global(lane.curve.sample_baked(heading_offset))
+	if road_heading.distance_squared_to(road_position) < 0.01:
+		road_heading = lane.to_global(lane.curve.sample_baked(maxf(0.0, offset - 1.0)))
+		road_heading = road_position + (road_position - road_heading)
+	actor.global_position = road_position + Vector3.UP * 0.08
+	var flat_heading := road_heading - road_position
+	flat_heading.y = 0.0
+	if flat_heading.length_squared() > 0.001:
+		actor.look_at(actor.global_position + flat_heading.normalized(), Vector3.UP)
+	actor.set("velocity", Vector3.ZERO)
 
 
 func build_grid_traffic_signals() -> void:
@@ -994,7 +1065,20 @@ func should_yield_to_police(actor: Node3D, police_unit: Node3D) -> bool:
 	if distance < 0.01 or distance > 34.0:
 		return false
 	var actor_forward := -actor.global_transform.basis.z
+	var actor_agent := actor.get_node_or_null("road_lane_agent") as RoadLaneAgent
+	if is_instance_valid(actor_agent) and is_instance_valid(actor_agent.current_lane):
+		# Lane direction is authoritative. A civilian may still be visually rotating
+		# after a compact turn, which made transform-based detection reject police
+		# directly behind it on the new street.
+		var lane := actor_agent.current_lane
+		var closest_local := lane.curve.get_closest_point(lane.to_local(actor.global_position))
+		var closest_offset := lane.curve.get_closest_offset(closest_local)
+		var ahead_offset := minf(lane.curve.get_baked_length(), closest_offset + 1.0)
+		var behind_offset := maxf(0.0, closest_offset - 1.0)
+		actor_forward = lane.to_global(lane.curve.sample_baked(ahead_offset)) - lane.to_global(lane.curve.sample_baked(behind_offset))
 	actor_forward.y = 0.0
+	if actor_forward.length_squared() < 0.001:
+		return false
 	actor_forward = actor_forward.normalized()
 	var police_forward := -police_unit.global_transform.basis.z
 	police_forward.y = 0.0
@@ -1014,7 +1098,11 @@ func yield_to_police(actor: Node3D, police_unit: Node3D, cruise_speed: int) -> b
 	if is_instance_valid(actor_agent) and is_instance_valid(actor_agent.current_lane):
 		var lane := actor_agent.current_lane
 		var single_lane_one_way := bool(lane.get_meta("one_way", false)) and int(lane.get_meta("same_direction_lane_count", 0)) == 1
-		if single_lane_one_way and String(lane.get_meta("road_kind", "")) == "straight":
+		var road_kind := String(lane.get_meta("road_kind", ""))
+		# Builder intersections use straight-through lane curves. Include those so a
+		# civilian stopped at a signal can clear the one-way approach for police.
+		var supports_curb_yield := road_kind == "straight" or road_kind == "intersection"
+		if single_lane_one_way and supports_curb_yield:
 			# Pull toward the passenger-side curb. A 2.65 m offset places part of the
 			# vehicle over the sidewalk without sending its lane agent off-network.
 			actor.set("target_lateral_lane_offset", 2.9)
