@@ -140,6 +140,17 @@
       <div class="hint">Select one or both. Determines which game modes can use this map.</div>
     </div>
 
+    <h3>Traffic</h3>
+    <div class="field">
+      <label>Civilian vehicles to spawn</label>
+      <input type="number" id="trafficCount" value="2" min="0" max="32" />
+      <div class="hint">How many cars the game actually spawns. This is <b>not</b> the spawn-point count below — points are just the valid start positions the map offers.</div>
+    </div>
+    <div class="field">
+      <label>Pedestrians to spawn</label>
+      <input type="number" id="pedCount" value="0" min="0" max="64" />
+    </div>
+
     <h3>Validation</h3>
     <div class="vstats" id="vstats"></div>
     <div class="issues" id="issues"></div>

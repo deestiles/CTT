@@ -13,6 +13,8 @@
     name: "new_map",
     author: "",
     roles: new Set(["police"]),
+    trafficCount: 2,
+    pedestrianCount: 0,
     bounds: { cols: 24, rows: 24 },
     tool: "place",
     selectedId: "one_way_street",
@@ -366,8 +368,8 @@
   function renderValidation() {
     const r = state.lastValidation.result;
     const rows = [
-      ["Vehicle spawns", r.vehicle_spawn_candidates, r.vehicle_spawn_candidates < 2],
-      ["Pedestrian spawns", r.pedestrian_spawn_candidates, false],
+      ["Vehicle spawn points", r.vehicle_spawn_candidates, r.vehicle_spawn_candidates < 2],
+      ["Pedestrian spawn points", r.pedestrian_spawn_candidates, false],
       ["Open road ends", r.dangling_ports, r.dangling_ports > 0],
       ["Lane mismatches", r.lane_mismatches, r.lane_mismatches > 0],
       ["Direction conflicts", r.direction_conflicts, r.direction_conflicts > 0],
@@ -406,6 +408,8 @@
       validation: v.result,
       // ---- builder metadata (ignored by the current game loader) ----
       roles: [...state.roles],
+      traffic_count: state.trafficCount,
+      pedestrian_count: state.pedestrianCount,
       name: state.name,
       author: state.author,
       created: new Date().toISOString(),
@@ -421,6 +425,8 @@
     if (obj.name) { state.name = obj.name; $("mapName").value = obj.name; }
     if (obj.author) { state.author = obj.author; $("mapAuthor").value = obj.author; }
     if (Array.isArray(obj.roles)) { state.roles = new Set(obj.roles); syncRoleButtons(); }
+    if (obj.traffic_count != null) { state.trafficCount = obj.traffic_count | 0; $("trafficCount").value = state.trafficCount; }
+    if (obj.pedestrian_count != null) { state.pedestrianCount = obj.pedestrian_count | 0; $("pedCount").value = state.pedestrianCount; }
     if (obj.play_area) { state.bounds = { cols: obj.play_area.cols | 0 || 24, rows: obj.play_area.rows | 0 || 24 }; }
     state.selectedItem = null; refreshValidation(); fitView(); draw();
     setStatus(`Loaded ${state.items.length} objects.`, "ok");
@@ -507,6 +513,8 @@
   $("showSpawns").onchange = (e) => { state.showSpawns = e.target.checked; draw(); };
   $("mapName").oninput = (e) => state.name = e.target.value;
   $("mapAuthor").oninput = (e) => state.author = e.target.value;
+  $("trafficCount").oninput = (e) => state.trafficCount = Math.max(0, e.target.value | 0);
+  $("pedCount").oninput = (e) => state.pedestrianCount = Math.max(0, e.target.value | 0);
   function syncRoleButtons() { document.querySelectorAll(".roles button").forEach((b) => b.classList.toggle("active", state.roles.has(b.dataset.role))); }
   document.querySelectorAll(".roles button").forEach((b) => b.onclick = () => {
     const role = b.dataset.role;
