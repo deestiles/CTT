@@ -295,6 +295,34 @@
   function refreshValidation() {
     state.lastValidation = validate(state.items, byId);
     renderValidation();
+    saveDraft();
+  }
+
+  // ---- local autosave so a reload/New never loses unsaved work ----
+  const DRAFT_KEY = "ctt_map_builder_draft_v1";
+  function saveDraft() {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        items: state.items, name: state.name, author: state.author,
+        roles: [...state.roles], bounds: state.bounds,
+        trafficCount: state.trafficCount, pedestrianCount: state.pedestrianCount,
+      }));
+    } catch (e) { /* private mode / storage disabled — ignore */ }
+  }
+  function loadDraft() {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+      if (!d || !Array.isArray(d.items) || !d.items.length) return false;
+      state.items = d.items.filter((it) => it && byId[it.id] && it.cell)
+        .map((it) => ({ id: it.id, cell: { x: it.cell.x | 0, y: it.cell.y | 0 }, turns: ((it.turns | 0) % 4 + 4) % 4 }));
+      if (d.name) { state.name = d.name; $("mapName").value = d.name; }
+      if (d.author) { state.author = d.author; $("mapAuthor").value = d.author; }
+      if (Array.isArray(d.roles) && d.roles.length) { state.roles = new Set(d.roles); syncRoleButtons(); }
+      if (d.bounds) state.bounds = { cols: d.bounds.cols | 0 || 24, rows: d.bounds.rows | 0 || 24 };
+      if (d.trafficCount != null) { state.trafficCount = d.trafficCount | 0; $("trafficCount").value = state.trafficCount; }
+      if (d.pedestrianCount != null) { state.pedestrianCount = d.pedestrianCount | 0; $("pedCount").value = state.pedestrianCount; }
+      return state.items.length > 0;
+    } catch (e) { return false; }
   }
   function itemAt(cell) {
     // topmost by layer
@@ -493,17 +521,21 @@
   async function saveMap() {
     state.name = $("mapName").value.trim() || "new_map";
     const payload = buildPayload();
-    if (!payload.validation.valid && !confirm(`This map has ${payload.validation.issues} validation issue(s). Save anyway?`)) return;
+    // Saving is always allowed (work-in-progress maps included). The validation
+    // state is reported in the status bar rather than gated behind a dialog — a
+    // blocking confirm() can be silently suppressed by the browser.
+    const issues = payload.validation.issues;
+    const note = payload.validation.valid ? "" : ` — ⚠ ${issues} validation issue${issues === 1 ? "" : "s"} to fix before TEST MAP`;
     if (state.bridge) {
       try {
         const r = await api("save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: state.name, map: payload }) });
         const j = await r.json();
-        if (j.ok) { setStatus(`Saved to ${j.written.join(" & ")}`, "ok"); return; }
+        if (j.ok) { setStatus(`Saved “${state.name}” to ${j.written.join(" & ")}${note}`, payload.validation.valid ? "ok" : "warn"); return; }
         setStatus("Save failed: " + (j.error || "unknown"), "bad"); return;
       } catch (e) { setStatus("Bridge save error; falling back to download.", "warn"); }
     }
     downloadJSON(state.name + ".json", payload);
-    setStatus("Downloaded JSON (bridge offline). Copy into maps/ and user://maps/.", "warn");
+    setStatus(`Downloaded “${state.name}.json” (bridge offline). Copy into maps/ and user://maps/.${note}`, "warn");
   }
   function downloadJSON(filename, obj) {
     const blob = new Blob([JSON.stringify(obj, null, "\t")], { type: "application/json" });
@@ -555,24 +587,28 @@
   document.querySelectorAll("#tools button").forEach((b) => b.onclick = () => setTool(b.dataset.tool));
   $("showArrows").onchange = (e) => { state.showArrows = e.target.checked; buildPalette(); draw(); };
   $("showSpawns").onchange = (e) => { state.showSpawns = e.target.checked; draw(); };
-  $("mapName").oninput = (e) => state.name = e.target.value;
-  $("mapAuthor").oninput = (e) => state.author = e.target.value;
-  $("trafficCount").oninput = (e) => state.trafficCount = Math.max(0, e.target.value | 0);
-  $("pedCount").oninput = (e) => state.pedestrianCount = Math.max(0, e.target.value | 0);
+  $("mapName").oninput = (e) => { state.name = e.target.value; saveDraft(); };
+  $("mapAuthor").oninput = (e) => { state.author = e.target.value; saveDraft(); };
+  $("trafficCount").oninput = (e) => { state.trafficCount = Math.max(0, e.target.value | 0); saveDraft(); };
+  $("pedCount").oninput = (e) => { state.pedestrianCount = Math.max(0, e.target.value | 0); saveDraft(); };
   function syncRoleButtons() { document.querySelectorAll(".roles button").forEach((b) => b.classList.toggle("active", state.roles.has(b.dataset.role))); }
   document.querySelectorAll(".roles button").forEach((b) => b.onclick = () => {
     const role = b.dataset.role;
     if (state.roles.has(role)) { if (state.roles.size > 1) state.roles.delete(role); } else state.roles.add(role);
-    syncRoleButtons();
+    syncRoleButtons(); saveDraft();
   });
 
   // ================= INIT =================
   buildPalette();
   loadThumbs(() => { buildPalette(); draw(); });
   resizeCanvas();
-  fitViewToBounds();
+  const restored = loadDraft();
+  if (restored) fitView(); else fitViewToBounds();
   refreshValidation();
   probeBridge();
-  setStatus("Define a map with New, then drag assets from the left. Press R to rotate.");
+  setStatus(restored
+    ? `Restored your unsaved draft — ${state.items.length} objects (autosaved locally).`
+    : "Define a map with New, then drag assets from the left. Press R to rotate.",
+    restored ? "ok" : undefined);
   draw();
 })();
