@@ -84,15 +84,20 @@
     return rules.total_lanes | 0;
   }
 
+  function isJunction(rules) {
+    return !!rules && (rules.kind === "intersection_4" || rules.kind === "intersection_t");
+  }
+
   // _road_ports_compatible
   function roadPortsCompatible(a, aPort, aTurns, b, bPort, bTurns) {
+    if (Math.abs((a.lane_width || 0) - (b.lane_width || 0)) >= 1e-4) return false;
     const ap = rotatedPortProfile(a, aPort, aTurns);
     const bp = rotatedPortProfile(b, bPort, bTurns);
-    return (
-      ap.outgoing === bp.incoming && ap.incoming === bp.outgoing &&
-      ap.span === bp.span &&
-      Math.abs((a.lane_width || 0) - (b.lane_width || 0)) < 1e-4
-    );
+    if (ap.span !== bp.span) return false;
+    // Junctions route internally: match lane count only. Road-to-road keeps the
+    // strict directional handshake so opposing one-way roads still flag head-on.
+    if (isJunction(a) || isJunction(b)) return true;
+    return ap.outgoing === bp.incoming && ap.incoming === bp.outgoing;
   }
 
   // _connection_state -> 0 absent, 1 compatible, 2 lane mismatch, 3 direction conflict
@@ -107,9 +112,12 @@
       if (!ports.includes(requiredPort)) continue;
       foundPort = true;
       if (roadPortsCompatible(srcRules, srcPort, srcTurns, def.module_rules, requiredPort, nb.turns)) return 1;
-      const sp = rotatedPortProfile(srcRules, srcPort, srcTurns);
-      const np = rotatedPortProfile(def.module_rules, requiredPort, nb.turns);
-      if (sp.incoming + sp.outgoing === np.incoming + np.outgoing && sp.span === np.span) return 3;
+      // Junctions never have a wrong direction; leftover mismatch there is state 2.
+      if (!(isJunction(srcRules) || isJunction(def.module_rules))) {
+        const sp = rotatedPortProfile(srcRules, srcPort, srcTurns);
+        const np = rotatedPortProfile(def.module_rules, requiredPort, nb.turns);
+        if (sp.incoming + sp.outgoing === np.incoming + np.outgoing && sp.span === np.span) return 3;
+      }
     }
     return foundPort ? 2 : 0;
   }

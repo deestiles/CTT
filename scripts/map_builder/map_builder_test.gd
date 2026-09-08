@@ -1005,21 +1005,36 @@ func _connection_state(cell: Vector2i, required_port: String, source_rules: Dict
 		var neighbor_turns := int(neighbor.get_meta("quarter_turns", 0))
 		if _road_ports_compatible(source_rules, source_port, source_turns, definition.module_rules, required_port, neighbor_turns):
 			return 1
-		var source_profile := RoadModuleRules.rotated_port_profile(source_rules, source_port, source_turns)
-		var neighbor_profile := RoadModuleRules.rotated_port_profile(definition.module_rules, required_port, neighbor_turns)
-		var source_total := int(source_profile.get("incoming", 0)) + int(source_profile.get("outgoing", 0))
-		var neighbor_total := int(neighbor_profile.get("incoming", 0)) + int(neighbor_profile.get("outgoing", 0))
-		if source_total == neighbor_total:
-			return 3
+		# A junction routes internally, so a road may enter or leave it on any arm;
+		# it never has a "wrong direction". Any leftover mismatch there is a
+		# lane-count problem, reported as state 2 below. Direction conflicts apply
+		# only to road-to-road (straight/curve/transition) connections.
+		if not (_is_junction_rules(source_rules) or _is_junction_rules(definition.module_rules)):
+			var source_profile := RoadModuleRules.rotated_port_profile(source_rules, source_port, source_turns)
+			var neighbor_profile := RoadModuleRules.rotated_port_profile(definition.module_rules, required_port, neighbor_turns)
+			var source_total := int(source_profile.get("incoming", 0)) + int(source_profile.get("outgoing", 0))
+			var neighbor_total := int(neighbor_profile.get("incoming", 0)) + int(neighbor_profile.get("outgoing", 0))
+			if source_total == neighbor_total and int(source_profile.get("span", 0)) == int(neighbor_profile.get("span", 0)):
+				return 3
 	return 2 if found_port else 0
 
 
+func _is_junction_rules(rules: Dictionary) -> bool:
+	return String(rules.get("kind", "")) in ["intersection_4", "intersection_t"]
+
+
 func _road_ports_compatible(a: Dictionary, a_port: String, a_turns: int, b: Dictionary, b_port: String, b_turns: int) -> bool:
+	if not is_equal_approx(float(a.get("lane_width", 0.0)), float(b.get("lane_width", 0.0))):
+		return false
 	var a_profile := RoadModuleRules.rotated_port_profile(a, a_port, a_turns)
 	var b_profile := RoadModuleRules.rotated_port_profile(b, b_port, b_turns)
+	if int(a_profile.get("span", 0)) != int(b_profile.get("span", 0)):
+		return false
+	# Junctions match on lane count only; road-to-road keeps the strict directional
+	# handshake so opposing one-way roads are still flagged head-on.
+	if _is_junction_rules(a) or _is_junction_rules(b):
+		return true
 	return (
 		int(a_profile.get("outgoing", 0)) == int(b_profile.get("incoming", 0))
 		and int(a_profile.get("incoming", 0)) == int(b_profile.get("outgoing", 0))
-		and int(a_profile.get("span", 0)) == int(b_profile.get("span", 0))
-		and is_equal_approx(float(a.get("lane_width", 0.0)), float(b.get("lane_width", 0.0)))
 	)

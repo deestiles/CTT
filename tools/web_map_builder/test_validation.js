@@ -54,4 +54,40 @@ assertNetwork("one-way two-lane curve", [
   item("one_way_street_2_lane", 2, 0, 3),
 ]);
 
+// Regression: a junction routes internally, so a one-way arm may flow INTO or
+// OUT OF it without a direction conflict. Previously this flagged valid maps
+// (e.g. city_map) as "WRONG DIRECTION" at one-way -> compact-T side ports.
+function assertNoDirectionConflict(name, items) {
+  const c = C.rules.validate(items, byId).result;
+  if (c.direction_conflicts)
+    throw new Error(`${name} should have no direction conflicts: ${JSON.stringify(c)}`);
+  console.log(`PASS ${name}`);
+}
+
+// compact-T at (0,0) covers (0,0),(1,0); its E side neighbours cell (2,0).
+// turns 3 vs 1 point the one-way's flow into vs out of the junction.
+assertNoDirectionConflict("one-way flowing INTO compact-T side", [
+  item("compact_t_intersection_1x2", 0, 0),
+  item("one_way_street", 2, 0, 3),
+]);
+assertNoDirectionConflict("one-way flowing OUT OF compact-T side", [
+  item("compact_t_intersection_1x2", 0, 0),
+  item("one_way_street", 2, 0, 1),
+]);
+assertNoDirectionConflict("one-way arms on a one-way intersection", [
+  item("one_way_intersection", 0, 0),
+  item("one_way_street", 0, -1),
+  item("one_way_street", 0, 1),
+]);
+
+// A real head-on collision between two opposing one-way straights MUST still flag.
+(function assertHeadOnStillCaught() {
+  const c = C.rules.validate(
+    [item("one_way_street", 0, 0, 0), item("one_way_street", 0, 1, 2)],
+    byId
+  ).result;
+  if (!c.direction_conflicts) throw new Error("head-on one-way collision should flag a direction conflict");
+  console.log("PASS head-on one-way still flags a conflict");
+})();
+
 console.log("WEB_MAP_VALIDATION_TESTS: PASS");
