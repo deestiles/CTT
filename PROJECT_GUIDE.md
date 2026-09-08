@@ -230,6 +230,12 @@ When finishing new work, append a dated entry here with branch/commit, files cha
   remain.
 - Remaining owner check: approach a civilian from behind on a straight, single-lane
   one-way road and confirm the pull-over looks natural and leaves enough passing room.
+- Follow-up diagnosis found builder-map exploration placement still searched for
+  legacy `Street_H_*` lane nodes, leaving the player and civilians on unrelated
+  generated lanes during normal testing. Builder maps now place the player and first
+  civilian on a qualifying four-segment one-way chain. A dedicated HUD line reports
+  `NPC YIELDING`, no detection, or the exact road eligibility reason. The automated
+  test also verifies that this HUD diagnostic appears.
 
 ### 2026-09-07 — road profiles and connection modules
 

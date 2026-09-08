@@ -71,6 +71,7 @@ var recovery_positions: Dictionary = {}
 var recovery_stall_times: Dictionary = {}
 var recovery_cooldowns: Dictionary = {}
 var status_label: Label
+var yield_debug_label: Label
 var distance_label: Label
 var timer_label: Label
 var damage_bar: ProgressBar
@@ -330,6 +331,12 @@ func setup_exploration_mode(vehicles: Node) -> void:
 
 
 func place_exploration_player() -> void:
+	if $IntersectionDistrict.has_meta("builder_map"):
+		var builder_chain := _builder_one_way_test_chain(4)
+		if not builder_chain.is_empty():
+			_place_exploration_actor_on_lane(player, player_agent, builder_chain[0], 0.20)
+			last_forward = -player.global_transform.basis.z
+			return
 	# Use a known straight-street lane instead of nearest-lane selection. The
 	# nearest search only compares distance, so at a two-way road it may choose
 	# either direction and previously retained the car's old perpendicular pose.
@@ -358,6 +365,14 @@ func place_exploration_player() -> void:
 
 
 func place_exploration_traffic() -> void:
+	if $IntersectionDistrict.has_meta("builder_map"):
+		var builder_chain := _builder_one_way_test_chain(4)
+		if not builder_chain.is_empty() and not traffic.is_empty():
+			# Always provide one repeatable civilian-ahead scenario on a qualifying
+			# one-way route. Other cars keep their authored map positions.
+			var first_agent := traffic[0].get_node("road_lane_agent") as RoadLaneAgent
+			_place_exploration_actor_on_lane(traffic[0], first_agent, builder_chain[3], 0.5)
+			return
 	# Bind each test car to a known straight road. Nearest-lane assignment can
 	# select a perpendicular intersection lane when several paths overlap.
 	var street_names := [
@@ -394,6 +409,36 @@ func place_exploration_traffic() -> void:
 		if flat_heading.length_squared() > 0.001:
 			actor.look_at(actor.global_position + flat_heading.normalized(), Vector3.UP)
 		actor.set("velocity", Vector3.ZERO)
+
+
+func _builder_one_way_test_chain(required_segments: int) -> Array[RoadLane]:
+	for node in $IntersectionDistrict/RoadManager.find_children("*", "RoadLane", true, false):
+		var start := node as RoadLane
+		if not _lane_supports_curb_yield(start):
+			continue
+		var chain: Array[RoadLane] = [start]
+		var lane := start
+		while chain.size() < required_segments:
+			lane = lane.get_node_or_null(lane.lane_next) as RoadLane
+			if not _lane_supports_curb_yield(lane):
+				break
+			chain.append(lane)
+		if chain.size() >= required_segments:
+			return chain
+	return []
+
+
+func _place_exploration_actor_on_lane(actor: Node3D, agent: RoadLaneAgent, lane: RoadLane, fraction: float) -> void:
+	agent.unassign_lane()
+	agent.assign_lane(lane)
+	var lane_length := lane.curve.get_baked_length()
+	var offset := clampf(lane_length * fraction, 0.25, maxf(0.25, lane_length - 0.25))
+	var road_position := lane.to_global(lane.curve.sample_baked(offset))
+	var road_heading := lane.to_global(lane.curve.sample_baked(minf(lane_length, offset + 1.0)))
+	actor.global_position = road_position + Vector3.UP * 0.08
+	if road_heading.distance_squared_to(road_position) > 0.01:
+		actor.look_at(actor.global_position + (road_heading - road_position).normalized(), Vector3.UP)
+	actor.set("velocity", Vector3.ZERO)
 
 
 func build_grid_traffic_signals() -> void:
@@ -938,6 +983,8 @@ func update_pileup_avoidance(delta: float) -> void:
 
 
 func update_npc_awareness(delta: float) -> void:
+	var diagnostic := "YIELD STATUS · NO CIVILIAN DETECTING POLICE BEHIND"
+	var diagnostic_distance := INF
 	for actor in traffic:
 		actor.set_meta("lane_change_cooldown", maxf(0.0, float(actor.get_meta("lane_change_cooldown", 0.0)) - delta))
 	npc_awareness_timer -= delta
@@ -957,6 +1004,14 @@ func update_npc_awareness(delta: float) -> void:
 				continue
 			if should_yield_to_police(actor, police_unit):
 				handled = yield_to_police(actor, police_unit, cruise_speed)
+				var distance_to_police := planar_distance(actor, police_unit)
+				if distance_to_police < diagnostic_distance:
+					diagnostic_distance = distance_to_police
+					if handled:
+						var actual_offset := float(actor.get("lateral_lane_offset"))
+						diagnostic = "NPC YIELDING · %s" % ("HOLDING AT CURB" if actual_offset > 2.5 else "MOVING RIGHT TO CURB")
+					else:
+						diagnostic = "NPC SEES POLICE · CANNOT CURB-YIELD: %s" % _curb_yield_block_reason(actor)
 				if handled:
 					break
 		if handled:
@@ -970,6 +1025,9 @@ func update_npc_awareness(delta: float) -> void:
 			avoid_predicted_collision(actor, threat, cruise_speed)
 		else:
 			actor.set("target_speed", cruise_speed)
+	if is_instance_valid(yield_debug_label):
+		yield_debug_label.text = diagnostic
+		yield_debug_label.add_theme_color_override("font_color", Color("#72ff9b") if diagnostic.begins_with("NPC YIELDING") else Color("#ffca55"))
 
 
 func npc_is_cornering(actor: Node3D) -> bool:
@@ -1026,11 +1084,7 @@ func yield_to_police(actor: Node3D, police_unit: Node3D, cruise_speed: int) -> b
 	var actor_agent := actor.get_node_or_null("road_lane_agent") as RoadLaneAgent
 	if is_instance_valid(actor_agent) and is_instance_valid(actor_agent.current_lane):
 		var lane := actor_agent.current_lane
-		var single_lane_one_way := bool(lane.get_meta("one_way", false)) and int(lane.get_meta("same_direction_lane_count", 0)) == 1
-		var road_kind := String(lane.get_meta("road_kind", ""))
-		# Straight-through intersection lanes are part of the same one-way
-		# approach. A stopped signal must not disable emergency yielding.
-		if single_lane_one_way and road_kind in ["straight", "intersection"]:
+		if _lane_supports_curb_yield(lane):
 			# Pull toward the passenger-side curb. A 2.65 m offset places part of the
 			# vehicle over the sidewalk without sending its lane agent off-network.
 			actor.set("target_lateral_lane_offset", 2.9)
@@ -1044,6 +1098,25 @@ func yield_to_police(actor: Node3D, police_unit: Node3D, cruise_speed: int) -> b
 	# driver must use the existing same-direction lane-change controls to pass.
 	actor.set_meta("yielding_to_police", false)
 	return false
+
+
+func _lane_supports_curb_yield(lane: RoadLane) -> bool:
+	if not is_instance_valid(lane):
+		return false
+	var single_lane_one_way := bool(lane.get_meta("one_way", false)) and int(lane.get_meta("same_direction_lane_count", 0)) == 1
+	return single_lane_one_way and String(lane.get_meta("road_kind", "")) in ["straight", "intersection"]
+
+
+func _curb_yield_block_reason(actor: Node3D) -> String:
+	var actor_agent := actor.get_node_or_null("road_lane_agent") as RoadLaneAgent
+	if not is_instance_valid(actor_agent) or not is_instance_valid(actor_agent.current_lane):
+		return "NO LANE ASSIGNED"
+	var lane := actor_agent.current_lane
+	if not bool(lane.get_meta("one_way", false)):
+		return "ROAD IS TWO-WAY"
+	if int(lane.get_meta("same_direction_lane_count", 0)) != 1:
+		return "ROAD HAS MULTIPLE LANES"
+	return "ROAD IS %s" % String(lane.get_meta("road_kind", "UNKNOWN")).to_upper()
 
 
 func find_predicted_threat(actor: Node3D) -> Node3D:
@@ -1943,6 +2016,9 @@ func build_hud() -> void:
 	root.add_child(top)
 	status_label = make_label("PREPARING PURSUIT", 17, Color("#27dcff"))
 	top.add_child(status_label)
+	yield_debug_label = make_label("YIELD STATUS · WAITING FOR TRAFFIC", 14, Color("#ffca55"))
+	yield_debug_label.visible = exploration_mode
+	top.add_child(yield_debug_label)
 	var info := HBoxContainer.new()
 	info.alignment = BoxContainer.ALIGNMENT_CENTER
 	top.add_child(info)

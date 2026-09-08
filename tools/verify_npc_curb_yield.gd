@@ -38,6 +38,10 @@ func _run() -> void:
 	if not bool(civilian.get_meta("yielding_to_police", false)) or float(civilian.get("target_lateral_lane_offset")) < 2.5:
 		_fail("police-behind detection did not command a curb yield")
 		return
+	var diagnostic := world.get("yield_debug_label") as Label
+	if not is_instance_valid(diagnostic) or not diagnostic.text.begins_with("NPC YIELDING"):
+		_fail("yield command was not exposed by the on-screen diagnostic")
+		return
 
 	for frame in 90:
 		await physics_frame
