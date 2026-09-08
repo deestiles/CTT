@@ -994,7 +994,20 @@ func should_yield_to_police(actor: Node3D, police_unit: Node3D) -> bool:
 	if distance < 0.01 or distance > 34.0:
 		return false
 	var actor_forward := -actor.global_transform.basis.z
+	var actor_agent := actor.get_node_or_null("road_lane_agent") as RoadLaneAgent
+	if is_instance_valid(actor_agent) and is_instance_valid(actor_agent.current_lane):
+		# The lane is authoritative while the vehicle is still aligning after a
+		# turn. Transform-only detection intermittently rejected police that were
+		# physically behind a civilian but whose body had not finished rotating.
+		var lane := actor_agent.current_lane
+		var closest_local := lane.curve.get_closest_point(lane.to_local(actor.global_position))
+		var closest_offset := lane.curve.get_closest_offset(closest_local)
+		var ahead_offset := minf(lane.curve.get_baked_length(), closest_offset + 1.0)
+		var behind_offset := maxf(0.0, closest_offset - 1.0)
+		actor_forward = lane.to_global(lane.curve.sample_baked(ahead_offset)) - lane.to_global(lane.curve.sample_baked(behind_offset))
 	actor_forward.y = 0.0
+	if actor_forward.length_squared() < 0.001:
+		return false
 	actor_forward = actor_forward.normalized()
 	var police_forward := -police_unit.global_transform.basis.z
 	police_forward.y = 0.0
@@ -1014,7 +1027,10 @@ func yield_to_police(actor: Node3D, police_unit: Node3D, cruise_speed: int) -> b
 	if is_instance_valid(actor_agent) and is_instance_valid(actor_agent.current_lane):
 		var lane := actor_agent.current_lane
 		var single_lane_one_way := bool(lane.get_meta("one_way", false)) and int(lane.get_meta("same_direction_lane_count", 0)) == 1
-		if single_lane_one_way and String(lane.get_meta("road_kind", "")) == "straight":
+		var road_kind := String(lane.get_meta("road_kind", ""))
+		# Straight-through intersection lanes are part of the same one-way
+		# approach. A stopped signal must not disable emergency yielding.
+		if single_lane_one_way and road_kind in ["straight", "intersection"]:
 			# Pull toward the passenger-side curb. A 2.65 m offset places part of the
 			# vehicle over the sidewalk without sending its lane agent off-network.
 			actor.set("target_lateral_lane_offset", 2.9)
@@ -1179,6 +1195,12 @@ func update_recovery_watchdog(delta: float) -> void:
 		var expects_motion := actor != player or Input.is_action_pressed("ui_up")
 		if actor in traffic and bool(actor.get_meta("stopped_for_signal", false)):
 			expects_motion = false
+		# Pulling over and holding at the curb is intentional. Without this state
+		# exemption, the four-second stall watchdog teleported the yielding car and
+		# cleared the lateral offset just as police reached it.
+		var intentionally_yielding := actor in traffic and bool(actor.get_meta("yielding_to_police", false))
+		if intentionally_yielding:
+			expects_motion = false
 		if actor == backup:
 			expects_motion = backup_timer > 0.0
 		if expects_motion and moved < 0.18:
@@ -1193,7 +1215,7 @@ func update_recovery_watchdog(delta: float) -> void:
 			off_road = planar_vector_distance(actor.global_position, nearest_point) > 10.5
 		var overturned := actor.global_transform.basis.y.normalized().dot(Vector3.UP) < 0.35
 		var reversed := is_actor_reversed(actor, agent)
-		var stalled := float(recovery_stall_times[actor]) >= (5.0 if actor == player else 4.0)
+		var stalled := not intentionally_yielding and float(recovery_stall_times[actor]) >= (5.0 if actor == player else 4.0)
 		if float(recovery_cooldowns.get(actor, 0.0)) <= 0.0 and (off_map or off_road or overturned or reversed or stalled):
 			if actor in traffic:
 				recycle_traffic_to_safe_lane(actor, agent)
