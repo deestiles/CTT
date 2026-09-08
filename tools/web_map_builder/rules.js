@@ -30,6 +30,15 @@
   }
   function rotatedPorts(rules, turns) { return rotateDirs(rules.ports, turns); }
 
+  function rotatedPortProfile(rules, rotatedPort, turns) {
+    const profiles = rules.port_profiles || {};
+    for (const [basePort, profile] of Object.entries(profiles)) {
+      if (rotateDirs([basePort], turns)[0] === rotatedPort) return profile;
+    }
+    const total = rules.total_lanes | 0;
+    return { incoming: total, outgoing: total, span: total, offset: -1 };
+  }
+
   // Build occupancy (cell -> [item]) and placed (cell -> [def]).
   function buildIndex(items, byId) {
     const occupancy = new Map();
@@ -58,7 +67,12 @@
       const x = direction === "W" ? anchor.x : anchor.x + w - 1;
       for (let y = anchor.y; y < anchor.y + h; y++) cells.push({ x, y });
     }
-    return cells;
+    const profile = rotatedPortProfile(def.module_rules, direction, item.turns);
+    const span = Math.max(1, Math.min(cells.length, profile.span || cells.length));
+    if (span >= cells.length) return cells;
+    const start = Math.max(0, Math.min(cells.length - span,
+      profile.offset >= 0 ? profile.offset : Math.floor((cells.length - span) / 2)));
+    return cells.slice(start, start + span);
   }
 
   // _port_lane_count
@@ -72,8 +86,11 @@
 
   // _road_ports_compatible
   function roadPortsCompatible(a, aPort, aTurns, b, bPort, bTurns) {
+    const ap = rotatedPortProfile(a, aPort, aTurns);
+    const bp = rotatedPortProfile(b, bPort, bTurns);
     return (
-      portLaneCount(a, aPort, aTurns) === portLaneCount(b, bPort, bTurns) &&
+      ap.outgoing === bp.incoming && ap.incoming === bp.outgoing &&
+      ap.span === bp.span &&
       Math.abs((a.lane_width || 0) - (b.lane_width || 0)) < 1e-4
     );
   }
@@ -89,14 +106,10 @@
       const ports = rotatedPorts(def.module_rules, nb.turns);
       if (!ports.includes(requiredPort)) continue;
       foundPort = true;
-      if (roadPortsCompatible(srcRules, srcPort, srcTurns, def.module_rules, requiredPort, nb.turns)) {
-        if (srcDef.traffic_directions.length === 1 && def.traffic_directions.length === 1) {
-          const srcFlow = rotateDirs(srcDef.traffic_directions, srcTurns);
-          const nbFlow = rotateDirs(def.traffic_directions, nb.turns);
-          if (srcFlow.includes(srcPort) === nbFlow.includes(requiredPort)) return 3;
-        }
-        return 1;
-      }
+      if (roadPortsCompatible(srcRules, srcPort, srcTurns, def.module_rules, requiredPort, nb.turns)) return 1;
+      const sp = rotatedPortProfile(srcRules, srcPort, srcTurns);
+      const np = rotatedPortProfile(def.module_rules, requiredPort, nb.turns);
+      if (sp.incoming + sp.outgoing === np.incoming + np.outgoing && sp.span === np.span) return 3;
     }
     return foundPort ? 2 : 0;
   }
@@ -266,7 +279,9 @@
     if (roadItems.length) {
       for (const it of roadItems) {
         if (largest.has(it)) continue;
-        for (const c of coveredCells(it.cell, byId[it.id], it.turns)) mark(c, "DISCONNECTED", true);
+        // Connectivity is a summary consequence. Mark only the module anchor in
+        // amber; exact open/mismatched port cells remain the blocking red cause.
+        mark(it.cell, "DISCONNECTED ISLAND", false);
       }
     }
 
@@ -291,7 +306,8 @@
   }
 
   window.CTT.rules = {
-    key, posmod, rotatedFootprint, coveredCells, rotateDirs, rotatedPorts,
-    buildIndex, portBoundaryCells, canPlace, collectSpawnCandidates, validate,
+    key, posmod, rotatedFootprint, coveredCells, rotateDirs, rotatedPorts, rotatedPortProfile,
+    buildIndex, portBoundaryCells, roadPortsCompatible, connectedRoadOwners,
+    canPlace, collectSpawnCandidates, validate,
   };
 })();

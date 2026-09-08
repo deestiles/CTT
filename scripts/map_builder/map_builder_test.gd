@@ -229,7 +229,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _selected_supports_road_drag() -> bool:
-	return selected != null and selected.id in ["one_way_street", "two_way_street_1x1", "two_way_street_2x2"]
+	return selected != null and selected.module_rules.get("kind", "") == "straight"
 
 
 func _extend_road_drag(cursor_cell: Vector2i) -> void:
@@ -901,9 +901,9 @@ func _mark_disconnected_roads(road_owners: Array[Node]) -> void:
 			continue
 		var definition := _definition_by_id(String(owner.get_meta("definition_id", "")))
 		var anchor: Vector2i = owner.get_meta("cell", Vector2i.ZERO)
-		var turns := int(owner.get_meta("quarter_turns", 0))
-		for cell in _covered_cells_for_turns(anchor, definition, turns):
-			_mark_validation_cell(cell, "DISCONNECTED", true)
+		# Connectivity is a summary consequence. Keep exact bad port cells red and
+		# mark only the island anchor amber so a whole valid-looking road is not red.
+		_mark_validation_cell(anchor, "DISCONNECTED ISLAND", false)
 func _fixture_faces_road(owner: Node3D) -> bool:
 	var cell: Vector2i = owner.get_meta("cell", Vector2i.ZERO)
 	# Placement already keeps the pole on the sidewalk edge. Accept whichever
@@ -978,7 +978,15 @@ func _port_boundary_cells(owner: Node3D, direction: String) -> Array[Vector2i]:
 		var x := anchor.x if direction == "W" else anchor.x + footprint.x - 1
 		for y in range(anchor.y, anchor.y + footprint.y):
 			cells.append(Vector2i(x, y))
-	return cells
+	var turns := int(owner.get_meta("quarter_turns", 0))
+	var profile := RoadModuleRules.rotated_port_profile(definition.module_rules, direction, turns)
+	var span := clampi(int(profile.get("span", cells.size())), 1, cells.size())
+	if span >= cells.size():
+		return cells
+	var configured_offset := int(profile.get("offset", -1))
+	var start := configured_offset if configured_offset >= 0 else int((cells.size() - span) / 2)
+	start = clampi(start, 0, cells.size() - span)
+	return cells.slice(start, start + span)
 
 
 func _connection_state(cell: Vector2i, required_port: String, source_rules: Dictionary, source_definition: Resource, source_port: String, source_turns: int) -> int:
@@ -996,25 +1004,22 @@ func _connection_state(cell: Vector2i, required_port: String, source_rules: Dict
 		found_port = true
 		var neighbor_turns := int(neighbor.get_meta("quarter_turns", 0))
 		if _road_ports_compatible(source_rules, source_port, source_turns, definition.module_rules, required_port, neighbor_turns):
-			if source_definition.traffic_directions.size() == 1 and definition.traffic_directions.size() == 1:
-				var source_flow := _rotated_connectors_for(source_definition.traffic_directions, source_turns)
-				var neighbor_flow := _rotated_connectors_for(definition.traffic_directions, neighbor_turns)
-				if source_flow.has(source_port) == neighbor_flow.has(required_port):
-					return 3
 			return 1
+		var source_profile := RoadModuleRules.rotated_port_profile(source_rules, source_port, source_turns)
+		var neighbor_profile := RoadModuleRules.rotated_port_profile(definition.module_rules, required_port, neighbor_turns)
+		var source_total := int(source_profile.get("incoming", 0)) + int(source_profile.get("outgoing", 0))
+		var neighbor_total := int(neighbor_profile.get("incoming", 0)) + int(neighbor_profile.get("outgoing", 0))
+		if source_total == neighbor_total:
+			return 3
 	return 2 if found_port else 0
 
 
 func _road_ports_compatible(a: Dictionary, a_port: String, a_turns: int, b: Dictionary, b_port: String, b_turns: int) -> bool:
+	var a_profile := RoadModuleRules.rotated_port_profile(a, a_port, a_turns)
+	var b_profile := RoadModuleRules.rotated_port_profile(b, b_port, b_turns)
 	return (
-		_port_lane_count(a, a_port, a_turns) == _port_lane_count(b, b_port, b_turns)
+		int(a_profile.get("outgoing", 0)) == int(b_profile.get("incoming", 0))
+		and int(a_profile.get("incoming", 0)) == int(b_profile.get("outgoing", 0))
+		and int(a_profile.get("span", 0)) == int(b_profile.get("span", 0))
 		and is_equal_approx(float(a.get("lane_width", 0.0)), float(b.get("lane_width", 0.0)))
 	)
-
-
-func _port_lane_count(rules: Dictionary, rotated_port: String, turns: int) -> int:
-	if String(rules.get("kind", "")) == "intersection_t":
-		var side_port: String = ["E", "N", "W", "S"][posmod(turns, 4)]
-		if rotated_port == side_port:
-			return 1
-	return int(rules.get("total_lanes", 0))

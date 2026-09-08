@@ -130,6 +130,15 @@ Because `user://` is machine-local, approved maps must be copied into repository
 
 Map JSON includes schema version, grid/lane dimensions, item IDs/cells/rotations, camera state, spawn candidates, and validation result. If the schema changes, increment `SCHEMA_VERSION` and provide migration/backward handling.
 
+Road-module schema version 3 adds a directional profile to each exposed port:
+`incoming`, `outgoing`, occupied cell `span`, and optional lateral `offset`. A
+different road width must be joined through an authored transition or intersection;
+visual contact alone is not a valid lane connection. Available connection modules
+include one-way 1↔2 lane and two-way 1-each↔2-each transitions, four-lane-main T
+junctions for one-way and two-way side streets, and width-specific one-way/two-way
+curves. Rotate the module so both port direction and width match. Older version 2
+maps remain readable; re-saving recomputes validation under version 3 rules.
+
 ## Testing workflow
 
 1. Open `project.godot` in Godot 4.7.2.
@@ -188,6 +197,11 @@ As of 2026-09-07:
 
 - Polygon City map builder, rotation, footprints, layering, validation highlighting, save confirmation, saved-map loading, and Test Map flow exist.
 - Generated builder lanes support straight, curved, four-way, and compact T modules.
+- Road validation now uses directional per-port lane profiles instead of comparing
+  one scalar lane count for an entire asset. Purpose-built 1↔2 lane transitions,
+  four-lane-main T junctions, and a two-lane one-way curve are in the catalog. A
+  disconnected island is marked amber at its anchor while the specific blocking
+  open/mismatched edges remain red.
 - Police vehicle, civilian cars, pedestrians, buildings, sidewalks, lamps, traffic signals, and day/dusk/night presentation are integrated from Polygon assets.
 - Exploration test currently uses two civilian NPCs.
 - A prior police opposing-lane/contraflow experiment was removed because it caused sidewalk crossing and floating.

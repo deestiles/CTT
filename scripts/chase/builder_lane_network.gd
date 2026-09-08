@@ -34,6 +34,8 @@ static func build(manager: Node3D, map_data: Dictionary, world_offset: Vector3, 
 				module_lanes = _build_straight_lanes(container, definition.module_rules, cell, turns, world_offset, module_index)
 			"curve_90":
 				module_lanes = _build_curve_lanes(container, definition.module_rules, cell, turns, world_offset, module_index)
+			"transition":
+				module_lanes = _build_transition_lanes(container, definition.module_rules, cell, turns, world_offset, module_index)
 			"intersection_4":
 				module_lanes = _build_intersection_lanes(container, definition.module_rules, cell, turns, world_offset, module_index)
 			"intersection_t":
@@ -86,6 +88,55 @@ static func _parallel_lanes(parent: Node3D, center: Vector3, forward: Vector3, l
 	return result
 
 
+static func _build_transition_lanes(parent: Node3D, rules: Dictionary, cell: Vector2i, turns: int, offset: Vector3, module_index: int) -> Array[RoadLane]:
+	var footprint := _rotated_footprint(rules, turns)
+	var center := Vector3((cell.x + footprint.x * 0.5) * RoadModuleRules.GRID_SIZE, 0.1, (cell.y + footprint.y * 0.5) * RoadModuleRules.GRID_SIZE) + offset
+	var forward := _direction_vector(turns)
+	var right := forward.cross(Vector3.UP).normalized()
+	var length := (footprint.y if turns % 2 == 0 else footprint.x) * RoadModuleRules.GRID_SIZE
+	var forward_count := int(rules.get("lanes_forward", 0))
+	var reverse_count := int(rules.get("lanes_reverse", 0))
+	var one_way := reverse_count == 0
+	var result: Array[RoadLane] = []
+	var forward_lanes: Array[RoadLane] = []
+	for lane_index in forward_count:
+		# The one-way transition occupies two cells but its narrow port occupies
+		# the first cell, so its lane center begins half a cell left of the module
+		# center. This mirrors the explicit port offset used by validation.
+		var start_lateral := -RoadModuleRules.LANE_WIDTH * 0.5 if one_way else RoadModuleRules.LANE_WIDTH * 0.5
+		var end_lateral := (float(lane_index) - float(forward_count - 1) * 0.5) * RoadModuleRules.LANE_WIDTH if one_way else (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
+		forward_lanes.append(_transition_lane(parent, center, forward, right, length, start_lateral, end_lateral, module_index, "F", lane_index))
+	var reverse_lanes: Array[RoadLane] = []
+	for lane_index in reverse_count:
+		var wide_lateral := -(lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
+		var narrow_lateral := -RoadModuleRules.LANE_WIDTH * 0.5
+		reverse_lanes.append(_transition_lane(parent, center, -forward, -right, length, -wide_lateral, -narrow_lateral, module_index, "R", lane_index))
+	_link_adjacent_lanes(forward_lanes)
+	_link_adjacent_lanes(reverse_lanes)
+	result.append_array(forward_lanes)
+	result.append_array(reverse_lanes)
+	for lane in result:
+		lane.set_meta("road_kind", "transition")
+		lane.set_meta("one_way", one_way)
+		lane.set_meta("same_direction_lane_count", forward_count if String(lane.get_meta("flow", "F")) == "F" else reverse_count)
+	return result
+
+
+static func _transition_lane(parent: Node3D, center: Vector3, forward: Vector3, right: Vector3, length: float, start_lateral: float, end_lateral: float, module_index: int, flow: String, lane_index: int) -> RoadLane:
+	var points: Array[Vector3] = []
+	for sample_index in range(7):
+		var ratio := float(sample_index) / 6.0
+		var eased := ratio * ratio * (3.0 - 2.0 * ratio)
+		var along := lerpf(-length * 0.5, length * 0.5, ratio)
+		var lateral := lerpf(start_lateral, end_lateral, eased)
+		points.append(center + forward * along + right * lateral)
+	var lane := _make_lane(parent, "Module_%03d_%s%d" % [module_index, flow, lane_index], points)
+	lane.set_meta("module_index", module_index)
+	lane.set_meta("flow", flow)
+	lane.set_meta("lane_index", lane_index)
+	return lane
+
+
 static func _build_curve_lanes(parent: Node3D, rules: Dictionary, cell: Vector2i, turns: int, offset: Vector3, module_index: int) -> Array[RoadLane]:
 	var width := float(rules.road_width)
 	var footprint: Vector2i = _rotated_footprint(rules, turns)
@@ -97,7 +148,7 @@ static func _build_curve_lanes(parent: Node3D, rules: Dictionary, cell: Vector2i
 	var divider_radius := width * 0.5
 	var forward_lanes: Array[RoadLane] = []
 	for lane_index in int(rules.lanes_forward):
-		var radius := divider_radius if int(rules.lanes_reverse) == 0 else divider_radius - (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
+		var radius := (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH if int(rules.lanes_reverse) == 0 else divider_radius - (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
 		forward_lanes.append(_curve_lane(parent, base_center, pivot, radius, turns, false, module_index, "F", lane_index))
 	var reverse_lanes: Array[RoadLane] = []
 	for lane_index in int(rules.lanes_reverse):

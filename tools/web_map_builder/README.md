@@ -49,6 +49,24 @@ don't have the repo use this Export/Import path and submit their JSON.
 6. Set **Playable as** — Police, Criminal, or both.
 7. **Save** (bridge) or **Export** (download).
 
+### Joining roads of different sizes
+
+Do not place a one-lane road directly against a two-lane road. Use the matching
+transition or junction module from the Roads palette:
+
+- **Transition: One-Way 1 ↔ 2 Lanes** adds/drops a same-direction lane. Its
+  one-cell end is intentionally aligned to one side of the two-cell footprint.
+- **Transition: Two-Way 1 ↔ 2 Each** joins a two-lane road to a four-lane road.
+- **T: 4-Lane Main + 1-Way Side** and **T: 4-Lane Main + 2-Way Side** open a
+  side street into a four-lane main road.
+- Curves are width-specific. Match One-Way, One-Way 2 Lanes, 1 Lane Each
+  Direction, or 2 Lanes Each Direction to the adjoining straight road.
+
+Rotate a module with **R** until its ports face the roads being joined. White lane
+arrows show travel direction. Red edge cells identify the exact open, wrong-way, or
+width-mismatched port; amber marks only a road island that is disconnected from the
+main network.
+
 To drive a map in the game: set `GameState.builder_map_name` to the map name (the
 in-engine **TEST MAP** flow does this), then run `scenes/chase/grid_streets_test.tscn`.
 
@@ -90,6 +108,11 @@ load an existing approved map and confirm the Validation panel reports the same
 `validation` block in its JSON.
 
 ## Output schema
+
+The current output is schema **version 3**. Road rules use directional per-edge
+profiles (`incoming`, `outgoing`, `span`, and optional `offset`) so asymmetric
+transitions and T junctions can be validated accurately. Version 2 map files remain
+loadable because item IDs and placement records are unchanged.
 
 Top level: `version`, `grid_size` (5), `lane_width` (5), `items`
 (`{id, cell:[x,y], turns}`), `camera` (`{x,z,size}`), `spawn_candidates`

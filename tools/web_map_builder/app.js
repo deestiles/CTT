@@ -133,6 +133,27 @@
     }
   }
 
+  function drawTransitionRoad(g, def, turns, px, py, W, H, s, showArrows) {
+    g.fillStyle = "#3a4048"; g.fillRect(px, py, W, H);
+    const ports = rotateDirs(def.connectors, turns);
+    const vertical = ports.includes("N") || ports.includes("S");
+    const narrow = vertical
+      ? { x: px + W * .375, y: py + H * .66, w: W * .25, h: H * .34 }
+      : { x: px, y: py + H * .375, w: W * .34, h: H * .25 };
+    g.fillStyle = "rgba(255,255,255,.08)";
+    g.fillRect(narrow.x, narrow.y, narrow.w, narrow.h);
+    g.strokeStyle = "#e7c14a"; g.lineWidth = Math.max(1.4, s * .05);
+    g.setLineDash([s * .18, s * .14]);
+    g.beginPath();
+    if (vertical) { g.moveTo(px + W / 2, py); g.lineTo(px + W / 2, py + H); }
+    else { g.moveTo(px, py + H / 2); g.lineTo(px + W, py + H / 2); }
+    g.stroke(); g.setLineDash([]);
+    if (showArrows) {
+      const traffic = rotateDirs(def.traffic_directions, turns);
+      if (traffic[0]) arrow(g, px + W / 2, py + H / 2, traffic[0], Math.min(s, W, H) * .28, "#e9edf1");
+    }
+  }
+
   function drawIntersection(g, def, turns, px, py, W, H, s) {
     g.fillStyle = "#3a4048"; g.fillRect(px, py, W, H);
     g.strokeStyle = "rgba(230,235,240,.55)"; g.setLineDash([s * 0.16, s * 0.14]); g.lineWidth = 1;
@@ -157,6 +178,7 @@
     if (def.category === "Roads") {
       const kind = def.module_rules.kind;
       if (kind === "straight") drawStraightRoad(g, def, turns, px, py, W, H, s, showArrows);
+      else if (kind === "transition") drawTransitionRoad(g, def, turns, px, py, W, H, s, showArrows);
       else if (kind === "curve_90") drawCurveRoad(g, def, turns, px, py, W, H, s, showArrows);
       else drawIntersection(g, def, turns, px, py, W, H, s);
     } else if (def.category === "Sidewalks") {
