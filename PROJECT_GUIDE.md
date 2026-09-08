@@ -212,6 +212,20 @@ As of 2026-09-07:
 
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
+### 2026-09-07 — road profiles and connection modules
+
+- Branch `codex/road-port-transitions`; implementation commit `d42ea04`.
+- Added schema-3 directional port profiles, one-way and two-way lane-width
+  transitions, four-lane-main T modules, and the two-lane one-way curve to both
+  builders and the generated runtime lane network.
+- Validator tests cover all five new connection patterns. Godot's dedicated
+  transition test reports five generated lanes with only the two intentional
+  outer exits unlinked. The map-builder and exploration scenes launch headlessly;
+  the existing exploration map still reports its prior two unlinked lanes.
+- Remaining owner check: build each new module in the visual editor, save it, and
+  drive through every rotation. Headless tests establish topology and parsing but
+  do not approve appearance or steering feel.
+
 ## Claude onboarding prompt
 
 Copy the prompt below into Claude at the beginning of a new development conversation:
