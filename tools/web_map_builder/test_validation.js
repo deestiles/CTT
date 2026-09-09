@@ -90,4 +90,30 @@ assertNoDirectionConflict("one-way arms on a one-way intersection", [
   console.log("PASS head-on one-way still flags a conflict");
 })();
 
+// Left-hand one-way curve lets a one-way loop run counter-clockwise.
+(function ccwLoopWithLeftCurves() {
+  const x0 = 0, x1 = 2, y0 = 0, y1 = 2, its = [];
+  for (let x = x0 + 1; x < x1; x++) its.push(item("one_way_street", x, y0, 1)); // top, flow W
+  for (let x = x0 + 1; x < x1; x++) its.push(item("one_way_street", x, y1, 3)); // bottom, flow E
+  for (let y = y0 + 1; y < y1; y++) its.push(item("one_way_street", x0, y, 2)); // left, flow S
+  for (let y = y0 + 1; y < y1; y++) its.push(item("one_way_street", x1, y, 0)); // right, flow N
+  for (const [cx, cy] of [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]) {
+    const it = { id: "curve_one_way_left", cell: { x: cx, y: cy }, turns: 0 };
+    its.push(it);
+    let best = 0, bv = Infinity;
+    for (let t = 0; t < 4; t++) { it.turns = t; const v = C.rules.validate(its, byId).result.issues; if (v < bv) { bv = v; best = t; } }
+    it.turns = best;
+  }
+  const r = C.rules.validate(its, byId).result;
+  if (!r.valid) throw new Error("CCW loop with left curves should validate: " + JSON.stringify(r));
+  console.log("PASS counter-clockwise one-way loop with left curves validates");
+})();
+
+// A road adjacent but with ports that don't line up reports state 4 (not a bare open end).
+(function portsDontMeet() {
+  const r = C.rules.validate([item("one_way_street", 0, 0, 0), item("curve_one_way", 0, 1, 0)], byId).result;
+  if (!(r.misaligned_ports > 0)) throw new Error('expected misaligned_ports > 0: ' + JSON.stringify(r));
+  console.log("PASS misaligned-port case detected (ports don't meet)");
+})();
+
 console.log("WEB_MAP_VALIDATION_TESTS: PASS");

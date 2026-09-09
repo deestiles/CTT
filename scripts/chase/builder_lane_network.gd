@@ -146,10 +146,13 @@ static func _build_curve_lanes(parent: Node3D, rules: Dictionary, cell: Vector2i
 	var base_center := Vector3((cell.x + int(rules.footprint[0])) * RoadModuleRules.GRID_SIZE, 0.1, (cell.y + int(rules.footprint[1])) * RoadModuleRules.GRID_SIZE) + offset
 	var result: Array[RoadLane] = []
 	var divider_radius := width * 0.5
+	# Left-hand one-way curves reuse this arc but flow the opposite way (E->S),
+	# so their forward lane is sampled in reverse to reverse travel direction.
+	var reverse_flow := bool(rules.get("reverse_flow", false))
 	var forward_lanes: Array[RoadLane] = []
 	for lane_index in int(rules.lanes_forward):
 		var radius := (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH if int(rules.lanes_reverse) == 0 else divider_radius - (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
-		forward_lanes.append(_curve_lane(parent, base_center, pivot, radius, turns, false, module_index, "F", lane_index))
+		forward_lanes.append(_curve_lane(parent, base_center, pivot, radius, turns, reverse_flow, module_index, "F", lane_index))
 	var reverse_lanes: Array[RoadLane] = []
 	for lane_index in int(rules.lanes_reverse):
 		var radius := divider_radius + (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH

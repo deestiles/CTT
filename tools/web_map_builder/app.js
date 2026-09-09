@@ -127,9 +127,32 @@
       g.strokeStyle = "#e9edf1"; g.lineWidth = Math.max(1.6, s * 0.08); g.setLineDash([s * 0.2, s * 0.16]);
       g.beginPath(); g.moveTo(a.x, a.y); g.quadraticCurveTo(corner.x, corner.y, b.x, b.y); g.stroke();
       g.setLineDash([]);
-      if (showArrows) { const t = 0.5, mx = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * corner.x + t * t * b.x,
-        my = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * corner.y + t * t * b.y;
-        g.fillStyle = "#e9edf1"; g.beginPath(); g.arc(mx, my, Math.max(2, s * 0.09), 0, 7); g.fill(); }
+      if (showArrows) {
+        // Orient the flow marker entry->exit using the port profiles, so one-way
+        // curves (and their left-hand mirrors) show which way they actually bend.
+        const prof = (dir) => R.rotatedPortProfile(def.module_rules, dir, turns);
+        const p0 = prof(conns[0]), p1 = prof(conns[1]);
+        let forward = true; // arc runs a(conns0) -> b(conns1)
+        if (p0.outgoing > p0.incoming || p1.incoming > p1.outgoing) forward = false; // conns0 is exit
+        const bez = (t) => ({ x: (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * corner.x + t * t * b.x,
+                              y: (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * corner.y + t * t * b.y });
+        const oneWay = (p0.incoming === 0 || p0.outgoing === 0);
+        if (oneWay) {
+          const tHead = forward ? 0.62 : 0.38, tTail = forward ? 0.42 : 0.58;
+          const head = bez(tHead), tail = bez(tTail);
+          const dx = head.x - tail.x, dy = head.y - tail.y, len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len, uy = dy / len, a2 = Math.max(3, s * 0.16);
+          g.strokeStyle = "#e9edf1"; g.lineWidth = Math.max(1.6, s * 0.07); g.lineCap = "round";
+          g.beginPath(); g.moveTo(head.x, head.y);
+          g.lineTo(head.x - ux * a2 + -uy * a2 * 0.55, head.y - uy * a2 + ux * a2 * 0.55);
+          g.moveTo(head.x, head.y);
+          g.lineTo(head.x - ux * a2 - -uy * a2 * 0.55, head.y - uy * a2 - ux * a2 * 0.55);
+          g.stroke();
+        } else {
+          const m = bez(0.5);
+          g.fillStyle = "#e9edf1"; g.beginPath(); g.arc(m.x, m.y, Math.max(2, s * 0.09), 0, 7); g.fill();
+        }
+      }
     }
   }
 
@@ -445,6 +468,7 @@
       ["Open road ends", r.dangling_ports, r.dangling_ports > 0],
       ["Lane mismatches", r.lane_mismatches, r.lane_mismatches > 0],
       ["Direction conflicts", r.direction_conflicts, r.direction_conflicts > 0],
+      ["Ports don't meet", r.misaligned_ports || 0, (r.misaligned_ports || 0) > 0],
       ["Disconnected roads", r.disconnected_roads, r.disconnected_roads > 0],
       ["Misoriented fixtures", r.misoriented_fixtures, r.misoriented_fixtures > 0],
     ];

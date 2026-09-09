@@ -100,14 +100,16 @@
     return ap.outgoing === bp.incoming && ap.incoming === bp.outgoing;
   }
 
-  // _connection_state -> 0 absent, 1 compatible, 2 lane mismatch, 3 direction conflict
+  // _connection_state -> 0 absent, 1 compatible, 2 lane mismatch, 3 direction
+  // conflict, 4 a road is adjacent but its ports don't line up (mis-rotated/wrong-hand)
   function connectionState(cell, requiredPort, srcRules, srcDef, srcPort, srcTurns, occupancy, byId) {
     const occ = occupancy.get(key(cell.x, cell.y));
     if (!occ) return 0;
-    let foundPort = false;
+    let foundPort = false, roadHere = false;
     for (const nb of occ) {
       const def = byId[nb.id];
       if (!def || !def.module_rules) continue;
+      roadHere = true;
       const ports = rotatedPorts(def.module_rules, nb.turns);
       if (!ports.includes(requiredPort)) continue;
       foundPort = true;
@@ -119,7 +121,8 @@
         if (sp.incoming + sp.outgoing === np.incoming + np.outgoing && sp.span === np.span) return 3;
       }
     }
-    return foundPort ? 2 : 0;
+    if (foundPort) return 2;
+    return roadHere ? 4 : 0;
   }
 
   // _footprint_touches_category
@@ -254,7 +257,7 @@
       if (!prev || (severe && !prev.severe)) marks.set(k, { reason, severe });
     };
 
-    let dangling = 0, incompatible = 0, directionConflicts = 0, fixtureErrors = 0;
+    let dangling = 0, incompatible = 0, directionConflicts = 0, misaligned = 0, fixtureErrors = 0;
     const roadItems = [];
     for (const it of items) {
       const def = byId[it.id];
@@ -276,6 +279,7 @@
           if (state === 0) { portConnected = false; mark(ec, "OPEN ROAD END", true); }
           else if (state === 2) { incompatible++; portConnected = false; mark(ec, "LANE MISMATCH", true); }
           else if (state === 3) { directionConflicts++; portConnected = false; mark(ec, "WRONG DIRECTION", true); }
+          else if (state === 4) { misaligned++; portConnected = false; mark(ec, "PORTS DON'T MEET · rotate/mirror", true); }
         }
         if (!portConnected) dangling++;
       }
@@ -305,6 +309,7 @@
       dangling_ports: dangling,
       lane_mismatches: incompatible,
       direction_conflicts: directionConflicts,
+      misaligned_ports: misaligned,
       disconnected_roads: disconnected,
       misoriented_fixtures: fixtureErrors,
       vehicle_spawn_candidates: vehicleCount,

@@ -26,6 +26,16 @@ static func for_id(module_id: String) -> Dictionary:
 			return _rules("curve_90", 1, 0, Vector2i(1, 1), ["S", "E"], ["turn_right"], {"S": _port(1, 0, 1), "E": _port(0, 1, 1)})
 		"curve_one_way_2_lane":
 			return _rules("curve_90", 2, 0, Vector2i(2, 2), ["S", "E"], ["turn_right", "lane_change"], {"S": _port(2, 0, 2), "E": _port(0, 2, 2)})
+		"curve_one_way_left":
+			# Mirror of curve_one_way: same arc, opposite flow (E->S), so a one-way
+			# loop can run the other way around. reverse_flow flips lane generation.
+			var lr := _rules("curve_90", 1, 0, Vector2i(1, 1), ["S", "E"], ["turn_left"], {"S": _port(0, 1, 1), "E": _port(1, 0, 1)})
+			lr["reverse_flow"] = true
+			return lr
+		"curve_one_way_2_lane_left":
+			var lr2 := _rules("curve_90", 2, 0, Vector2i(2, 2), ["S", "E"], ["turn_left", "lane_change"], {"S": _port(0, 2, 2), "E": _port(2, 0, 2)})
+			lr2["reverse_flow"] = true
+			return lr2
 		"curve_two_way_1x1":
 			return _rules("curve_90", 1, 1, Vector2i(2, 2), ["S", "E"], ["turn_left", "turn_right"], {"S": _port(1, 1, 2), "E": _port(1, 1, 2)})
 		"curve_two_way_2x2":

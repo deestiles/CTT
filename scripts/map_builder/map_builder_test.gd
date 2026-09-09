@@ -778,6 +778,7 @@ func _update_validation() -> void:
 	var dangling := 0
 	var incompatible := 0
 	var direction_conflicts := 0
+	var misaligned := 0
 	var fixture_orientation_errors := 0
 	var road_owners: Array[Node] = []
 	for owner in $PlacedItems.get_children():
@@ -806,6 +807,10 @@ func _update_validation() -> void:
 					direction_conflicts += 1
 					port_connected = false
 					_mark_validation_cell(edge_cell, "WRONG DIRECTION", true)
+				elif connection_state == 4:
+					misaligned += 1
+					port_connected = false
+					_mark_validation_cell(edge_cell, "PORTS DON'T MEET · rotate/mirror", true)
 			if not port_connected:
 				dangling += 1
 	var disconnected := _count_disconnected_roads(road_owners)
@@ -821,6 +826,7 @@ func _update_validation() -> void:
 		"dangling_ports": dangling,
 		"lane_mismatches": incompatible,
 		"direction_conflicts": direction_conflicts,
+		"misaligned_ports": misaligned,
 		"disconnected_roads": disconnected,
 		"misoriented_fixtures": fixture_orientation_errors,
 		"vehicle_spawn_candidates": vehicle_spawn_count,
@@ -829,6 +835,9 @@ func _update_validation() -> void:
 	if total_issues == 0:
 		status_label.text = "VALID MAP — connected roads · %d vehicle spawns · %d pedestrian spawns" % [vehicle_spawn_count, pedestrian_spawn_count]
 		status_label.modulate = Color(0.45, 1.0, 0.62)
+	elif misaligned > 0:
+		status_label.text = "PORTS DON'T MEET — %d edge%s touch a road that doesn't open that way (rotate it, or use the mirrored one-way curve)" % [misaligned, "" if misaligned == 1 else "s"]
+		status_label.modulate = Color(1.0, 0.3, 0.25)
 	elif direction_conflicts > 0:
 		status_label.text = "ONE-WAY CONFLICT — rotate %d road edge%s so arrows continue" % [direction_conflicts, "" if direction_conflicts == 1 else "s"]
 		status_label.modulate = Color(1.0, 0.3, 0.25)
@@ -990,14 +999,17 @@ func _port_boundary_cells(owner: Node3D, direction: String) -> Array[Vector2i]:
 
 
 func _connection_state(cell: Vector2i, required_port: String, source_rules: Dictionary, source_definition: Resource, source_port: String, source_turns: int) -> int:
-	# 0: absent, 1: compatible, 2: lane mismatch, 3: one-way arrows collide/diverge.
+	# 0: absent, 1: compatible, 2: lane mismatch, 3: arrows collide/diverge,
+	# 4: a road is adjacent but its ports don't line up (mis-rotated / wrong-hand).
 	if not occupancy.has(cell):
 		return 0
 	var found_port := false
+	var road_here := false
 	for neighbor in occupancy[cell]:
 		var definition := _definition_by_id(String(neighbor.get_meta("definition_id", "")))
 		if definition == null or definition.module_rules.is_empty():
 			continue
+		road_here = true
 		var ports := RoadModuleRules.rotated_ports(definition.module_rules, int(neighbor.get_meta("quarter_turns", 0)))
 		if not ports.has(required_port):
 			continue
@@ -1016,7 +1028,9 @@ func _connection_state(cell: Vector2i, required_port: String, source_rules: Dict
 			var neighbor_total := int(neighbor_profile.get("incoming", 0)) + int(neighbor_profile.get("outgoing", 0))
 			if source_total == neighbor_total and int(source_profile.get("span", 0)) == int(neighbor_profile.get("span", 0)):
 				return 3
-	return 2 if found_port else 0
+	if found_port:
+		return 2
+	return 4 if road_here else 0
 
 
 func _is_junction_rules(rules: Dictionary) -> bool:
