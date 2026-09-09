@@ -113,45 +113,62 @@
   }
 
   function drawCurveRoad(g, def, turns, px, py, W, H, s, showArrows) {
-    g.fillStyle = "#3a4048"; g.fillRect(px, py, W, H);
-    const conns = rotateDirs(def.connectors, turns); // two adjacent dirs
-    const edgeMid = (dir) => {
-      const v = window.CTT.DIRECTIONS[dir];
-      return { x: px + W / 2 + v.x * W / 2, y: py + H / 2 + v.y * H / 2 };
-    };
-    if (conns.length >= 2) {
-      const a = edgeMid(conns[0]), b = edgeMid(conns[1]);
-      // pivot at the corner shared by the two edges
-      const va = window.CTT.DIRECTIONS[conns[0]], vb = window.CTT.DIRECTIONS[conns[1]];
-      const corner = { x: px + W / 2 + (va.x + vb.x) * W / 2, y: py + H / 2 + (va.y + vb.y) * H / 2 };
-      g.strokeStyle = "#e9edf1"; g.lineWidth = Math.max(1.6, s * 0.08); g.setLineDash([s * 0.2, s * 0.16]);
-      g.beginPath(); g.moveTo(a.x, a.y); g.quadraticCurveTo(corner.x, corner.y, b.x, b.y); g.stroke();
-      g.setLineDash([]);
-      if (showArrows) {
-        // Orient the flow marker entry->exit using the port profiles, so one-way
-        // curves (and their left-hand mirrors) show which way they actually bend.
-        const prof = (dir) => R.rotatedPortProfile(def.module_rules, dir, turns);
-        const p0 = prof(conns[0]), p1 = prof(conns[1]);
-        let forward = true; // arc runs a(conns0) -> b(conns1)
-        if (p0.outgoing > p0.incoming || p1.incoming > p1.outgoing) forward = false; // conns0 is exit
-        const bez = (t) => ({ x: (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * corner.x + t * t * b.x,
-                              y: (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * corner.y + t * t * b.y });
-        const oneWay = (p0.incoming === 0 || p0.outgoing === 0);
-        if (oneWay) {
-          const tHead = forward ? 0.62 : 0.38, tTail = forward ? 0.42 : 0.58;
-          const head = bez(tHead), tail = bez(tTail);
-          const dx = head.x - tail.x, dy = head.y - tail.y, len = Math.hypot(dx, dy) || 1;
-          const ux = dx / len, uy = dy / len, a2 = Math.max(3, s * 0.16);
-          g.strokeStyle = "#e9edf1"; g.lineWidth = Math.max(1.6, s * 0.07); g.lineCap = "round";
-          g.beginPath(); g.moveTo(head.x, head.y);
-          g.lineTo(head.x - ux * a2 + -uy * a2 * 0.55, head.y - uy * a2 + ux * a2 * 0.55);
-          g.moveTo(head.x, head.y);
-          g.lineTo(head.x - ux * a2 - -uy * a2 * 0.55, head.y - uy * a2 - ux * a2 * 0.55);
-          g.stroke();
-        } else {
-          const m = bez(0.5);
-          g.fillStyle = "#e9edf1"; g.beginPath(); g.arc(m.x, m.y, Math.max(2, s * 0.09), 0, 7); g.fill();
-        }
+    // Render the curve as a quarter-pipe matching the game: pavement is a pie /
+    // annulus centred on the corner where the two ports meet, so the curved OUTER
+    // edge sweeps the outer corner (the visible outline is on the outside).
+    const DIR = window.CTT.DIRECTIONS, OPP = window.CTT.OPPOSITE;
+    const mr = def.module_rules;
+    const conns = rotateDirs(def.connectors, turns); // two adjacent rotated ports
+    if (conns.length < 2) return;
+    const footCells = def.footprint[0];              // curves are square (1,2,4)
+    let rwCells = 1;
+    if (def.id.startsWith("curve_two_way_1x1")) rwCells = 2;
+    else if (def.id.startsWith("curve_two_way_2x2")) rwCells = 4;
+    const outerR = footCells * s;
+    const innerR = Math.max(0, (footCells - rwCells) * s);
+    // Pie centre = the cell corner shared by the two open edges.
+    const c0 = DIR[conns[0]], c1 = DIR[conns[1]];
+    const cx = px + W / 2 + (c0.x + c1.x) * W / 2;
+    const cy = py + H / 2 + (c0.y + c1.y) * H / 2;
+    // The pavement opens away from that corner: its two straight sides run along
+    // the opposite directions of the two ports.
+    const r0 = DIR[OPP[conns[0]]], r1 = DIR[OPP[conns[1]]];
+    const ang0 = Math.atan2(r0.y, r0.x);
+    let delta = Math.atan2(r1.y, r1.x) - ang0;
+    while (delta <= -Math.PI) delta += 2 * Math.PI;
+    while (delta > Math.PI) delta -= 2 * Math.PI; // shortest 90° sweep
+    const N = 14;
+    const at = (r, t) => { const a = ang0 + delta * t; return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r }; };
+    // asphalt fill
+    g.fillStyle = "#3a4048"; g.beginPath();
+    for (let i = 0; i <= N; i++) { const p = at(outerR, i / N); i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y); }
+    if (innerR > 0.5) { for (let i = N; i >= 0; i--) { const p = at(innerR, i / N); g.lineTo(p.x, p.y); } }
+    else g.lineTo(cx, cy);
+    g.closePath(); g.fill();
+    // edge outlines — outer edge is the sweep on the OUTSIDE of the bend
+    const stroke = (r) => { g.beginPath(); for (let i = 0; i <= N; i++) { const p = at(r, i / N); i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y); } g.stroke(); };
+    g.strokeStyle = "rgba(233,237,241,.85)"; g.lineWidth = Math.max(1.3, s * 0.05); g.setLineDash([]);
+    stroke(outerR);
+    if (innerR > 0.5) stroke(innerR);
+    // centre divider (yellow) for two-way curves
+    const midR = (outerR + innerR) / 2;
+    if (mr.lanes_reverse > 0) { g.strokeStyle = "#e7c14a"; g.lineWidth = Math.max(1.3, s * 0.05); stroke(midR); }
+    // one-way flow arrowhead at the exit edge, pointing out the exit direction
+    if (showArrows && mr.port_profiles && mr.port_profiles.S) {
+      const sB = mr.port_profiles.S;
+      if (sB.incoming === 0 || sB.outgoing === 0) {
+        const baseExit = sB.outgoing > 0 ? "S" : "E";
+        const exitDir = rotateDirs([baseExit], turns)[0];
+        const em = { x: px + W / 2 + DIR[exitDir].x * W / 2, y: py + H / 2 + DIR[exitDir].y * H / 2 };
+        // arc endpoint (at mid radius) nearest the exit edge
+        const e0 = at(midR, 0), e1 = at(midR, 1);
+        const head = (Math.hypot(e0.x - em.x, e0.y - em.y) < Math.hypot(e1.x - em.x, e1.y - em.y)) ? e0 : e1;
+        const v = DIR[exitDir], a2 = Math.max(3, s * 0.18);
+        g.strokeStyle = "#e9edf1"; g.lineWidth = Math.max(1.5, s * 0.07); g.lineCap = "round";
+        g.beginPath();
+        g.moveTo(head.x, head.y); g.lineTo(head.x - v.x * a2 - v.y * a2 * 0.55, head.y - v.y * a2 + v.x * a2 * 0.55);
+        g.moveTo(head.x, head.y); g.lineTo(head.x - v.x * a2 + v.y * a2 * 0.55, head.y - v.y * a2 - v.x * a2 * 0.55);
+        g.stroke();
       }
     }
   }
