@@ -6,6 +6,6 @@
 [node name="GridStreetsTest" type="Node3D"]
 script = ExtResource("2_chase")
 exploration_mode = true
-exploration_traffic_count = 2
+exploration_traffic_count = 4
 
 [node name="IntersectionDistrict" parent="." instance=ExtResource("1_grid")]

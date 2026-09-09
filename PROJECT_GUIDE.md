@@ -105,7 +105,7 @@ The pack provides art, pivots, meshes, and materials; it does not define this ga
 - On multi-lane roads, civilian traffic holds its road behavior and the player maneuvers through a same-direction lane. Police must not cross onto a sidewalk or float.
 - Recovery logic must respawn stuck vehicles on a clear lane away from police and thief/suspect positions.
 - NPCs must turn before dead ends; valid map design should prevent dead-end intersections in the first place.
-- Current exploration traffic count is 2 in `scenes/chase/grid_streets_test.tscn`.
+- Current exploration traffic count is 4 in `scenes/chase/grid_streets_test.tscn`.
 
 Vehicle lighting must use the model's real meshes/material surfaces:
 
@@ -203,14 +203,39 @@ As of 2026-09-07:
   disconnected island is marked amber at its anchor while the specific blocking
   open/mismatched edges remain red.
 - Police vehicle, civilian cars, pedestrians, buildings, sidewalks, lamps, traffic signals, and day/dusk/night presentation are integrated from Polygon assets.
-- Exploration test currently uses two civilian NPCs.
+- Exploration test currently uses four civilian NPC vehicles.
 - A prior police opposing-lane/contraflow experiment was removed because it caused sidewalk crossing and floating.
-- The intended replacement is civilian curb yielding only on straight single-lane one-way roads. The latest implementation uses a persistent lateral offset and separate sideways collision movement, but the owner has reported that pull-over behavior is still not working in visual testing. Treat this as unresolved; instrument/verify detection, lane metadata, and motion rather than assuming completion.
+- Civilian curb yielding is restricted to single-lane one-way straight/straight-through
+  intersection lanes. Detection uses authoritative lane direction while cars finish
+  turning, and intentional curb stops are exempt from stall recycling. The automated
+  test confirms a 2.9 m pull-over and a held lane beyond the watchdog timeout; owner
+  visual approval on a normal play run is still required.
 - NPC wide curve turns were adjusted with pre-turn slowing, a 2.4 m curve look-ahead, and 135°/s steering response. This needs continued visual regression testing on every curve size.
 - Current headless output reports 142 generated lanes and 2 lanes without continuation (`Module_049_F0` and `Module_057_F0`). Determine whether these are intentional map boundaries; validation policy says playable networks should not contain accidental open ends.
 - Headless launch currently completes without GDScript errors, aside from local log/certificate warnings described above.
 
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
+
+### 2026-09-08 — civilian curb yield and restored traffic
+
+- Branch `codex/npc-yield-and-traffic` based on the developer's current
+  `claude/builder-junction-fix` branch.
+- Ported the lane-direction detection and intentional-yield watchdog exemption into
+  the current map-builder line without merging or overwriting map work.
+- Restored four exploration civilian vehicles and added
+  `tools/verify_npc_curb_yield.gd`. The test confirms four NPCs spawn, the target
+  receives a 2.9 m passenger-side offset, physically reaches the curb, and is not
+  recycled after more than four seconds stopped. A 900-frame exploration smoke test
+  completes without GDScript errors; the two pre-existing unlinked lane notices
+  remain.
+- Remaining owner check: approach a civilian from behind on a straight, single-lane
+  one-way road and confirm the pull-over looks natural and leaves enough passing room.
+- Follow-up diagnosis found builder-map exploration placement still searched for
+  legacy `Street_H_*` lane nodes, leaving the player and civilians on unrelated
+  generated lanes during normal testing. Builder maps now place the player and first
+  civilian on a qualifying four-segment one-way chain. A dedicated HUD line reports
+  `NPC YIELDING`, no detection, or the exact road eligibility reason. The automated
+  test also verifies that this HUD diagnostic appears.
 
 ### 2026-09-07 — road profiles and connection modules
 
