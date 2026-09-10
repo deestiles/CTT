@@ -123,4 +123,17 @@ assertNetwork("one-way 2-to-1 merge", [
   item("one_way_street", 0, 3, 2),          // 1-lane one-way continuing south
 ]);
 
+// An intersection arm capped by a sidewalk is an acceptable edge (not open end).
+(function sidewalkCappedIntersection() {
+  const base = [item("one_way_intersection", 1, 1), item("one_way_street", 1, 0, 2), item("one_way_street", 1, 2, 2)];
+  const capped = base.concat([item("sidewalk", 0, 1), item("sidewalk", 2, 1)]);
+  const r0 = C.rules.validate(base, byId).result;
+  const r1 = C.rules.validate(capped, byId).result;
+  if (r1.direction_conflicts || r1.lane_mismatches)
+    throw new Error("sidewalk caps introduced a mismatch: " + JSON.stringify(r1));
+  if (r0.dangling_ports - r1.dangling_ports !== 2)
+    throw new Error(`expected 2 fewer open ends with sidewalk caps, got ${r0.dangling_ports} -> ${r1.dangling_ports}`);
+  console.log("PASS sidewalk-capped intersection arms are accepted");
+})();
+
 console.log("WEB_MAP_VALIDATION_TESTS: PASS");

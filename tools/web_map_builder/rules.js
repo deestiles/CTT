@@ -258,6 +258,13 @@
     };
 
     let dangling = 0, incompatible = 0, directionConflicts = 0, misaligned = 0, fixtureErrors = 0;
+    const cellHasSidewalk = (cx, cy) => {
+      for (const nb of occupancy.get(key(cx, cy)) || []) {
+        const d = byId[nb.id];
+        if (d && d.category === "Sidewalks") return true;
+      }
+      return false;
+    };
     const roadItems = [];
     for (const it of items) {
       const def = byId[it.id];
@@ -272,11 +279,16 @@
         let portConnected = true;
         for (const ec of portBoundaryCells(it, def, port)) {
           const d = DIRECTIONS[port];
+          const nx = ec.x + d.x, ny = ec.y + d.y;
           const state = connectionState(
-            { x: ec.x + d.x, y: ec.y + d.y }, OPPOSITE[port],
+            { x: nx, y: ny }, OPPOSITE[port],
             def.module_rules, def, port, it.turns, occupancy, byId
           );
-          if (state === 0) { portConnected = false; mark(ec, "OPEN ROAD END", true); }
+          if (state === 0) {
+            // An intersection arm capped by a sidewalk is an intentional edge.
+            if (isJunction(def.module_rules) && cellHasSidewalk(nx, ny)) continue;
+            portConnected = false; mark(ec, "OPEN ROAD END", true);
+          }
           else if (state === 2) { incompatible++; portConnected = false; mark(ec, "LANE MISMATCH", true); }
           else if (state === 3) { directionConflicts++; portConnected = false; mark(ec, "WRONG DIRECTION", true); }
           else if (state === 4) { misaligned++; portConnected = false; mark(ec, "PORTS DON'T MEET · rotate/mirror", true); }

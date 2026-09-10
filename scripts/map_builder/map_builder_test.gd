@@ -797,6 +797,10 @@ func _update_validation() -> void:
 			for edge_cell in _port_boundary_cells(owner, connector):
 				var connection_state := _connection_state(edge_cell + DIRECTIONS[connector], OPPOSITE[connector], definition.module_rules, definition, connector, turns)
 				if connection_state == 0:
+					# An intersection arm intentionally capped by a sidewalk (e.g. at the
+					# map edge) is an acceptable edge, not an open road end.
+					if _is_junction_rules(definition.module_rules) and _cell_has_sidewalk(edge_cell + DIRECTIONS[connector]):
+						continue
 					port_connected = false
 					_mark_validation_cell(edge_cell, "OPEN ROAD END", true)
 				elif connection_state == 2:
@@ -1035,6 +1039,14 @@ func _connection_state(cell: Vector2i, required_port: String, source_rules: Dict
 
 func _is_junction_rules(rules: Dictionary) -> bool:
 	return String(rules.get("kind", "")) in ["intersection_4", "intersection_t"]
+
+
+func _cell_has_sidewalk(cell: Vector2i) -> bool:
+	for occupant in occupancy.get(cell, []):
+		var definition := _definition_by_id(String(occupant.get_meta("definition_id", "")))
+		if definition != null and definition.category == "Sidewalks":
+			return true
+	return false
 
 
 func _road_ports_compatible(a: Dictionary, a_port: String, a_turns: int, b: Dictionary, b_port: String, b_turns: int) -> bool:
