@@ -344,7 +344,14 @@ func _physics_process(delta: float) -> void:
 			# Resolve the pull-over separately so a police bumper touching the rear
 			# cannot cancel the sideways escape along with forward motion.
 			move_and_collide(lateral_correction)
-	if bool(get_meta("road_bounds_enabled", false)) and not motion_stays_on_road(requested_motion):
+	# The lane-envelope bound is only meaningful on straight roads. Transitions,
+	# curves and intersections legitimately move the lane laterally, so applying
+	# the bound there wrongly rejects motion and strands the player (e.g. stuck at
+	# a 1->2 lane expansion). Civilians have no bound and pass freely, so match
+	# that everywhere except straights.
+	if bool(get_meta("road_bounds_enabled", false)) \
+			and String(agent.current_lane.get_meta("road_kind", "")) == "straight" \
+			and not motion_stays_on_road(requested_motion):
 		# Retain free movement between lanes, but reject the frame that would put
 		# the vehicle center beyond the drivable lane envelope.
 		requested_motion = Vector3.ZERO
