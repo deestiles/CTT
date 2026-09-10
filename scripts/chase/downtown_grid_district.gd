@@ -208,6 +208,8 @@ func build_saved_map_visuals() -> void:
 			instance.position = _saved_item_position(definition, cell, turns)
 			instance.rotation.y = turns * PI * 0.5
 			instance.scale = definition.visual_scale
+			if definition.placement_layer == "structure":
+				_fit_structure_to_footprint(instance, cell, definition, turns)
 			if definition.id == "pedestrian":
 				_add_pedestrian_collision(instance)
 			elif definition.id == "street_lamp":
@@ -216,6 +218,40 @@ func build_saved_map_visuals() -> void:
 				_add_traffic_light_support(instance)
 				instance.add_to_group("builder_traffic_lights")
 				instance.set_meta("signal_axis", "NS" if turns % 2 == 0 else "EW")
+
+
+func _fit_structure_to_footprint(instance: Node3D, cell: Vector2i, definition: Resource, turns: int) -> void:
+	# Polygon building meshes are not centred on their origin, so a fixed offset
+	# can't place them. Measure the real mesh bounds and slide the instance so it
+	# is centred on its (rotated) footprint and its base sits on the ground.
+	var fp: Vector2i = definition.footprint
+	if turns % 2 == 1:
+		fp = Vector2i(fp.y, fp.x)
+	var target := Vector3((cell.x + fp.x * 0.5) * 5.0, 0.0, (cell.y + fp.y * 0.5) * 5.0) + saved_map_offset
+	var bounds := _visual_world_aabb(instance)
+	if bounds.size == Vector3.ZERO:
+		return
+	var center := bounds.position + bounds.size * 0.5
+	instance.global_position += Vector3(target.x - center.x, -bounds.position.y, target.z - center.z)
+
+
+func _visual_world_aabb(node: Node) -> AABB:
+	var result := AABB()
+	var has_any := false
+	var nodes := node.find_children("*", "VisualInstance3D", true, false)
+	if node is VisualInstance3D:
+		nodes.append(node)
+	for child in nodes:
+		var vi := child as VisualInstance3D
+		if vi == null:
+			continue
+		var world := vi.global_transform * vi.get_aabb()
+		if not has_any:
+			result = world
+			has_any = true
+		else:
+			result = result.merge(world)
+	return result
 
 
 func _configure_saved_street_lamp(lamp: Node3D) -> void:
