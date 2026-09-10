@@ -207,10 +207,12 @@
     const W = fp.w * s, H = fp.h * s;
     const img = thumbs[def.id];
     if (img) {
-      // Real prefab image, rotated to match the placed rotation.
+      // Real prefab image, rotated to match the placed rotation. The game rotates
+      // meshes with Godot +Y (counter-clockwise on a top-down X-right/Z-down view),
+      // so negate the canvas angle (canvas +angle is clockwise) to match the render.
       g.save();
       g.translate(px + W / 2, py + H / 2);
-      g.rotate((turns * Math.PI) / 2);
+      g.rotate(-(turns * Math.PI) / 2);
       g.drawImage(img, -W / 2, -H / 2, W, H);
       g.restore();
       return;
@@ -249,7 +251,7 @@
       }
     } else if (def.category === "Vehicles") {
       const cx = px + W / 2, cy = py + H / 2;
-      g.save(); g.translate(cx, cy); g.rotate((turns * Math.PI) / 2);
+      g.save(); g.translate(cx, cy); g.rotate(-(turns * Math.PI) / 2);
       g.fillStyle = def.id === "police_car" ? "#4aa3ff" : "#c8ccd2";
       g.fillRect(-s * .28, -s * .42, s * .56, s * .84);
       g.fillStyle = "#1a1d22"; g.fillRect(-s * .2, -s * .3, s * .4, s * .22); // windshield
