@@ -58,20 +58,56 @@ func _load_saved_builder_map() -> void:
 			horizontal_centers.append((float(cell[1]) + 2.0) * 5.0)
 		else:
 			vertical_centers.append((float(cell[0]) + 2.0) * 5.0)
-	if horizontal_centers.size() < 2 or vertical_centers.size() < 2:
+	if horizontal_centers.size() >= 2 and vertical_centers.size() >= 2:
+		horizontal_centers.sort()
+		vertical_centers.sort()
+		var top: float = horizontal_centers.front()
+		var bottom: float = horizontal_centers.back()
+		var left: float = vertical_centers.front()
+		var right: float = vertical_centers.back()
+		saved_map_offset = Vector3(-(left + right) * 0.5, 0.0, -(top + bottom) * 0.5)
+		left += saved_map_offset.x
+		right += saved_map_offset.x
+		top += saved_map_offset.z
+		bottom += saved_map_offset.z
+		var radius := minf(10.0, minf(right - left, bottom - top) * 0.22)
+		circuit = [
+			Vector3(left + radius, 0, top), Vector3(right - radius, 0, top),
+			Vector3(right, 0, top + radius), Vector3(right, 0, bottom - radius),
+			Vector3(right - radius, 0, bottom), Vector3(left + radius, 0, bottom),
+			Vector3(left, 0, bottom - radius), Vector3(left, 0, top + radius),
+		]
+	else:
+		# A map without a two-way-street grid (e.g. a one-way loop like ccw_ring)
+		# is still a valid, drivable map. Center it on its overall footprint and
+		# derive a perimeter circuit so it renders and drives instead of being
+		# discarded.
+		_center_on_bounds_and_ring()
+
+
+func _center_on_bounds_and_ring() -> void:
+	var min_x := INF
+	var min_y := INF
+	var max_x := -INF
+	var max_y := -INF
+	for item in saved_map["items"]:
+		if not item is Dictionary:
+			continue
+		var cell: Array = item.get("cell", [])
+		if cell.size() < 2:
+			continue
+		min_x = minf(min_x, float(cell[0]))
+		min_y = minf(min_y, float(cell[1]))
+		max_x = maxf(max_x, float(cell[0]) + 1.0)
+		max_y = maxf(max_y, float(cell[1]) + 1.0)
+	if min_x == INF:
 		saved_map.clear()
 		return
-	horizontal_centers.sort()
-	vertical_centers.sort()
-	var top: float = horizontal_centers.front()
-	var bottom: float = horizontal_centers.back()
-	var left: float = vertical_centers.front()
-	var right: float = vertical_centers.back()
-	saved_map_offset = Vector3(-(left + right) * 0.5, 0.0, -(top + bottom) * 0.5)
-	left += saved_map_offset.x
-	right += saved_map_offset.x
-	top += saved_map_offset.z
-	bottom += saved_map_offset.z
+	saved_map_offset = Vector3(-(min_x + max_x) * 0.5 * 5.0, 0.0, -(min_y + max_y) * 0.5 * 5.0)
+	var left := min_x * 5.0 + saved_map_offset.x
+	var right := max_x * 5.0 + saved_map_offset.x
+	var top := min_y * 5.0 + saved_map_offset.z
+	var bottom := max_y * 5.0 + saved_map_offset.z
 	var radius := minf(10.0, minf(right - left, bottom - top) * 0.22)
 	circuit = [
 		Vector3(left + radius, 0, top), Vector3(right - radius, 0, top),
