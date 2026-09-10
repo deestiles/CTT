@@ -54,6 +54,7 @@ function moduleRulesForId(id) {
     case "two_way_street_1x1":        return R("straight", 1, 1, [2, 1], ["N", "S"], ["continue"], {N:P(1,1,2), S:P(1,1,2)});
     case "two_way_street_2x2":        return R("straight", 2, 2, [4, 1], ["N", "S"], ["continue", "lane_change"], {N:P(2,2,4), S:P(2,2,4)});
     case "transition_one_way_1_to_2": return R("transition", 2, 0, [2, 3], ["N", "S"], ["continue", "split", "merge"], {N:P(0,2,2), S:P(1,0,1,0)});
+    case "transition_one_way_2_to_1": { const m=R("transition", 2, 0, [2, 3], ["N", "S"], ["continue", "split", "merge"], {N:P(2,0,2), S:P(0,1,1,0)}); m.reverse_flow=true; return m; }
     case "transition_two_way_1_to_2": return R("transition", 2, 2, [4, 3], ["N", "S"], ["continue", "split", "merge"], {N:P(2,2,4), S:P(1,1,2)});
     case "curve_one_way":             return R("curve_90", 1, 0, [1, 1], ["S", "E"], ["turn_right"], {S:P(1,0,1), E:P(0,1,1)});
     case "curve_one_way_2_lane":      return R("curve_90", 2, 0, [2, 2], ["S", "E"], ["turn_right", "lane_change"], {S:P(2,0,2), E:P(0,2,2)});
@@ -96,6 +97,7 @@ function createCatalog() {
     def({ id: "two_way_street_1x1", name: "Two-Way: 1 Lane Each Direction", category: "Roads", footprint: [2, 1], connectors: ["N", "S"], traffic: ["N", "S"] }),
     def({ id: "two_way_street_2x2", name: "Two-Way: 2 Lanes Each Direction", category: "Roads", footprint: [4, 1], connectors: ["N", "S"], traffic: ["N", "S"] }),
     def({ id: "transition_one_way_1_to_2", name: "Transition: One-Way 1 ↔ 2 Lanes", category: "Roads", footprint: [2, 3], connectors: ["N", "S"], traffic: ["N"] }),
+    def({ id: "transition_one_way_2_to_1", name: "Transition: One-Way 2 → 1 Lane (Merge)", category: "Roads", footprint: [2, 3], connectors: ["N", "S"], traffic: ["S"] }),
     def({ id: "transition_two_way_1_to_2", name: "Transition: Two-Way 1 ↔ 2 Each", category: "Roads", footprint: [4, 3], connectors: ["N", "S"], traffic: ["N", "S"] }),
     def({ id: "curve_one_way", name: "Curve: One-Way", category: "Roads", footprint: [1, 1], connectors: ["S", "E"], traffic: ["S", "E"] }),
     def({ id: "curve_one_way_2_lane", name: "Curve: One-Way 2 Lanes", category: "Roads", footprint: [2, 2], connectors: ["S", "E"], traffic: ["S", "E"] }),

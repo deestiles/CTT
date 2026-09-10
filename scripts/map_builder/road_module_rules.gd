@@ -20,6 +20,12 @@ static func for_id(module_id: String) -> Dictionary:
 			# A one-cell road cannot be centered on a two-cell carriageway. Keep the
 			# narrow end on the left-hand footprint cell and widen on its right.
 			return _rules("transition", 2, 0, Vector2i(2, 3), ["N", "S"], ["continue", "split", "merge"], {"N": _port(0, 2, 2), "S": _port(1, 0, 1, 0)})
+		"transition_one_way_2_to_1":
+			# Mirror of the split: same taper, opposite flow (wide N intake ->
+			# narrow S output) so a one-way road can merge 2 lanes back to 1.
+			var m := _rules("transition", 2, 0, Vector2i(2, 3), ["N", "S"], ["continue", "split", "merge"], {"N": _port(2, 0, 2), "S": _port(0, 1, 1, 0)})
+			m["reverse_flow"] = true
+			return m
 		"transition_two_way_1_to_2":
 			return _rules("transition", 2, 2, Vector2i(4, 3), ["N", "S"], ["continue", "split", "merge"], {"N": _port(2, 2, 4), "S": _port(1, 1, 2)})
 		"curve_one_way":

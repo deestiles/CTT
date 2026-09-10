@@ -97,6 +97,10 @@ static func _build_transition_lanes(parent: Node3D, rules: Dictionary, cell: Vec
 	var forward_count := int(rules.get("lanes_forward", 0))
 	var reverse_count := int(rules.get("lanes_reverse", 0))
 	var one_way := reverse_count == 0
+	# A merge (2->1) is the split's taper driven the other way: same geometry
+	# (narrow at the S end, wide at the N end) but the lane points run in reverse
+	# so traffic flows wide -> narrow.
+	var reverse_flow := bool(rules.get("reverse_flow", false))
 	var result: Array[RoadLane] = []
 	var forward_lanes: Array[RoadLane] = []
 	for lane_index in forward_count:
@@ -105,7 +109,7 @@ static func _build_transition_lanes(parent: Node3D, rules: Dictionary, cell: Vec
 		# center. This mirrors the explicit port offset used by validation.
 		var start_lateral := -RoadModuleRules.LANE_WIDTH * 0.5 if one_way else RoadModuleRules.LANE_WIDTH * 0.5
 		var end_lateral := (float(lane_index) - float(forward_count - 1) * 0.5) * RoadModuleRules.LANE_WIDTH if one_way else (lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
-		forward_lanes.append(_transition_lane(parent, center, forward, right, length, start_lateral, end_lateral, module_index, "F", lane_index))
+		forward_lanes.append(_transition_lane(parent, center, forward, right, length, start_lateral, end_lateral, module_index, "F", lane_index, reverse_flow))
 	var reverse_lanes: Array[RoadLane] = []
 	for lane_index in reverse_count:
 		var wide_lateral := -(lane_index + 0.5) * RoadModuleRules.LANE_WIDTH
@@ -122,10 +126,12 @@ static func _build_transition_lanes(parent: Node3D, rules: Dictionary, cell: Vec
 	return result
 
 
-static func _transition_lane(parent: Node3D, center: Vector3, forward: Vector3, right: Vector3, length: float, start_lateral: float, end_lateral: float, module_index: int, flow: String, lane_index: int) -> RoadLane:
+static func _transition_lane(parent: Node3D, center: Vector3, forward: Vector3, right: Vector3, length: float, start_lateral: float, end_lateral: float, module_index: int, flow: String, lane_index: int, reverse := false) -> RoadLane:
 	var points: Array[Vector3] = []
 	for sample_index in range(7):
 		var ratio := float(sample_index) / 6.0
+		if reverse:
+			ratio = 1.0 - ratio
 		var eased := ratio * ratio * (3.0 - 2.0 * ratio)
 		var along := lerpf(-length * 0.5, length * 0.5, ratio)
 		var lateral := lerpf(start_lateral, end_lateral, eased)

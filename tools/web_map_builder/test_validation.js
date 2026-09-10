@@ -116,4 +116,11 @@ assertNoDirectionConflict("one-way arms on a one-way intersection", [
   console.log("PASS misaligned-port case detected (ports don't meet)");
 })();
 
+// One-way MERGE (2->1): a 2-lane one-way road narrows back to 1 lane.
+assertNetwork("one-way 2-to-1 merge", [
+  item("one_way_street_2_lane", 0, -1, 2), // 2-lane one-way flowing south into the merge's wide N port
+  item("transition_one_way_2_to_1", 0, 0),  // wide N intake -> narrow S output
+  item("one_way_street", 0, 3, 2),          // 1-lane one-way continuing south
+]);
+
 console.log("WEB_MAP_VALIDATION_TESTS: PASS");
