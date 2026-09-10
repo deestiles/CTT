@@ -357,7 +357,7 @@ func place_exploration_player() -> void:
 	var heading_offset := minf(spawn_offset + 3.0, lane_length)
 	var spawn_position := spawn_lane.to_global(spawn_lane.curve.sample_baked(spawn_offset))
 	var spawn_heading := spawn_lane.to_global(spawn_lane.curve.sample_baked(heading_offset))
-	player.global_position = spawn_position + Vector3.UP * 0.08
+	player.global_position = spawn_position
 	if spawn_position.distance_squared_to(spawn_heading) > 0.01:
 		player.look_at(spawn_heading, Vector3.UP)
 	player.set("velocity", Vector3.ZERO)
@@ -403,7 +403,7 @@ func place_exploration_traffic() -> void:
 			heading_offset = maxf(0.0, offset - 2.5)
 		var road_position := lane.to_global(lane.curve.sample_baked(offset))
 		var road_heading := lane.to_global(lane.curve.sample_baked(heading_offset))
-		actor.global_position = road_position + Vector3.UP * 0.08
+		actor.global_position = road_position
 		var flat_heading := road_heading - road_position
 		flat_heading.y = 0.0
 		if flat_heading.length_squared() > 0.001:
@@ -435,7 +435,7 @@ func _place_exploration_actor_on_lane(actor: Node3D, agent: RoadLaneAgent, lane:
 	var offset := clampf(lane_length * fraction, 0.25, maxf(0.25, lane_length - 0.25))
 	var road_position := lane.to_global(lane.curve.sample_baked(offset))
 	var road_heading := lane.to_global(lane.curve.sample_baked(minf(lane_length, offset + 1.0)))
-	actor.global_position = road_position + Vector3.UP * 0.08
+	actor.global_position = road_position
 	if road_heading.distance_squared_to(road_position) > 0.01:
 		actor.look_at(actor.global_position + (road_heading - road_position).normalized(), Vector3.UP)
 	actor.set("velocity", Vector3.ZERO)
@@ -1327,7 +1327,7 @@ func recycle_traffic_to_safe_lane(actor: Node3D, agent: RoadLaneAgent) -> void:
 	actor.call("cancel_lane_change")
 	agent.unassign_lane()
 	agent.assign_lane(best_lane)
-	actor.global_position = best_position + Vector3.UP * 0.08
+	actor.global_position = best_position
 	var heading := agent.test_move_along_lane(3.0)
 	actor.look_at(heading, Vector3.UP)
 	actor.set("velocity", Vector3.ZERO)
@@ -1386,7 +1386,7 @@ func recover_actor_to_lane(actor: Node3D, agent: RoadLaneAgent, message: String)
 		if is_recovery_point_clear(actor, candidate):
 			recovery_point = candidate
 			break
-	actor.global_position = recovery_point + Vector3.UP * 0.08
+	actor.global_position = recovery_point
 	var look_target := agent.test_move_along_lane(1.8)
 	if not actor.global_position.is_equal_approx(look_target):
 		actor.look_at(look_target, Vector3.UP)
