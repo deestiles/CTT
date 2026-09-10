@@ -20,6 +20,10 @@ static func build_police(actor: Node3D) -> void:
 	root.name = "PolygonCityVehicle"
 	# Synty models face local +Z; RoadActor gameplay forward is local -Z.
 	root.rotation.y = PI
+	# The sedan mesh origin sits 0.106 m above its wheels, but the police mesh
+	# origin is at its wheels. Match the sedan so both cars rest on the road at
+	# the same spawn height instead of the police floating ~0.1 m.
+	root.position.y = -0.1062
 	actor.add_child(root)
 	_apply_native_lamp_material(root.get_node("Body") as MeshInstance3D)
 	_add_native_light_sources(root)
