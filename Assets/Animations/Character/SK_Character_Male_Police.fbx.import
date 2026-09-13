@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://coa81tumot8bn"
-path="res://.godot/imported/Walking_02.fbx-edef05a770ecb0498884074a01f969c9.scn"
+uid="uid://cdip25ind4yb0"
+path="res://.godot/imported/SK_Character_Male_Police.fbx-c9d03c80a9324358e2476329d4e3d937.scn"
 
 [deps]
 
-source_file="res://Assets/Animations/Walking_02.fbx"
-dest_files=["res://.godot/imported/Walking_02.fbx-edef05a770ecb0498884074a01f969c9.scn"]
+source_file="res://Assets/Animations/Character/SK_Character_Male_Police.fbx"
+dest_files=["res://.godot/imported/SK_Character_Male_Police.fbx-c9d03c80a9324358e2476329d4e3d937.scn"]
 
 [params]
 

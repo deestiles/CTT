@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8cttchrprev01"]
+
+[ext_resource type="Script" path="res://scripts/tools/char_preview.gd" id="1_prev"]
+
+[node name="CharPreview" type="Node3D"]
+script = ExtResource("1_prev")
