@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://c7wdhh273p4lf"]
+
+[ext_resource type="ArrayMesh" uid="uid://boykoay1ohtst" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_SmartPhone_01.res" id="1_u6vhe"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_s4es0"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_xa6rg"]
+points = PackedVector3Array(0.0701544, -0.0020887414, 0.13404676, -0.06808132, -0.0020887414, 0.13404676, 0.0701544, -0.0020887414, -0.13404676, 0.068057045, 0.026779335, 0.12997916, -0.06678232, 0.026949883, 0.13150126, -0.06808132, -0.0020887414, -0.13404676, -0.06678232, 0.026949883, -0.13152748, 0.068057045, 0.026779335, -0.13000542)
+
+[node name="SM_Prop_SmartPhone_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_u6vhe")
+surface_material_override/0 = ExtResource("2_s4es0")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_xa6rg")

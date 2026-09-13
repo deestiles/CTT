@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bgoymj74kho37"]
+
+[ext_resource type="ArrayMesh" uid="uid://btccovuksd040" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeOld_Large_Roof_01.res" id="1_rxw50"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_dgseu"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_jgnjm"]
+points = PackedVector3Array(15.387749, 0.639753, 0.37673187, 15.1862135, -0.12781358, 0.17626667, 15.387749, 0.639753, -15.376724, 14.998525, 1.388602, -0.011861801, 0.009582341, 1.3896419, -0.0010671616, -0.32887268, 0.639753, 0.33972263, -0.16579889, -0.12781358, 0.17626667, 15.1862135, -0.12781358, -15.177801, -0.32887268, 0.639753, -15.341257, 0.009582341, 1.3897904, -15.000467, 14.998525, 1.388602, -14.989673, -0.16579889, -0.12781358, -15.177801)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rxw50"]
+size = Vector3(15.108887, 3.1870117, 15.384644)
+
+[node name="SM_Bld_OfficeOld_Large_Roof_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_rxw50")
+surface_material_override/0 = ExtResource("2_dgseu")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_jgnjm")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.508545, 2.6203613, -7.523987)
+shape = SubResource("BoxShape3D_rxw50")

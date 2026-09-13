@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cjj01b617e518"]
+
+[ext_resource type="ArrayMesh" uid="uid://cfhvfdl6uush6" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Grass_01.res" id="1_vrq0h"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_lku51"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yp587"]
+size = Vector3(5, 0.1757126, 5)
+
+[node name="SM_Env_Grass_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_vrq0h")
+surface_material_override/0 = ExtResource("2_lku51")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.005810499, -2.5)
+shape = SubResource("BoxShape3D_yp587")

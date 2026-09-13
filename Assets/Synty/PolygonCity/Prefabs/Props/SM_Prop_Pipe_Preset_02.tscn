@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://ot2fs4lpdxjv"]
+
+[ext_resource type="ArrayMesh" uid="uid://dtgsn417f5nm2" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Pipe_Present_02.res" id="1_fq8kk"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ie1at"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fq8kk"]
+radius = 0.17529297
+height = 6.8585205
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ie1at"]
+radius = 0.18408203
+height = 2.3339844
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2ox53"]
+radius = 0.17529297
+height = 3.4951172
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_utax8"]
+radius = 0.16601563
+height = 1.668457
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fa31d"]
+radius = 0.16357422
+height = 1.6306152
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1cg80"]
+radius = 0.15966797
+height = 2.0861816
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_aal05"]
+radius = 0.18066406
+height = 1.0095215
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_oey5i"]
+radius = 0.18408203
+height = 1.7546387
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ptfoj"]
+radius = 0.16552734
+height = 2.8571777
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1fbqj"]
+radius = 0.1484375
+height = 0.95703125
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vyqjp"]
+radius = 0.15576172
+height = 0.9387207
+
+[node name="SM_Prop_Pipe_Preset_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_fq8kk")
+surface_material_override/0 = ExtResource("2_ie1at")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5510647, 3.3707886, 0.29303646)
+shape = SubResource("CapsuleShape3D_fq8kk")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26422262, 1.0732422, -0.5401552)
+shape = SubResource("CapsuleShape3D_ie1at")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27358532, 3.7580094, -1.3972214)
+shape = SubResource("CapsuleShape3D_2ox53")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5889442, 2.983306, 0.27835703)
+shape = SubResource("CapsuleShape3D_utax8")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.51153743, 6.692025, 0.28762507)
+shape = SubResource("CapsuleShape3D_fa31d")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 1.5340211, 3.8589497, 0.27937317)
+shape = SubResource("CapsuleShape3D_1cg80")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.174829, 2.0735028, 0.26160085)
+shape = SubResource("CapsuleShape3D_aal05")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.28804064, 2.0966194, -0.5284424)
+shape = SubResource("CapsuleShape3D_oey5i")
+
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.27891707, 6.690252, -1.1302421)
+shape = SubResource("CapsuleShape3D_ptfoj")
+
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 2.9637117, 3.0428426, 0.2814777)
+shape = SubResource("CapsuleShape3D_1fbqj")
+
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.27861577, 4.6708627, -1.7493215)
+shape = SubResource("CapsuleShape3D_vyqjp")

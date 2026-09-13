@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://diac4plfg1mpo"]
+
+[ext_resource type="ArrayMesh" uid="uid://wh4qhq0r5jus" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_WaterEdge_Rock_01.res" id="1_lvsig"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_v6x68"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lvsig"]
+points = PackedVector3Array(2.2609653, 0, -0.9286133, 1.8002815, 0, -1.8684729, 1.8113985, 0.6315774, -1.3597254, 2.1809235, 0.61655766, 0.54704857, 2.1978211, 0, 0.7334914, 1.0060914, 0, -2.8230362, 1.2502182, 0.25758743, -2.499555, 1.5543761, 0.48964143, -1.9108195, 0.75929666, 1.3966421, -1.1544619, 0.60766244, 1.7511064, 0.572927, 1.815845, 0.5624868, 1.2775278, 1.6562068, 0.21928726, 1.6851139, 0.15942979, 0, 3.1854782, -1.7749078, 0, -1.9196417, -0.5689485, 0.17497922, -2.8036273, -0.3848529, 0.3775571, -2.5936587, -2.0332642, 0.49827772, -1.7796626, -1.5427873, 0.8206375, -1.3532557, -0.55471885, 1.2839946, -0.84744895, -0.4150908, 1.9180125, 0.80877423, -0.2545631, 1.850424, 1.0881443, 0.101621866, 1.6598619, 1.1975398, 0.36353564, 0.8150051, 2.666144, -0.14428353, 0.7560529, 2.918459, -1.110563, 0.54277354, 2.7143717, -1.0612041, 0, 2.332664, -2.281393, 0, 0.34060884, -1.9865733, 0.44852507, 0.5352857, -1.1692601, 1.6467197, 0.7205522, -0.9873879, 1.7850884, 0.91934586, -0.839311, 1.3018304, 1.873909, -1.3342347, 1.2847455, 1.3998623, -1.4565203, 0.75830585, 1.8250928)
+
+[node name="SM_Env_WaterEdge_Rock_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_lvsig")
+surface_material_override/0 = ExtResource("2_v6x68")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_lvsig")

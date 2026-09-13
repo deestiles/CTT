@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://q4jq13aiiyb1"]
+
+[ext_resource type="ArrayMesh" uid="uid://bfpy3y4l7dfui" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_ShopInterior_Desk_02.res" id="1_u5v6e"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_67pto"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u5v6e"]
+size = Vector3(1.2456055, 0.8457031, 0.5108032)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_67pto"]
+size = Vector3(0.6279907, 0.86035156, 0.5845337)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sqcii"]
+size = Vector3(1.2573853, 0.8331375, 0.4597168)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s77km"]
+size = Vector3(0.3817749, 0.30706787, 0.25964355)
+
+[node name="SM_Prop_ShopInterior_Desk_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_u5v6e")
+surface_material_override/0 = ExtResource("2_67pto")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(0.72905225, 0, -0.6844581, 0, 1, 0, 0.6844581, 0, 0.72905225, -0.6146228, 0.41605675, -0.016576067)
+shape = SubResource("BoxShape3D_u5v6e")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028717041, 0.42626953, 0.29925096)
+shape = SubResource("BoxShape3D_67pto")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(0.739678, 0, 0.6729609, 0, 1, 0, -0.6729609, 0, 0.739678, 0.59511673, 0.41213608, -0.017616255)
+shape = SubResource("BoxShape3D_sqcii")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(0.94092804, 0, -0.33860654, 0, 1, 0, 0.33860654, 0, 0.94092804, 0.74407107, 0.96532714, -0.10169737)
+shape = SubResource("BoxShape3D_s77km")

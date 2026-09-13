@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://d327xkgihrurk"]
+
+[ext_resource type="ArrayMesh" uid="uid://ctxjwbqff444d" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Apartment_Roof_Corner_02.res" id="1_j23lp"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_yb3rn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obmim"]
+size = Vector3(5.4621315, 0.49273837, 5.4881005)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tyc1i"]
+size = Vector3(5.4621315, 0.7435399, 0.44331074)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3avnj"]
+size = Vector3(0.3924942, 0.7435399, 5.441078)
+
+[node name="SM_Bld_Apartment_Roof_Corner_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_j23lp")
+surface_material_override/0 = ExtResource("2_yb3rn")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3950367, 0.24636918, -2.4080203)
+shape = SubResource("BoxShape3D_obmim")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3950367, 0.37176996, 0.11437464)
+shape = SubResource("BoxShape3D_tyc1i")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13978195, 0.37176996, -2.384509)
+shape = SubResource("BoxShape3D_3avnj")

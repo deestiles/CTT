@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://lo63iybqo821"]
+
+[ext_resource type="ArrayMesh" uid="uid://c5e6k0qe643so" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_06.res" id="1_s7iiy"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_wjofg"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_jxy7n"]
+points = PackedVector3Array(5.134272, 3.0316443, 0.46266153, 5.134272, 2.3788028, 0.2760988, 4.880652, 2.999948, 0.30321229, -0.08948517, 3.0316443, 0.46266153, 4.947636, 2.938217, 0.74234134, 4.947636, 2.7516816, 0.8356775, 5.134272, 2.3788028, 0.46266153, -0.08948517, 2.3788028, 0.2760988, 0.16362366, 2.999948, 0.30321229, -0.08948517, 2.3788028, 0.46266153, 0.0040883943, 2.7516816, 0.8356775, 0.0040883943, 2.938217, 0.74234134, 4.947636, 2.4720385, 0.8356775, 0.0040883943, 2.4720385, 0.8356775)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s7iiy"]
+size = Vector3(5.0375977, 3.013733, 5.2817383)
+
+[node name="SM_Bld_Shop_06" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_s7iiy")
+surface_material_override/0 = ExtResource("2_wjofg")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_jxy7n")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.526123, 1.4854431, -2.361084)
+shape = SubResource("BoxShape3D_s7iiy")

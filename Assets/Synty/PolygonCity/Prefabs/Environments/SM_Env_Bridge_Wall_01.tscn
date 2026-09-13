@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dnawt6xk65mma"]
+
+[ext_resource type="ArrayMesh" uid="uid://bsf2ltapcidls" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Bridge_Wall_01.res" id="1_lbpuk"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_vknlc"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lbpuk"]
+points = PackedVector3Array(-2.861023e-06, -1.2764986, -0.507449, -0.7444234, -2.9424832, -0.3116877, -0.28876543, -4.322593, -0.18864131, -0.2863183, -4.6650996, -0.18345642, -2.861023e-06, -5.000236, -0.507449, -0.60591507, -5.0941052, -1.1167371, -1.1687577, -5.0301037, -1.47538, -1.5152731, -3.9444013, -1.252556, -5.000003, -1.2764986, -0.507449, -2.4495916, -1.2764986, -0.42980206, -4.844854, -5.1352215, -0.2518717, -0.47572708, -5.080141, -0.24086964, -0.4644704, -5.078202, -0.89783347, -1.5867295, -5.1596584, -1.397733, -2.5773325, -5.1988354, -1.2032363, -5.000003, -5.000236, -0.507449, -4.938335, -4.6402745, -0.29271853, -4.4298186, -5.239176, -0.66071945, -4.0054846, -5.2089205, -0.27324355)
+
+[node name="SM_Env_Bridge_Wall_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_lbpuk")
+surface_material_override/0 = ExtResource("2_vknlc")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_lbpuk")

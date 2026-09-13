@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://sjy3x8qtwpti"]
+
+[ext_resource type="ArrayMesh" uid="uid://xg1keu3haaqg" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_Parking_01.res" id="1_dsmg8"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_325xe"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ejrga"]
+points = PackedVector3Array(-0.22803292, 1.2544007, 0.06578831, -0.06702402, -0.006587267, -0.028134853, -0.013354391, -0.006587267, 0.06578831, -0.22803292, 1.7104163, 0.06578831, -0.22803292, 1.7104163, 0.025524266, -0.2011981, 1.4153274, -0.0012921616, -0.026749477, 0.32881793, -0.06837263, 0.026830852, -0.006587267, -0.06837263, 0.06710541, -0.006587267, 0.012116052, 0.22811428, 1.2544007, 0.06578831, 0.21462992, 1.723968, 0.06578831, -0.026749477, 1.6700999, -0.041516803, -0.040189207, 1.4824085, -0.054964416, 0.040225923, 1.4824085, -0.054964416, 0.20127946, 1.4824085, -0.0012921616, 0.22811428, 1.2544007, 0.025524266)
+
+[node name="SM_Prop_Sign_Parking_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_dsmg8")
+surface_material_override/0 = ExtResource("2_325xe")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_ejrga")

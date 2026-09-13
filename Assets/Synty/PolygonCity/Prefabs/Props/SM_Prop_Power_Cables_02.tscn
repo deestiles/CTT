@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://b76gr0701m5wf"]
+
+[ext_resource type="ArrayMesh" uid="uid://bbli2kfb0dvor" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Power_Cables_02.res" id="1_86ce3"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ocr3l"]
+
+[node name="SM_Prop_Power_Cables_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_86ce3")
+surface_material_override/0 = ExtResource("2_ocr3l")

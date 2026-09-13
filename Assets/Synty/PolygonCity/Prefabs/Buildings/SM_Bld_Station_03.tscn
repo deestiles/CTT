@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b71l56qwhlrn"]
+
+[ext_resource type="ArrayMesh" uid="uid://bkem622e480qw" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Station_03.res" id="1_ombni"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_dcudr"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ombni"]
+size = Vector3(10.681641, 5.7622375, 5.78479)
+
+[node name="SM_Bld_Station_03" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_ombni")
+surface_material_override/0 = ExtResource("2_dcudr")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8470001, 0.033996582)
+shape = SubResource("BoxShape3D_ombni")

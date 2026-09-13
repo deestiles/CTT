@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dnw88sj2d4ls5"]
+
+[ext_resource type="ArrayMesh" uid="uid://dww2firbfp4ec" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Cloud_02.res" id="1_gvepp"]
+[ext_resource type="Material" uid="uid://b1s01oalepedc" path="res://Assets/Synty/PolygonCity/Materials/FX/Cloud_Mat_mat.tres" id="2_ye71y"]
+
+[node name="SM_Env_Cloud_02" type="MeshInstance3D"]
+cast_shadow = 0
+gi_mode = 2
+mesh = ExtResource("1_gvepp")
+surface_material_override/0 = ExtResource("2_ye71y")

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bsq80umjgi5dm"]
+
+[ext_resource type="ArrayMesh" uid="uid://bvkrm8sx2167f" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Vents_Corner_01.res" id="1_8wvrm"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_2h50w"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_clema"]
+points = PackedVector3Array(0.45733762, 0.06993132, 0.11642915, 0.45733762, -0.023286104, 0.11642915, 0.37062526, 0.80344415, 0.063016385, 0.45676327, 0.8150143, 0.90814424, 0.45676327, 0.20959336, 0.90814424, -0.9469993, 0.0069110915, 2.2446122, -2.3829203, -0.023286104, 2.9570694, -0.4743886, -0.023286104, 0.023387551, -0.4278741, 0.8150143, 0.023387551, -1.6378263, 0.8150143, 2.9102616, -1.6378263, 0.20959336, 2.9102616, -2.466474, 0.75420964, 2.8557, -2.466474, 0.26145375, 2.8557, -2.4759493, -0.023286104, 2.025505, -0.4743886, 0.06993132, 0.023387551, -2.4759493, 0.8150143, 2.0720258)
+
+[node name="SM_Prop_Vents_Corner_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_8wvrm")
+surface_material_override/0 = ExtResource("2_2h50w")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_clema")

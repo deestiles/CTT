@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cvfeefkj4ysic"]
+
+[ext_resource type="ArrayMesh" uid="uid://du56fndj8vljy" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_Police_01.res" id="1_35373"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_72sak"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35373"]
+size = Vector3(1.9483643, 0.55474854, 0.12963867)
+
+[node name="SM_Prop_Sign_Police_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_35373")
+surface_material_override/0 = ExtResource("2_72sak")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00091552734, 0.27645874, 0.0037841797)
+shape = SubResource("BoxShape3D_35373")

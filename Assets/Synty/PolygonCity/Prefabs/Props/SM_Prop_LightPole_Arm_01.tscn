@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dl53viiu5ahp1"]
+
+[ext_resource type="ArrayMesh" uid="uid://dtextm5265am3" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LightPole_Arm_01.res" id="1_7xq7v"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_m6ec8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7xq7v"]
+size = Vector3(0.3963318, 0.9760742, 6.2724)
+
+[node name="SM_Prop_LightPole_Arm_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_7xq7v")
+surface_material_override/0 = ExtResource("2_m6ec8")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15345764, 4.5711555, 3.0570374)
+shape = SubResource("BoxShape3D_7xq7v")

@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://drymytqdqjins"]
+
+[ext_resource type="ArrayMesh" uid="uid://but8xqd6aiwiq" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Gen_Env_Skyline_01.res" id="1_4gj3r"]
+[ext_resource type="Material" uid="uid://cvgo4k0c5s6ja" path="res://Assets/Synty/PolygonCity/Materials/Misc/Generic_Skyline_mat.tres" id="2_ab4we"]
+[ext_resource type="ArrayMesh" uid="uid://ckjr5rjemr1xh" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Gen_Env_Skyline_02.res" id="3_ab4we"]
+[ext_resource type="ArrayMesh" uid="uid://b5f0vt6ui7dkn" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Gen_Env_Skyline_03.res" id="4_xudws"]
+[ext_resource type="ArrayMesh" uid="uid://bhfiyn3s0qol0" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Gen_Env_Skyline_04.res" id="5_pv87a"]
+
+[node name="SM_Gen_Env_Skyline_01" type="MeshInstance3D"]
+cast_shadow = 0
+gi_mode = 2
+mesh = ExtResource("1_4gj3r")
+surface_material_override/0 = ExtResource("2_ab4we")
+
+[node name="SM_Gen_Env_Skyline_02" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_ab4we")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_ab4we")
+
+[node name="SM_Gen_Env_Skyline_03" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("4_xudws")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_ab4we")
+
+[node name="SM_Gen_Env_Skyline_04" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("5_pv87a")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_ab4we")

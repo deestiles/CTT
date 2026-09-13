@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cbuenks3358qq"]
+
+[ext_resource type="ArrayMesh" uid="uid://3tilbtxy70ob" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Roof_Aircon_01.res" id="1_3ux06"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_rkx7f"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_tk1j7"]
+points = PackedVector3Array(-2.8371811e-05, 0.5943965, 0.24022539, -2.8371811e-05, 0.5943965, -0.2412167, -0.4685629, 0.5862656, 0.23372199, -2.8371811e-05, 0.11290722, 0.24022539, 0.48143315, 0.15798056, -0.12085618, 0.4363281, 0.21819617, -0.12085618, 0.4410711, 0.008855578, -0.18546632, -2.8371811e-05, 0.11290722, -0.2412167, -0.4666099, 0.5850283, -0.23377076, -0.4551709, 0.122805685, -0.22802134, -0.4557289, 0.12257001, 0.22726567, 0.48143315, -0.0075240135, -0.12085618, -0.06019944, -0.0075240135, 0.17999803, -0.06019944, -0.0075240135, -0.18103644, -0.3890478, 0.015454549, -0.16722843, -0.3913728, 0.013804806, 0.16717966)
+
+[node name="SM_Prop_Roof_Aircon_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_3ux06")
+surface_material_override/0 = ExtResource("2_rkx7f")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_tk1j7")

@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://dy2g7jc3f3r4k"]
+
+[ext_resource type="ArrayMesh" uid="uid://cgrsd0vfivsv6" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_FireEscape_03.res" id="1_kl7k3"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_j78wo"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kl7k3"]
+size = Vector3(0.82907104, 3.7065735, 0.1085968)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j78wo"]
+size = Vector3(2.6572876, 0.9351196, 0.12768555)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_04oge"]
+size = Vector3(0.11035156, 3.5940552, 0.7501221)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_55jwi"]
+size = Vector3(0.09967041, 0.98168945, 1.6378174)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sqire"]
+size = Vector3(2.661438, 0.14303589, 1.6538696)
+
+[node name="SM_Bld_FireEscape_03" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_kl7k3")
+surface_material_override/0 = ExtResource("2_j78wo")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8565521, 1.4148712, 1.7029495)
+shape = SubResource("BoxShape3D_kl7k3")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4959412, 0.46029663, 1.6214361)
+shape = SubResource("BoxShape3D_j78wo")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(0.84803885, -0.5299341, 0, 0.5299341, 0.84803885, 0, 0, 0, 1, 1.6931051, 1.50852, 1.1777346)
+shape = SubResource("BoxShape3D_04oge")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8319445, 0.47644043, 0.8328023)
+shape = SubResource("BoxShape3D_55jwi")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5142848, 0.0055389404, 0.82124877)
+shape = SubResource("BoxShape3D_sqire")

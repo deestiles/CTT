@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://iwhtv5dvwe5e"]
+
+[ext_resource type="ArrayMesh" uid="uid://yu4srr8bhd66" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_Pizza_01.res" id="1_bcvld"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_t2x3b"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bcvld"]
+size = Vector3(2.213745, 0.7044678, 0.15893555)
+
+[node name="SM_Prop_Sign_Pizza_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_bcvld")
+surface_material_override/0 = ExtResource("2_t2x3b")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.1035156e-05, 0.35321045, -0.0030517578)
+shape = SubResource("BoxShape3D_bcvld")

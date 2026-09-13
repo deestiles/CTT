@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c43xfovolukyg"]
+
+[ext_resource type="ArrayMesh" uid="uid://dgktvlopjvy64" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_SidewalkPoles_02.res" id="1_tfvaf"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_madsu"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tfvaf"]
+radius = 0.10644531
+height = 1.2592773
+
+[node name="SM_Prop_SidewalkPoles_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_tfvaf")
+surface_material_override/0 = ExtResource("2_madsu")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51586914, 0)
+shape = SubResource("CapsuleShape3D_tfvaf")

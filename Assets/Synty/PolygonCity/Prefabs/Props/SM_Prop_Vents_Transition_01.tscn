@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://c426dyrpkxsgj"]
+
+[ext_resource type="ArrayMesh" uid="uid://b433p3ch1xefs" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Vents_Transition_01.res" id="1_utsqf"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_5rkfu"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_utsqf"]
+size = Vector3(0.8284607, 0.7860718, 0.86279297)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5rkfu"]
+size = Vector3(1.7087097, 0.7896118, 0.8278198)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_viqga"]
+points = PackedVector3Array(-0.6692874, 0.26227263, 1.065162, -0.45269042, -0.019759774, 1.6070752, -0.36151946, 0.26227263, 1.911027, -0.63134336, 0.7414368, 1.1615388, -0.64201516, 0.7471785, 1.0823011, 0.6703463, 0.75858533, 1.0690534, 0.67667025, 0.26227263, 1.065162, -0.41013518, 0.01905413, 1.7038662, 0.45994157, -0.019759774, 1.6070752, 0.41738635, 0.01905413, 1.7038662, 0.3663991, 0.26319128, 1.908129, -0.35071597, 0.7511594, 1.8984416, -0.3603337, 0.7608055, 1.6960003, -0.36178297, 0.76233655, 1.59242, 0.36758488, 0.7608055, 1.6960003, 0.3434747, 0.7366903, 1.8817165)
+
+[node name="SM_Prop_Vents_Transition_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_utsqf")
+surface_material_override/0 = ExtResource("2_5rkfu")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00047302246, 0.39883423, 2.0696077)
+shape = SubResource("BoxShape3D_utsqf")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00044250488, 0.3963318, 0.4411316)
+shape = SubResource("BoxShape3D_5rkfu")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_viqga")

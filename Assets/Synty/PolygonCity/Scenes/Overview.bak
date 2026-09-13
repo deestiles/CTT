@@ -1,0 +1,1995 @@
+[gd_scene load_steps=337 format=3 uid="uid://02u30nb8wis1"]
+
+[ext_resource type="PackedScene" uid="uid://dbkd3aa787w57" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/Custom/SM_Bld_Apartment_Stairs_Corner_01.tscn" id="1_kg8lx"]
+[ext_resource type="PackedScene" uid="uid://46ict7y1skdu" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_01.tscn" id="2_18pjd"]
+[ext_resource type="PackedScene" uid="uid://c8voayf0aefhy" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_02.tscn" id="3_mdaab"]
+[ext_resource type="PackedScene" uid="uid://c6rxc2n8h4hi8" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_03.tscn" id="4_a78n7"]
+[ext_resource type="PackedScene" uid="uid://b737xbty4dvpu" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Corner_01.tscn" id="5_bwtxs"]
+[ext_resource type="PackedScene" uid="uid://bb1nba0o2p7ei" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Corner_02.tscn" id="6_bu1nu"]
+[ext_resource type="PackedScene" uid="uid://dpvarj0tmpd6h" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Corner_03.tscn" id="7_lsg34"]
+[ext_resource type="PackedScene" uid="uid://r3pmc3qqc3q" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Door_01.tscn" id="8_sa36l"]
+[ext_resource type="PackedScene" uid="uid://doptih145kufp" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Door_02.tscn" id="9_e203e"]
+[ext_resource type="PackedScene" uid="uid://c2r3ifu1t5q83" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Door_Corner_01.tscn" id="10_xpjsb"]
+[ext_resource type="PackedScene" uid="uid://c3flg1tdo2tyw" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Door_Corner_02.tscn" id="11_kvsry"]
+[ext_resource type="PackedScene" uid="uid://binv1mqt5n7jh" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_01.tscn" id="12_5w5tp"]
+[ext_resource type="PackedScene" uid="uid://byirq48xyggud" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_02.tscn" id="13_2p7kv"]
+[ext_resource type="PackedScene" uid="uid://cn1l80ex3huew" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_03.tscn" id="14_7fede"]
+[ext_resource type="PackedScene" uid="uid://b1ses7vn8nsxk" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_Corner_01.tscn" id="15_5y4y0"]
+[ext_resource type="PackedScene" uid="uid://d327xkgihrurk" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_Corner_02.tscn" id="16_nqi4m"]
+[ext_resource type="PackedScene" uid="uid://tovugdsdadyd" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Roof_Corner_03.tscn" id="17_g5nn0"]
+[ext_resource type="PackedScene" uid="uid://colhq0vhrsliw" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stack_01.tscn" id="18_ga67h"]
+[ext_resource type="PackedScene" uid="uid://dxnp5xj2mh4oc" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stack_02.tscn" id="19_oqt23"]
+[ext_resource type="PackedScene" uid="uid://bmqn30eoxsjy" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stack_03.tscn" id="20_5xtg3"]
+[ext_resource type="PackedScene" uid="uid://s27i3j2f3l86" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stairs_01.tscn" id="21_3m5ir"]
+[ext_resource type="PackedScene" uid="uid://cvuv81txijmol" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stairs_02.tscn" id="22_4gnj7"]
+[ext_resource type="PackedScene" uid="uid://dgijjdy4xyyjb" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stairs_03.tscn" id="23_k3o5e"]
+[ext_resource type="PackedScene" uid="uid://bpgklllvpqx2t" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stairs_Planter_01.tscn" id="24_72kke"]
+[ext_resource type="PackedScene" uid="uid://cnr6xsho8ggpb" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Apartment_Stairs_Planter_02.tscn" id="25_kmblw"]
+[ext_resource type="PackedScene" uid="uid://bk2bi2cwgpp3q" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_CityHall_01.tscn" id="26_ihwit"]
+[ext_resource type="PackedScene" uid="uid://j7vi82ynjgae" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Cover_01.tscn" id="27_1ykkw"]
+[ext_resource type="PackedScene" uid="uid://mvtior8wi7e8" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Cover_02.tscn" id="28_djcho"]
+[ext_resource type="PackedScene" uid="uid://cijke5t2xshkf" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_FireEscape_01.tscn" id="29_bvgmx"]
+[ext_resource type="PackedScene" uid="uid://sirrjkfyfq1e" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Small_02.tscn" id="30_d80ht"]
+[ext_resource type="PackedScene" uid="uid://ur3vtnts8g2j" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_FireEscape_02.tscn" id="31_65g15"]
+[ext_resource type="PackedScene" uid="uid://dy2g7jc3f3r4k" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_FireEscape_03.tscn" id="32_ftc6q"]
+[ext_resource type="PackedScene" uid="uid://dw2mohidgdbgf" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOctagon_01.tscn" id="33_r6yn6"]
+[ext_resource type="PackedScene" uid="uid://65lxwh83c3pm" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOctagon_Base_01.tscn" id="34_xtumi"]
+[ext_resource type="PackedScene" uid="uid://banyc6vnkqj85" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOctagon_Floor_01.tscn" id="35_7q1u0"]
+[ext_resource type="PackedScene" uid="uid://dwewwn2bei4md" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOctagon_Roof_01.tscn" id="36_e7w8n"]
+[ext_resource type="PackedScene" uid="uid://43hkwjg6faej" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Large_01.tscn" id="37_0c34x"]
+[ext_resource type="PackedScene" uid="uid://4lmb1x6m5msx" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Large_02.tscn" id="38_h0n4u"]
+[ext_resource type="PackedScene" uid="uid://bcu74vrp3bvqv" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Large_Base_01.tscn" id="39_ury6c"]
+[ext_resource type="PackedScene" uid="uid://b3d2l7coe71k5" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Large_Floor_01.tscn" id="40_unjw2"]
+[ext_resource type="PackedScene" uid="uid://bgoymj74kho37" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Large_Roof_01.tscn" id="41_c2q6q"]
+[ext_resource type="PackedScene" uid="uid://ud1cmb7d2p6" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Small_01.tscn" id="42_b683r"]
+[ext_resource type="PackedScene" uid="uid://bqi6srfp3urni" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Small_Base_01.tscn" id="43_eg0sj"]
+[ext_resource type="PackedScene" uid="uid://qiptx78g28qc" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Small_Floor_01.tscn" id="44_lodfn"]
+[ext_resource type="PackedScene" uid="uid://bucqdx7qq4vqs" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeOld_Small_Roof_01.tscn" id="45_sb2ds"]
+[ext_resource type="PackedScene" uid="uid://dsx4gidngcoju" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_01.tscn" id="46_tnupk"]
+[ext_resource type="PackedScene" uid="uid://cha2rdpsuveoe" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_02.tscn" id="47_ktb81"]
+[ext_resource type="PackedScene" uid="uid://c44ceyktuchm4" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_03.tscn" id="48_2dtj7"]
+[ext_resource type="PackedScene" uid="uid://5qnmdx3beqx8" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_04.tscn" id="49_023ws"]
+[ext_resource type="PackedScene" uid="uid://cnu3kuosia0cl" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_Base_01.tscn" id="50_iwhbl"]
+[ext_resource type="PackedScene" uid="uid://cvaab1xgbbpm8" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeRound_Roof_01.tscn" id="51_mqv5h"]
+[ext_resource type="PackedScene" uid="uid://blcciqcy4txu2" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_01.tscn" id="52_aoexw"]
+[ext_resource type="PackedScene" uid="uid://cibcn52utx3bf" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_02.tscn" id="53_j6osv"]
+[ext_resource type="PackedScene" uid="uid://dx1et3mvsiq22" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_03.tscn" id="54_0eyqe"]
+[ext_resource type="PackedScene" uid="uid://cpredwlwswcdm" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_04.tscn" id="55_wjifl"]
+[ext_resource type="PackedScene" uid="uid://bmc8elfjmdvuq" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_Base_01.tscn" id="56_tb3xh"]
+[ext_resource type="PackedScene" uid="uid://bm5hy22i225kj" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_OfficeSquare_Roof_01.tscn" id="57_j56a0"]
+[ext_resource type="PackedScene" uid="uid://05qotce6ifgy" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Roof_Access_01.tscn" id="58_jf3hv"]
+[ext_resource type="PackedScene" uid="uid://d1iyuyb2a4u3u" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_01.tscn" id="59_dquuw"]
+[ext_resource type="PackedScene" uid="uid://35yjysby62ld" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_02.tscn" id="60_wtdmd"]
+[ext_resource type="PackedScene" uid="uid://dh5cqddiqf27r" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_03.tscn" id="61_x6vao"]
+[ext_resource type="PackedScene" uid="uid://6rtp0x2krose" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_04.tscn" id="62_hx1ub"]
+[ext_resource type="PackedScene" uid="uid://bon16cgpjbk2k" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_05.tscn" id="63_sogxj"]
+[ext_resource type="PackedScene" uid="uid://lo63iybqo821" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_06.tscn" id="64_0dadt"]
+[ext_resource type="PackedScene" uid="uid://bsmql228seaoo" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Corner_01.tscn" id="65_yxrt7"]
+[ext_resource type="PackedScene" uid="uid://csnorfqtr7556" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Corner_02.tscn" id="66_5fert"]
+[ext_resource type="PackedScene" uid="uid://baxbxq1p6b3cv" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Cover_01.tscn" id="67_krb61"]
+[ext_resource type="PackedScene" uid="uid://wwyimfg5pfew" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Cover_02.tscn" id="68_u3oid"]
+[ext_resource type="PackedScene" uid="uid://dr1ocykkv315b" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Cover_03.tscn" id="69_t77m5"]
+[ext_resource type="PackedScene" uid="uid://bugtjgb8dag2c" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Cover_04.tscn" id="70_gsbbl"]
+[ext_resource type="PackedScene" uid="uid://bycht4afpxirf" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Shop_Cover_05.tscn" id="71_op1uy"]
+[ext_resource type="PackedScene" uid="uid://dml6hjt5lqmg6" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Spire_01.tscn" id="72_bbmgt"]
+[ext_resource type="PackedScene" uid="uid://crdjdamlqaj22" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Station_01.tscn" id="73_1bsfl"]
+[ext_resource type="PackedScene" uid="uid://dcdsfth1lu0bg" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Station_02.tscn" id="74_en7ke"]
+[ext_resource type="PackedScene" uid="uid://b71l56qwhlrn" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Bld_Station_03.tscn" id="75_smud6"]
+[ext_resource type="PackedScene" uid="uid://ktpew8lerw3p" path="res://Assets/Synty/PolygonCity/Prefabs/Buildings/SM_Prop_Water_Tower_01.tscn" id="76_g5med"]
+[ext_resource type="PackedScene" uid="uid://sv3pu0iavvat" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_BusinessMan_Shirt.tscn" id="77_fxh1w"]
+[ext_resource type="PackedScene" uid="uid://pwpevnm657c0" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_BusinessMan_Suit.tscn" id="78_ibsn6"]
+[ext_resource type="PackedScene" uid="uid://b5qkb4dft7q10" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_BusinessWoman.tscn" id="79_288t4"]
+[ext_resource type="PackedScene" uid="uid://cdyeah315n7au" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Female_Coat.tscn" id="80_albgw"]
+[ext_resource type="PackedScene" uid="uid://phvc2y0k3xjd" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Female_Jacket.tscn" id="81_cicy3"]
+[ext_resource type="PackedScene" uid="uid://bocc7a8sl0qa2" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Female_Police.tscn" id="82_rw38t"]
+[ext_resource type="PackedScene" uid="uid://cy2op2ipt85jf" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Male_Hoodie.tscn" id="83_vqd2o"]
+[ext_resource type="PackedScene" uid="uid://ctrdegolm3sqd" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Male_Jacket.tscn" id="84_0wk47"]
+[ext_resource type="PackedScene" uid="uid://drlnh5y5w4064" path="res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Male_Police.tscn" id="85_0l4vq"]
+[ext_resource type="PackedScene" uid="uid://b5yevwrgi22e1" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Ambo_01.tscn" id="86_fa8df"]
+[ext_resource type="PackedScene" uid="uid://qplnmlocgoqi" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Medium_01.tscn" id="87_bbokf"]
+[ext_resource type="PackedScene" uid="uid://3cw7j0a4y14r" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Muscle_01.tscn" id="88_injk7"]
+[ext_resource type="PackedScene" uid="uid://c0g5ucdccs0du" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Police_01.tscn" id="89_t4wek"]
+[ext_resource type="PackedScene" uid="uid://bd70isr4rawid" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Sedan_01.tscn" id="90_qlwwn"]
+[ext_resource type="PackedScene" uid="uid://b5h0uu6kxa1bi" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Small_01.tscn" id="91_6mbkf"]
+[ext_resource type="PackedScene" uid="uid://cdgukfbkxjyiu" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Taxi_01.tscn" id="92_k6lnc"]
+[ext_resource type="PackedScene" uid="uid://cvksda6xcxmcd" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Van_01.tscn" id="93_akv2h"]
+[ext_resource type="PackedScene" uid="uid://bnx1x5jx3gx6" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Steering_Wheel_01.tscn" id="94_whscv"]
+[ext_resource type="PackedScene" uid="uid://bys56mshgn2xl" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Aircon_01.tscn" id="95_x82kq"]
+[ext_resource type="PackedScene" uid="uid://5f7dhbcv2fvu" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ATM_01.tscn" id="96_hhhl7"]
+[ext_resource type="PackedScene" uid="uid://cx0tevjd8gc78" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Barrier_01.tscn" id="97_quguq"]
+[ext_resource type="PackedScene" uid="uid://bxtyxpip4gtqf" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_01.tscn" id="98_ovk2v"]
+[ext_resource type="PackedScene" uid="uid://bojc14dwr5hbt" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Pole_01.tscn" id="99_017t5"]
+[ext_resource type="PackedScene" uid="uid://1nkd8hfxtsir" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Roof_01.tscn" id="100_trw1b"]
+[ext_resource type="PackedScene" uid="uid://knxfufb6gvtq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_01.tscn" id="101_jxydj"]
+[ext_resource type="PackedScene" uid="uid://btgehvloh5cc" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_02.tscn" id="102_utg20"]
+[ext_resource type="PackedScene" uid="uid://d0laniltelfdl" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_03.tscn" id="103_4vtgp"]
+[ext_resource type="PackedScene" uid="uid://mn6u7tpsujyw" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_04.tscn" id="104_qejaj"]
+[ext_resource type="PackedScene" uid="uid://vawxmqyfq0g7" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_05.tscn" id="105_8md5j"]
+[ext_resource type="PackedScene" uid="uid://d3bjh5mxan0m4" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_06.tscn" id="106_4l6qq"]
+[ext_resource type="PackedScene" uid="uid://dqqst2y42ff2i" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Billboard_Sign_07.tscn" id="107_3args"]
+[ext_resource type="PackedScene" uid="uid://cy25pa4fm441h" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Burger_01.tscn" id="108_sf24q"]
+[ext_resource type="PackedScene" uid="uid://dsu2s8ss336b4" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_BusStop_01.tscn" id="109_fod15"]
+[ext_resource type="PackedScene" uid="uid://bgscphe0ufcji" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_CardboardBox_01.tscn" id="110_6uye3"]
+[ext_resource type="PackedScene" uid="uid://lje5roryhd0i" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_CardboardBox_02.tscn" id="111_bpoji"]
+[ext_resource type="PackedScene" uid="uid://d2x78pjvwyjae" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_CardboardBox_03.tscn" id="112_dkkqg"]
+[ext_resource type="PackedScene" uid="uid://dy7s4fp1730lo" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_CardboardBox_04.tscn" id="113_d16ui"]
+[ext_resource type="PackedScene" uid="uid://di6tjcbf203gm" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Cone_01.tscn" id="114_xbd4b"]
+[ext_resource type="PackedScene" uid="uid://cxp8hfot27qpp" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Cone_02.tscn" id="115_t61y4"]
+[ext_resource type="PackedScene" uid="uid://55ob0cwyiw15" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Couch_01.tscn" id="116_m2a3k"]
+[ext_resource type="PackedScene" uid="uid://ds1rtjrmiw4ad" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Deckchair_01.tscn" id="117_o6k7x"]
+[ext_resource type="PackedScene" uid="uid://dbttcmxnu0kn5" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Door_01.tscn" id="118_6q0n5"]
+[ext_resource type="PackedScene" uid="uid://b5m2baj34j6vr" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Door_02.tscn" id="119_rdmju"]
+[ext_resource type="PackedScene" uid="uid://ce3cissn2i2at" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_HotdogStand_01.tscn" id="120_1ptty"]
+[ext_resource type="PackedScene" uid="uid://cwxwkj76k7q05" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Hydrant_01.tscn" id="121_iapfn"]
+[ext_resource type="PackedScene" uid="uid://cstfntosabav6" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Beer_01.tscn" id="122_4ydg7"]
+[ext_resource type="PackedScene" uid="uid://dimufmg4v0ldw" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Bottle_01.tscn" id="123_t1238"]
+[ext_resource type="PackedScene" uid="uid://xsuw1hkei70n" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_BowlingBall_01.tscn" id="124_wqpnw"]
+[ext_resource type="PackedScene" uid="uid://n74ipx7mownx" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_BowlingPin_01.tscn" id="125_rk7n6"]
+[ext_resource type="PackedScene" uid="uid://yr5nuugex0w3" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Burger_01.tscn" id="126_vicp3"]
+[ext_resource type="PackedScene" uid="uid://d1ugrqgjx1ctq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Coffee_01.tscn" id="127_bva0r"]
+[ext_resource type="PackedScene" uid="uid://drgiw4n7kcnnn" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Donut_01.tscn" id="128_cr0gb"]
+[ext_resource type="PackedScene" uid="uid://bvyaydlre8ks0" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Guitar_01.tscn" id="129_0cybr"]
+[ext_resource type="PackedScene" uid="uid://dhht56v7bippd" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Hotdog_01.tscn" id="130_gfkyl"]
+[ext_resource type="PackedScene" uid="uid://2wkuhx6w0byk" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Icecream_01.tscn" id="131_kblou"]
+[ext_resource type="PackedScene" uid="uid://2ttnxag2cuks" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Lollypop_01.tscn" id="132_fxshv"]
+[ext_resource type="PackedScene" uid="uid://chfrdlf6lwq0d" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Milkshake_01.tscn" id="133_5cn5b"]
+[ext_resource type="PackedScene" uid="uid://hxvmwjsybcg2" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Noodles_01.tscn" id="134_xm6jq"]
+[ext_resource type="PackedScene" uid="uid://g44nwpcye0dg" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Pizza_01.tscn" id="135_lxqd3"]
+[ext_resource type="PackedScene" uid="uid://fbllmb2n16fp" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Popcorn_01.tscn" id="136_wqk4k"]
+[ext_resource type="PackedScene" uid="uid://cytm06hwvb54q" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Soda_01.tscn" id="137_odmg4"]
+[ext_resource type="PackedScene" uid="uid://bu5bw6a68773n" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LargeSign_Taco_01.tscn" id="138_myswj"]
+[ext_resource type="PackedScene" uid="uid://bdhs1ftlfbkwa" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Light_Attachment_01.tscn" id="139_3kqyn"]
+[ext_resource type="PackedScene" uid="uid://dl53viiu5ahp1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Arm_01.tscn" id="140_58hr6"]
+[ext_resource type="PackedScene" uid="uid://cxd0sl1vukekx" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Base_01.tscn" id="141_cscvh"]
+[ext_resource type="PackedScene" uid="uid://dl6hajg4fwqr8" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Base_02.tscn" id="142_cb40r"]
+[ext_resource type="PackedScene" uid="uid://dvy7ss10eume0" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Box_01.tscn" id="143_0p75r"]
+[ext_resource type="PackedScene" uid="uid://cqk3ib1dkfm37" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_CrossButton_01.tscn" id="144_errop"]
+[ext_resource type="PackedScene" uid="uid://cuj5y5a1yxrn4" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_CrossLights_01.tscn" id="145_twu7b"]
+[ext_resource type="PackedScene" uid="uid://b32frdgbo2bi3" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Lights_01.tscn" id="146_g7crg"]
+[ext_resource type="PackedScene" uid="uid://gdlttgknw4xx" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_LightPole_Lights_02.tscn" id="147_s5a8e"]
+[ext_resource type="PackedScene" uid="uid://jljyt5ka81pc" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Mailbox_01.tscn" id="148_e4joq"]
+[ext_resource type="PackedScene" uid="uid://be64tc0yv3o7t" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Manhole_01.tscn" id="149_hwcec"]
+[ext_resource type="PackedScene" uid="uid://cmh0x6nhx7cci" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Manhole_02.tscn" id="150_oskn7"]
+[ext_resource type="PackedScene" uid="uid://q8ebm13wnijq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Newspaper_01.tscn" id="151_wbu8k"]
+[ext_resource type="PackedScene" uid="uid://b7oj2wlnnmc4p" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Newspaper_02.tscn" id="152_n8i0k"]
+[ext_resource type="PackedScene" uid="uid://bhckjn8d52mgk" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pallet_01.tscn" id="153_xbl0k"]
+[ext_resource type="PackedScene" uid="uid://dehhpr1ybtw64" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Paper_01.tscn" id="154_2dshe"]
+[ext_resource type="PackedScene" uid="uid://dujdk1xkuyoyb" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Paper_02.tscn" id="155_ugxhm"]
+[ext_resource type="PackedScene" uid="uid://bnrhe38x6r114" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Paper_03.tscn" id="156_74rcf"]
+[ext_resource type="PackedScene" uid="uid://cgstyaht81vua" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Paper_04.tscn" id="157_y1ln0"]
+[ext_resource type="PackedScene" uid="uid://c608hjcnbyxep" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Paper_05.tscn" id="158_3i1bt"]
+[ext_resource type="PackedScene" uid="uid://ba2ohq63yru3y" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ParkBench_01.tscn" id="159_q0q4g"]
+[ext_resource type="PackedScene" uid="uid://cvov6g788hi4p" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ParkingMeter_01.tscn" id="160_ddyux"]
+[ext_resource type="PackedScene" uid="uid://brnerblr565rt" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ParkingMeter_02.tscn" id="161_202k2"]
+[ext_resource type="PackedScene" uid="uid://dnhdq6iyb2xs1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Phones_01.tscn" id="162_7s43v"]
+[ext_resource type="PackedScene" uid="uid://bs3g2sodos72q" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PicnicTable_01.tscn" id="163_wktnk"]
+[ext_resource type="PackedScene" uid="uid://cplny7yxj42gn" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Part_Connect_01.tscn" id="164_neb1c"]
+[ext_resource type="PackedScene" uid="uid://kgcdw5ilycml" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Part_Corner_01.tscn" id="165_fqofh"]
+[ext_resource type="PackedScene" uid="uid://qyqq45obn43m" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Part_Straight_01.tscn" id="166_50mkc"]
+[ext_resource type="PackedScene" uid="uid://b85egd718sogw" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Part_T_01.tscn" id="167_o67jx"]
+[ext_resource type="PackedScene" uid="uid://dfhu6imfn15p3" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Preset_01.tscn" id="168_do0sp"]
+[ext_resource type="PackedScene" uid="uid://ot2fs4lpdxjv" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Preset_02.tscn" id="169_d13u2"]
+[ext_resource type="PackedScene" uid="uid://csfviw0o5qn8s" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Preset_03.tscn" id="170_tfs60"]
+[ext_resource type="PackedScene" uid="uid://dktctn8166kwa" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Small_01.tscn" id="171_xgwe2"]
+[ext_resource type="PackedScene" uid="uid://jdep72m3kcx2" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Pipe_Small_02.tscn" id="172_xr6lh"]
+[ext_resource type="PackedScene" uid="uid://clyk1fk5hrt7i" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Planter_01.tscn" id="173_57ure"]
+[ext_resource type="PackedScene" uid="uid://cniaa6q5w7sox" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Planter_02.tscn" id="174_056l0"]
+[ext_resource type="PackedScene" uid="uid://nllxmvwy8btx" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PlanterWindow_01.tscn" id="175_p5an6"]
+[ext_resource type="PackedScene" uid="uid://dpxecvyjr2b1a" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PlanterWindow_02.tscn" id="176_raxlg"]
+[ext_resource type="PackedScene" uid="uid://oqy43vu4ted7" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Police_Baton_01.tscn" id="177_0mbe2"]
+[ext_resource type="PackedScene" uid="uid://y6c5in411qf8" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Poster_01.tscn" id="178_rrllw"]
+[ext_resource type="PackedScene" uid="uid://y7fxpb54erok" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Poster_02.tscn" id="179_62l6s"]
+[ext_resource type="PackedScene" uid="uid://ctmut15tmd27h" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Poster_03.tscn" id="180_ls8tb"]
+[ext_resource type="PackedScene" uid="uid://bkgqpyjay6b1b" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Poster_Frame_01.tscn" id="181_ael2q"]
+[ext_resource type="PackedScene" uid="uid://iu42wx7y4l05" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PotPlant_01.tscn" id="182_md8v7"]
+[ext_resource type="PackedScene" uid="uid://r58qwcs8oir2" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PotPlant_02.tscn" id="183_eg5lk"]
+[ext_resource type="PackedScene" uid="uid://c6bex65d4hmu6" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Power_Cables_01.tscn" id="184_b12c5"]
+[ext_resource type="PackedScene" uid="uid://b76gr0701m5wf" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Power_Cables_02.tscn" id="185_ypwrn"]
+[ext_resource type="PackedScene" uid="uid://br6n4oq74of31" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Power_Cables_03.tscn" id="186_i581i"]
+[ext_resource type="PackedScene" uid="uid://dtdsgnxa5l6p" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_PowerBox_01.tscn" id="187_7prxk"]
+[ext_resource type="PackedScene" uid="uid://cbuenks3358qq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Roof_Aircon_01.tscn" id="188_pwbql"]
+[ext_resource type="PackedScene" uid="uid://bfb6yn5522gd2" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Roof_Aircon_02.tscn" id="189_qafyd"]
+[ext_resource type="PackedScene" uid="uid://nch3sg6j1eay" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Roof_Aircon_03.tscn" id="190_6vvjm"]
+[ext_resource type="PackedScene" uid="uid://ddi8mp1uip3x1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SatDish_01.tscn" id="191_nu4ay"]
+[ext_resource type="PackedScene" uid="uid://cr8guenxd152k" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SecurityCamera_01.tscn" id="192_w13ic"]
+[ext_resource type="PackedScene" uid="uid://1fefcnatm1cr" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SecurityCamera_Arm_01.tscn" id="193_41cjn"]
+[ext_resource type="PackedScene" uid="uid://d1683dns6l3vq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Cafe_01.tscn" id="194_ht4qy"]
+[ext_resource type="PackedScene" uid="uid://cv21uvryr8g4c" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Chair_01.tscn" id="195_lexnb"]
+[ext_resource type="PackedScene" uid="uid://d0bpvb1e1yrid" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Desk_01.tscn" id="196_dic0o"]
+[ext_resource type="PackedScene" uid="uid://q4jq13aiiyb1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Desk_02.tscn" id="197_8gmi2"]
+[ext_resource type="PackedScene" uid="uid://b1vn5hsuw4id0" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Display_01.tscn" id="198_3cjet"]
+[ext_resource type="PackedScene" uid="uid://b8m14pppi1bgl" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Display_02.tscn" id="199_q6dpr"]
+[ext_resource type="PackedScene" uid="uid://cu4fx38g1351w" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Shelf_01.tscn" id="200_dvb28"]
+[ext_resource type="PackedScene" uid="uid://c1ck767p5blj0" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Shelf_02.tscn" id="201_1242m"]
+[ext_resource type="PackedScene" uid="uid://db2xh4mf2o8b8" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Shelf_03.tscn" id="202_nwamn"]
+[ext_resource type="PackedScene" uid="uid://dephey7fo6rsb" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Shelf_04.tscn" id="203_qq4xy"]
+[ext_resource type="PackedScene" uid="uid://b0c2ewcvf7ei4" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_ShopInterior_Table_01.tscn" id="204_crqd4"]
+[ext_resource type="PackedScene" uid="uid://drd1pxcunwi11" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sidewalk_Panel_01.tscn" id="205_vrx5g"]
+[ext_resource type="PackedScene" uid="uid://du0rrv3pvetnq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sidewalk_Panel_02.tscn" id="206_s6avw"]
+[ext_resource type="PackedScene" uid="uid://uwkhofcvijxq" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sidewalk_Panel_03.tscn" id="207_t5pme"]
+[ext_resource type="PackedScene" uid="uid://djgo6gfmx4dnn" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sidewalk_Panel_04.tscn" id="208_jc4xq"]
+[ext_resource type="PackedScene" uid="uid://desugyry2v8wm" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sidewalk_Panel_05.tscn" id="209_lytef"]
+[ext_resource type="PackedScene" uid="uid://b18kwldpa3n5m" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SidewalkPoles_01.tscn" id="210_77g4k"]
+[ext_resource type="PackedScene" uid="uid://c43xfovolukyg" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SidewalkPoles_02.tscn" id="211_6m5lu"]
+[ext_resource type="PackedScene" uid="uid://dmbpl7rvr8ejs" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Arrow_01.tscn" id="212_dnhvs"]
+[ext_resource type="PackedScene" uid="uid://4mx73obxb14c" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Attachment_01.tscn" id="213_ylu5x"]
+[ext_resource type="PackedScene" uid="uid://c7gta6ix1q5b2" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Attachment_02.tscn" id="214_wsx87"]
+[ext_resource type="PackedScene" uid="uid://cmxfi6sp6uaeu" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Attachment_03.tscn" id="215_0t4vq"]
+[ext_resource type="PackedScene" uid="uid://c8imw6mwxhg4w" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Bar_01.tscn" id="216_265bu"]
+[ext_resource type="PackedScene" uid="uid://cgnli73w42ijc" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Barber_01.tscn" id="217_4m573"]
+[ext_resource type="PackedScene" uid="uid://chv53oofgvnmc" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Bustop_01.tscn" id="218_0p7n1"]
+[ext_resource type="PackedScene" uid="uid://de51450xb4irl" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Cafe_01.tscn" id="219_l0r87"]
+[ext_resource type="PackedScene" uid="uid://glhl3nogrctg" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Chinese_Noodles_01.tscn" id="220_k8aij"]
+[ext_resource type="PackedScene" uid="uid://0pui6olnngk8" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_DeliPizza_01.tscn" id="221_u05ag"]
+[ext_resource type="PackedScene" uid="uid://b8aopg8xtx1q1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Entrance_01.tscn" id="222_rfl4l"]
+[ext_resource type="PackedScene" uid="uid://dvgry5xe28f44" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_FireDepartment_01.tscn" id="223_5naty"]
+[ext_resource type="PackedScene" uid="uid://c6v3ehh0ws7od" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_GiveWay_01.tscn" id="224_r66ht"]
+[ext_resource type="PackedScene" uid="uid://clqv6ir7tsdc4" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_GiveWay_02.tscn" id="225_qawe2"]
+[ext_resource type="PackedScene" uid="uid://cd3r3liwujyko" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_GiveWay_03.tscn" id="226_d3und"]
+[ext_resource type="PackedScene" uid="uid://lng6f5fpf81f" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Hospital_01.tscn" id="227_3avfk"]
+[ext_resource type="PackedScene" uid="uid://c7hixtei7iatg" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Hotel_01.tscn" id="228_wm2wf"]
+[ext_resource type="PackedScene" uid="uid://sjy3x8qtwpti" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Parking_01.tscn" id="229_ays27"]
+[ext_resource type="PackedScene" uid="uid://iwhtv5dvwe5e" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Pizza_01.tscn" id="230_c2v76"]
+[ext_resource type="PackedScene" uid="uid://cvfeefkj4ysic" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Police_01.tscn" id="231_3uat2"]
+[ext_resource type="PackedScene" uid="uid://bbe8hrir65adt" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Pub_01.tscn" id="232_5r2ut"]
+[ext_resource type="PackedScene" uid="uid://bk5aihgdwtgtv" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Stop_01.tscn" id="233_q5no8"]
+[ext_resource type="PackedScene" uid="uid://dlbxmaivicwen" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Street_01.tscn" id="234_1383u"]
+[ext_resource type="PackedScene" uid="uid://dtje0murxotbf" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Street_02.tscn" id="235_msdyn"]
+[ext_resource type="PackedScene" uid="uid://d2oie8ar6b05m" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_Warning_01.tscn" id="236_8g72f"]
+[ext_resource type="PackedScene" uid="uid://dpiir5fiiywxb" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Sign_XXX_01.tscn" id="237_88x12"]
+[ext_resource type="PackedScene" uid="uid://h3u14leqnxw3" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Skip_01.tscn" id="238_t1vmv"]
+[ext_resource type="PackedScene" uid="uid://bg3qsmq53ridh" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Skip_02.tscn" id="239_mix83"]
+[ext_resource type="PackedScene" uid="uid://pnswtcgw7s84" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Skylight_01.tscn" id="240_f6ond"]
+[ext_resource type="PackedScene" uid="uid://c7wdhh273p4lf" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_SmartPhone_01.tscn" id="241_elhq4"]
+[ext_resource type="PackedScene" uid="uid://ckesh5fpeshmd" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Soda_01.tscn" id="242_wu31x"]
+[ext_resource type="PackedScene" uid="uid://cbvvfxte70e4l" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Soda_02.tscn" id="243_8q1wk"]
+[ext_resource type="PackedScene" uid="uid://b2c5veuikp5h8" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Soda_03.tscn" id="244_ru1vf"]
+[ext_resource type="PackedScene" uid="uid://b1buihcxs31w5" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Table_02.tscn" id="245_twd16"]
+[ext_resource type="PackedScene" uid="uid://b80hmm7pau03b" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrafficLight_01.tscn" id="246_xirw4"]
+[ext_resource type="PackedScene" uid="uid://cx6ywwmem0cdy" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrafficLight_02.tscn" id="247_1vxd8"]
+[ext_resource type="PackedScene" uid="uid://b6k2jcw0gpqmm" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrafficLight_03.tscn" id="248_a4ili"]
+[ext_resource type="PackedScene" uid="uid://tllg71rtsoja" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrashBag_01.tscn" id="249_2uah0"]
+[ext_resource type="PackedScene" uid="uid://blyer34a428ah" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrashBag_02.tscn" id="250_m0ga1"]
+[ext_resource type="PackedScene" uid="uid://cqoc1xfsamlqw" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrashBag_03.tscn" id="251_nwy4r"]
+[ext_resource type="PackedScene" uid="uid://d3h4midpj3yth" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Trashbin_01.tscn" id="252_7gkb2"]
+[ext_resource type="PackedScene" uid="uid://bbe7245my6b06" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Trashbin_02.tscn" id="253_84xdf"]
+[ext_resource type="PackedScene" uid="uid://cvpen36sfno5n" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrashCan_01.tscn" id="254_tw8vo"]
+[ext_resource type="PackedScene" uid="uid://d3a1yelxhsbxn" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_TrashCan_Lid_01.tscn" id="255_ecgx6"]
+[ext_resource type="PackedScene" uid="uid://s1nj20l53sa1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Umbrella_01.tscn" id="256_huk4f"]
+[ext_resource type="PackedScene" uid="uid://bsq80umjgi5dm" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Corner_01.tscn" id="257_kgdsm"]
+[ext_resource type="PackedScene" uid="uid://cgfrs42t5oug3" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Corner_02.tscn" id="258_uikt3"]
+[ext_resource type="PackedScene" uid="uid://dbbw4uobfom81" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_End_01.tscn" id="259_ntlsh"]
+[ext_resource type="PackedScene" uid="uid://c5vmfxv7sjuoa" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Exhaust_01.tscn" id="260_htea5"]
+[ext_resource type="PackedScene" uid="uid://djm4tsjgsaemb" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Straight_01.tscn" id="261_mweep"]
+[ext_resource type="PackedScene" uid="uid://c426dyrpkxsgj" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Transition_01.tscn" id="262_ww6ig"]
+[ext_resource type="PackedScene" uid="uid://sukpjavfxskv" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Vents_Wide_01.tscn" id="263_pa4i1"]
+[ext_resource type="PackedScene" uid="uid://bdi7pv5t4o6l1" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Washingline_01.tscn" id="264_y3ekj"]
+[ext_resource type="PackedScene" uid="uid://bwehloeihkp62" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Washingline_02.tscn" id="265_mv6k5"]
+[ext_resource type="PackedScene" uid="uid://c4fbpwnblyxcg" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Washingline_03.tscn" id="266_yb7op"]
+[ext_resource type="PackedScene" uid="uid://brknur0srvp03" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Washingline_04.tscn" id="267_t7tpg"]
+[ext_resource type="PackedScene" uid="uid://b725ykglrblrm" path="res://Assets/Synty/PolygonCity/Prefabs/Props/SM_Prop_Window_01.tscn" id="268_eao4r"]
+[ext_resource type="PackedScene" uid="uid://dghdclgpbenc7" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Bridge_Edge_01.tscn" id="269_4cjp0"]
+[ext_resource type="PackedScene" uid="uid://ci37ad5vkuy8s" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Bridge_Pillar_01.tscn" id="270_5430y"]
+[ext_resource type="PackedScene" uid="uid://csci4ppfy130d" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Bridge_Support_01.tscn" id="271_g8vy1"]
+[ext_resource type="PackedScene" uid="uid://c8x25bbdtku2r" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Bridge_Underside_01.tscn" id="272_u6ql4"]
+[ext_resource type="PackedScene" uid="uid://dnawt6xk65mma" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Bridge_Wall_01.tscn" id="273_m2lgw"]
+[ext_resource type="PackedScene" uid="uid://bki6lfkbh8rrn" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Cloud_01.tscn" id="274_y7nl8"]
+[ext_resource type="PackedScene" uid="uid://dnw88sj2d4ls5" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Cloud_02.tscn" id="275_orhmu"]
+[ext_resource type="PackedScene" uid="uid://rouvpuudl3fg" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Cloud_03.tscn" id="276_0r3wc"]
+[ext_resource type="PackedScene" uid="uid://4yjo276cj1wv" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Fence_01.tscn" id="277_sjecs"]
+[ext_resource type="PackedScene" uid="uid://dbum2s5nkibt1" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Fence_End_01.tscn" id="278_uwb8b"]
+[ext_resource type="PackedScene" uid="uid://spy084ayrk81" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Flower_01.tscn" id="279_etjtm"]
+[ext_resource type="PackedScene" uid="uid://cjj01b617e518" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Grass_01.tscn" id="280_3v4in"]
+[ext_resource type="PackedScene" uid="uid://dghem3sj16w74" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_GrassPath_Corner_01.tscn" id="281_e0nf7"]
+[ext_resource type="PackedScene" uid="uid://vkutwir5bakp" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_GrassPath_Junction_01.tscn" id="282_vjcih"]
+[ext_resource type="PackedScene" uid="uid://cnh0bx5avh0og" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_GrassPath_Straight_01.tscn" id="283_356yq"]
+[ext_resource type="PackedScene" uid="uid://lpcceklmjepg" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_GrassPath_T_01.tscn" id="284_avc1a"]
+[ext_resource type="PackedScene" uid="uid://2621s00586h8" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Ocean_Tile_01.tscn" id="285_dudqk"]
+[ext_resource type="PackedScene" uid="uid://cyvsxgr83yg6v" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Path_Corner_01.tscn" id="286_cx63q"]
+[ext_resource type="PackedScene" uid="uid://7bj273yx78cm" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Path_Junction_01.tscn" id="287_agfbb"]
+[ext_resource type="PackedScene" uid="uid://co8d6k22t8xjs" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Path_Straight_01.tscn" id="288_jwwbx"]
+[ext_resource type="PackedScene" uid="uid://cud640pygrj76" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Path_T_01.tscn" id="289_8h28v"]
+[ext_resource type="PackedScene" uid="uid://dikgtw0vqeg4k" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_01.tscn" id="290_1arao"]
+[ext_resource type="PackedScene" uid="uid://cre3yg5ejkqw0" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_02.tscn" id="291_gheve"]
+[ext_resource type="PackedScene" uid="uid://blbty2br3dv2o" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_03.tscn" id="292_avh7t"]
+[ext_resource type="PackedScene" uid="uid://c041jyavae8t3" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Arrow_01.tscn" id="293_ab51w"]
+[ext_resource type="PackedScene" uid="uid://ccvqxkfalhmr1" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Arrow_02.tscn" id="294_ldbe2"]
+[ext_resource type="PackedScene" uid="uid://bfa2wgqbyqtpy" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Bare_01.tscn" id="295_o766v"]
+[ext_resource type="PackedScene" uid="uid://djiaryxlxcwjt" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Crossing_01.tscn" id="296_ee5vp"]
+[ext_resource type="PackedScene" uid="uid://uybf6ib42gu8" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Lines_01.tscn" id="297_yl0rn"]
+[ext_resource type="PackedScene" uid="uid://dxlvfd1ivuogi" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Lines_02.tscn" id="298_q856c"]
+[ext_resource type="PackedScene" uid="uid://byxvf60v8k1hc" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Median_01.tscn" id="299_3eymb"]
+[ext_resource type="PackedScene" uid="uid://rw6lch67kct" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Median_02.tscn" id="300_xhibw"]
+[ext_resource type="PackedScene" uid="uid://caee7tx4mmqkq" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_ParkingLines_01.tscn" id="301_q14h5"]
+[ext_resource type="PackedScene" uid="uid://cqm25vbbam807" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_Patch_01.tscn" id="302_ofko5"]
+[ext_resource type="PackedScene" uid="uid://dl23rksjrhfwk" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_YellowLines_01.tscn" id="303_u3hj8"]
+[ext_resource type="PackedScene" uid="uid://bswrs20vukafh" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Road_YellowLines_02.tscn" id="304_us7od"]
+[ext_resource type="PackedScene" uid="uid://dcr1rmea5qg6t" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_01.tscn" id="305_r7nmx"]
+[ext_resource type="PackedScene" uid="uid://f7t0m5ok0b6" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Construction_01.tscn" id="306_bavie"]
+[ext_resource type="PackedScene" uid="uid://deexk0lprjq6q" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Corner_01.tscn" id="307_26s6n"]
+[ext_resource type="PackedScene" uid="uid://8llnrf5wjsf" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Corner_02.tscn" id="308_6sw61"]
+[ext_resource type="PackedScene" uid="uid://dcnpfx13jxjp1" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Dip_01.tscn" id="309_i40mp"]
+[ext_resource type="PackedScene" uid="uid://c7humxge0r8ww" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Dip_Corner_01.tscn" id="310_q7gbi"]
+[ext_resource type="PackedScene" uid="uid://vax7g8ufci8b" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Grate_01.tscn" id="311_gg73t"]
+[ext_resource type="PackedScene" uid="uid://sduy88ifmeh5" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Grate_02.tscn" id="312_f8abt"]
+[ext_resource type="PackedScene" uid="uid://dr0posmumxdxg" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Gutter_01.tscn" id="313_jelvc"]
+[ext_resource type="PackedScene" uid="uid://c61ffx2fbjgn1" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Merger_01.tscn" id="314_hku2s"]
+[ext_resource type="PackedScene" uid="uid://bs5blsh4xeisq" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Panel_01.tscn" id="315_vs0cy"]
+[ext_resource type="PackedScene" uid="uid://36kpt3nfq4cw" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Panel_02.tscn" id="316_f5fi8"]
+[ext_resource type="PackedScene" uid="uid://bayas3akgjwqb" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Straight_01.tscn" id="317_moa78"]
+[ext_resource type="PackedScene" uid="uid://chspha8mqnvxn" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Sidewalk_Straight_02.tscn" id="318_ctfku"]
+[ext_resource type="PackedScene" uid="uid://bysjoqadunq0" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Street_Divider_01.tscn" id="319_w6ujf"]
+[ext_resource type="PackedScene" uid="uid://bomjmeg3v2tgd" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Street_Divider_02.tscn" id="320_phlu0"]
+[ext_resource type="PackedScene" uid="uid://b6cqmeq6h4xk2" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Tree_01.tscn" id="321_d6tqf"]
+[ext_resource type="PackedScene" uid="uid://c22b4g8gjg4fx" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Tree_02.tscn" id="322_s541q"]
+[ext_resource type="PackedScene" uid="uid://iwiyujdmiffq" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_Tree_03.tscn" id="323_tuu3e"]
+[ext_resource type="PackedScene" uid="uid://dbgq1dyabulur" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Corner_01.tscn" id="324_7acyy"]
+[ext_resource type="PackedScene" uid="uid://ytv60bdemcps" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Corner_02.tscn" id="325_qh8ib"]
+[ext_resource type="PackedScene" uid="uid://djimdkp4hd1q0" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Pipe_01.tscn" id="326_8clyg"]
+[ext_resource type="PackedScene" uid="uid://diac4plfg1mpo" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Rock_01.tscn" id="327_temru"]
+[ext_resource type="PackedScene" uid="uid://bnr65nmsahxhx" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Straight_01.tscn" id="328_rect2"]
+[ext_resource type="PackedScene" uid="uid://xjx5tlowwl4k" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Straight_02.tscn" id="329_ggm7n"]
+[ext_resource type="PackedScene" uid="uid://dexvkoyq84pc" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/SM_Env_WaterEdge_Straight_03.tscn" id="330_mhevs"]
+[ext_resource type="PackedScene" uid="uid://cxmgnqslt67x5" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/Custom/SM_Env_Skyline_01.tscn" id="331_bb4hk"]
+[ext_resource type="PackedScene" uid="uid://civfk8t0r2awi" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/Custom/SM_Env_SubwayEntrance_01.tscn" id="332_tlce6"]
+[ext_resource type="PackedScene" uid="uid://d0bx7ylw4gnex" path="res://Assets/Synty/PolygonCity/Prefabs/Environments/Custom/SM_Env_SubwayEntrance_02.tscn" id="333_4uhxg"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hbon4"]
+resource_name = "Default-Skybox"
+sky_top_color = Color(0.454902, 0.678431, 0.87451, 1)
+sky_horizon_color = Color(0.894118, 0.952941, 1, 1)
+sky_curve = 0.0731028
+ground_bottom_color = Color(0.454902, 0.470588, 0.490196, 1)
+ground_horizon_color = Color(1, 1, 1, 1)
+
+[sub_resource type="Sky" id="Sky_7ekip"]
+sky_material = SubResource("ProceduralSkyMaterial_hbon4")
+
+[sub_resource type="Environment" id="Environment_rc6pr"]
+background_mode = 2
+sky = SubResource("Sky_7ekip")
+fog_light_color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="RootNode3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_rc6pr")
+
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="Custom" type="Node3D" parent="Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -381.5, -14.408, -541.8)
+
+[node name="SM_Bld_Apartment_Stairs_Corner_01" parent="Buildings/Custom" instance=ExtResource("1_kg8lx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.815735, -0.46973127, 5.071045)
+
+[node name="SM_Bld_Apartment_01" parent="Buildings" instance=ExtResource("2_18pjd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -508, 0, -58.13524)
+
+[node name="SM_Bld_Apartment_02" parent="Buildings" instance=ExtResource("3_mdaab")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -329.3877, 0, -177.13431)
+
+[node name="SM_Bld_Apartment_03" parent="Buildings" instance=ExtResource("4_a78n7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -269.85025, 0, -236.75221)
+
+[node name="SM_Bld_Apartment_Corner_01" parent="Buildings" instance=ExtResource("5_bwtxs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -448.36475, 0, -177.2101)
+
+[node name="SM_Bld_Apartment_Corner_02" parent="Buildings" instance=ExtResource("6_bu1nu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -507.978, 0, -177.13431)
+
+[node name="SM_Bld_Apartment_Corner_03" parent="Buildings" instance=ExtResource("7_lsg34")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -269.82623, 0, -296.21167)
+
+[node name="SM_Bld_Apartment_Door_01" parent="Buildings" instance=ExtResource("8_sa36l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -388.9251, 0, -117.81562)
+
+[node name="SM_Bld_Apartment_Door_02" parent="Buildings" instance=ExtResource("9_e203e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -627.0749, 0, -117.575356)
+
+[node name="SM_Bld_Apartment_Door_Corner_01" parent="Buildings" instance=ExtResource("10_xpjsb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -329.1472, 0, -296.42783)
+
+[node name="SM_Bld_Apartment_Door_Corner_02" parent="Buildings" instance=ExtResource("11_kvsry")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -686.6118, 0, -117.575356)
+
+[node name="SM_Bld_Apartment_Roof_01" parent="Buildings" instance=ExtResource("12_5w5tp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -388.9251, 0, -236.9403)
+
+[node name="SM_Bld_Apartment_Roof_02" parent="Buildings" instance=ExtResource("13_2p7kv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -567.5375, 0, -177.20428)
+
+[node name="SM_Bld_Apartment_Roof_03" parent="Buildings" instance=ExtResource("14_7fede")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -448.46255, 0, -236.79355)
+
+[node name="SM_Bld_Apartment_Roof_Corner_01" parent="Buildings" instance=ExtResource("15_5y4y0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -448.1653, 0, -296.47775)
+
+[node name="SM_Bld_Apartment_Roof_Corner_02" parent="Buildings" instance=ExtResource("16_nqi4m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -388.77463, 0, -296.331)
+
+[node name="SM_Bld_Apartment_Roof_Corner_03" parent="Buildings" instance=ExtResource("17_g5nn0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -686.5074, 0, -236.74173)
+
+[node name="SM_Bld_Apartment_Stack_01" parent="Buildings" instance=ExtResource("18_ga67h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -567.5375, 0, -58.13524)
+
+[node name="SM_Bld_Apartment_Stack_02" parent="Buildings" instance=ExtResource("19_oqt23")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -269.85025, 0, -177.13431)
+
+[node name="SM_Bld_Apartment_Stack_03" parent="Buildings" instance=ExtResource("20_5xtg3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -329.3877, 0, -236.75221)
+
+[node name="SM_Bld_Apartment_Stairs_01" parent="Buildings" instance=ExtResource("21_3m5ir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -627.0749, 0, -174.58435)
+
+[node name="SM_Bld_Apartment_Stairs_02" parent="Buildings" instance=ExtResource("22_4gnj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -686.6123, 0, -174.52092)
+
+[node name="SM_Bld_Apartment_Stairs_03" parent="Buildings" instance=ExtResource("23_k3o5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -329.3877, 0, -117.31033)
+
+[node name="SM_Bld_Apartment_Stairs_Planter_01" parent="Buildings" instance=ExtResource("24_72kke")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -386.4251, 0, 1.6696515)
+
+[node name="SM_Bld_Apartment_Stairs_Planter_02" parent="Buildings" instance=ExtResource("25_kmblw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -325.32605, 0, 0.5832114)
+
+[node name="SM_Bld_CityHall_01" parent="Buildings" instance=ExtResource("26_ihwit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -684.1123, 0, -417.7621)
+
+[node name="SM_Bld_Cover_01" parent="Buildings" instance=ExtResource("27_1ykkw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -445.96255, 0, -61.037437)
+
+[node name="SM_Bld_Cover_02" parent="Buildings" instance=ExtResource("28_djcho")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.33832, 0, -1.3506162)
+
+[node name="SM_Bld_FireEscape_01" parent="Buildings" instance=ExtResource("29_bvgmx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -626.266, 0, -1.8217721)
+
+[node name="SM_Bld_OfficeOld_Small_02" parent="Buildings/SM_Bld_FireEscape_01" instance=ExtResource("30_d80ht")]
+
+[node name="SM_Bld_FireEscape_02" parent="Buildings" instance=ExtResource("31_65g15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -685.8034, 0, -1.8217721)
+
+[node name="SM_Bld_FireEscape_03" parent="Buildings" instance=ExtResource("32_ftc6q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -270.12286, 0, -61.417286)
+
+[node name="SM_Bld_OfficeOctagon_01" parent="Buildings" instance=ExtResource("33_r6yn6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.35025, 0, -477.29953)
+
+[node name="SM_Bld_OfficeOctagon_Base_01" parent="Buildings" instance=ExtResource("34_xtumi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -445.96255, 0, -477.29953)
+
+[node name="SM_Bld_OfficeOctagon_Floor_01" parent="Buildings" instance=ExtResource("35_7q1u0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -326.8877, 0, -477.29953)
+
+[node name="SM_Bld_OfficeOctagon_Roof_01" parent="Buildings" instance=ExtResource("36_e7w8n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -386.4251, 0, -477.29953)
+
+[node name="SM_Bld_OfficeOld_Large_01" parent="Buildings" instance=ExtResource("37_0c34x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -513.0294, 0, -410.2621)
+
+[node name="SM_Bld_OfficeOld_Large_02" parent="Buildings" instance=ExtResource("38_h0n4u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -632.1044, 0, -410.2621)
+
+[node name="SM_Bld_OfficeOld_Large_Base_01" parent="Buildings" instance=ExtResource("39_ury6c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -453.46255, 0, -410.2621)
+
+[node name="SM_Bld_OfficeOld_Large_Floor_01" parent="Buildings" instance=ExtResource("40_unjw2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -513, 0, -350.72464)
+
+[node name="SM_Bld_OfficeOld_Large_Roof_01" parent="Buildings" instance=ExtResource("41_c2q6q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -572.5669, 0, -410.2621)
+
+[node name="SM_Bld_OfficeOld_Small_01" parent="Buildings" instance=ExtResource("42_b683r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -391.4714, 0, -353.18652)
+
+[node name="SM_Bld_OfficeOld_Small_Base_01" parent="Buildings" instance=ExtResource("43_eg0sj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -331.8877, 0, -353.22464)
+
+[node name="SM_Bld_OfficeOld_Small_Floor_01" parent="Buildings" instance=ExtResource("44_lodfn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -629.5749, 0, -293.6872)
+
+[node name="SM_Bld_OfficeOld_Small_Roof_01" parent="Buildings" instance=ExtResource("45_sb2ds")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -451.00885, 0, -353.18652)
+
+[node name="SM_Bld_OfficeRound_01" parent="Buildings" instance=ExtResource("46_tnupk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -505.5, 0, -477.29953)
+
+[node name="SM_Bld_OfficeRound_02" parent="Buildings" instance=ExtResource("47_ktb81")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -565.0375, 0, -477.29953)
+
+[node name="SM_Bld_OfficeRound_03" parent="Buildings" instance=ExtResource("48_2dtj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -624.5749, 0, -477.30127)
+
+[node name="SM_Bld_OfficeRound_04" parent="Buildings" instance=ExtResource("49_023ws")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -684.1123, 0, -477.30127)
+
+[node name="SM_Bld_OfficeRound_Base_01" parent="Buildings" instance=ExtResource("50_iwhbl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.35025, 0, -536.837)
+
+[node name="SM_Bld_OfficeRound_Roof_01" parent="Buildings" instance=ExtResource("51_mqv5h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -326.8877, 0, -536.837)
+
+[node name="SM_Bld_OfficeSquare_01" parent="Buildings" instance=ExtResource("52_aoexw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -572.5375, 0, -350.72464)
+
+[node name="SM_Bld_OfficeSquare_02" parent="Buildings" instance=ExtResource("53_j6osv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -632.0749, 0, -350.72464)
+
+[node name="SM_Bld_OfficeSquare_03" parent="Buildings" instance=ExtResource("54_0eyqe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -691.6123, 0, -350.72464)
+
+[node name="SM_Bld_OfficeSquare_04" parent="Buildings" instance=ExtResource("55_wjifl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -274.85025, 0, -410.2621)
+
+[node name="SM_Bld_OfficeSquare_Base_01" parent="Buildings" instance=ExtResource("56_tb3xh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -334.3877, 0, -410.2621)
+
+[node name="SM_Bld_OfficeSquare_Roof_01" parent="Buildings" instance=ExtResource("57_j56a0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -393.9251, 0, -410.2621)
+
+[node name="SM_Bld_Roof_Access_01" parent="Buildings" instance=ExtResource("58_jf3hv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -565.0375, 0, -1)
+
+[node name="SM_Bld_Shop_01" parent="Buildings" instance=ExtResource("59_dquuw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -627.0749, 0, -58.30538)
+
+[node name="SM_Bld_Shop_02" parent="Buildings" instance=ExtResource("60_wtdmd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -686.6123, 0, -58.249966)
+
+[node name="SM_Bld_Shop_03" parent="Buildings" instance=ExtResource("61_x6vao")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -689.1123, 0, -296.43375)
+
+[node name="SM_Bld_Shop_04" parent="Buildings" instance=ExtResource("62_hx1ub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -508, 0, -117.958984)
+
+[node name="SM_Bld_Shop_05" parent="Buildings" instance=ExtResource("63_sogxj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -567.5375, 0, -117.596214)
+
+[node name="SM_Bld_Shop_06" parent="Buildings" instance=ExtResource("64_0dadt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -388.9251, 0, -177.46303)
+
+[node name="SM_Bld_Shop_Corner_01" parent="Buildings" instance=ExtResource("65_yxrt7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -567.5375, 0, -236.73311)
+
+[node name="SM_Bld_Shop_Corner_02" parent="Buildings" instance=ExtResource("66_5fert")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -508, 0, -236.64975)
+
+[node name="SM_Bld_Shop_Cover_01" parent="Buildings" instance=ExtResource("67_krb61")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -326.8877, 0, -60.537437)
+
+[node name="SM_Bld_Shop_Cover_02" parent="Buildings" instance=ExtResource("68_u3oid")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -386.4251, 0, -60.537437)
+
+[node name="SM_Bld_Shop_Cover_03" parent="Buildings" instance=ExtResource("69_t77m5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.35025, 0, -120.074875)
+
+[node name="SM_Bld_Shop_Cover_04" parent="Buildings" instance=ExtResource("70_gsbbl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -445.96255, 0, -120.441124)
+
+[node name="SM_Bld_Shop_Cover_05" parent="Buildings" instance=ExtResource("71_op1uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -626.5394, 0, -237.18523)
+
+[node name="SM_Bld_Spire_01" parent="Buildings" instance=ExtResource("72_bbmgt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -505.5, 0, -1)
+
+[node name="SM_Bld_Station_01" parent="Buildings" instance=ExtResource("73_1bsfl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -565.0375, 0, -298.6872)
+
+[node name="SM_Bld_Station_02" parent="Buildings" instance=ExtResource("74_en7ke")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -505.5, 0, -298.98688)
+
+[node name="SM_Bld_Station_03" parent="Buildings" instance=ExtResource("75_smud6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.35025, 0, -358.22464)
+
+[node name="SM_Prop_Water_Tower_01" parent="Buildings" instance=ExtResource("76_g5med")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -445.96255, 0, -1)
+
+[node name="Directional Light" type="Node3D" parent="."]
+transform = Transform3D(0.86602545, 0.38302213, 0.3213938, 0, 0.6427877, -0.7660444, -0.4999999, 0.66341394, 0.5566705, 0, 3, 0)
+
+[node name="Light" type="DirectionalLight3D" parent="Directional Light"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+light_color = Color(1, 0.95686275, 0.8392157, 1)
+light_bake_mode = 0
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_normal_bias = 0.4
+
+[node name="Global Volume" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 107.917015, -32.96374, -29.20904)
+
+[node name="Characters" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.44, 0, -3.19)
+
+[node name="Character_BusinessMan_Shirt" parent="Characters" instance=ExtResource("77_fxh1w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.97, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_BusinessMan_Shirt" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_BusinessMan_Suit" parent="Characters" instance=ExtResource("78_ibsn6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.53, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_BusinessMan_Suit" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_BusinessWoman" parent="Characters" instance=ExtResource("79_288t4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_BusinessWoman" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Female_Coat" parent="Characters" instance=ExtResource("80_albgw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.04, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Female_Coat" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Female_Jacket" parent="Characters" instance=ExtResource("81_cicy3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.33, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Female_Jacket" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Female_Police" parent="Characters" instance=ExtResource("82_rw38t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Female_Police" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Male_Hoodie" parent="Characters" instance=ExtResource("83_vqd2o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.97, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Male_Hoodie" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Male_Jacket" parent="Characters" instance=ExtResource("84_0wk47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.26, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Male_Jacket" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Character_Male_Police" parent="Characters" instance=ExtResource("85_0l4vq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.49, 0, 0)
+
+[node name="GeneralSkeleton" parent="Characters/Character_Male_Police" index="2"]
+bones/1/position = Vector3(4.817043e-08, 7.748604e-07, 0.8762762)
+bones/3/rotation = Quaternion(-0.098004, -5.9604645e-08, -2.9802322e-08, 0.9951861)
+bones/7/rotation = Quaternion(0.70710665, 7.993606e-15, 1.0658141e-14, 0.7071069)
+bones/9/rotation = Quaternion(0.6470764, 0.32319465, 0.42979896, -0.54047215)
+bones/10/rotation = Quaternion(0.22902974, 0.9713868, 0.062873326, -7.45058e-08)
+bones/11/rotation = Quaternion(-0.024663903, -0.7058118, 0.055237677, 0.7058118)
+bones/12/rotation = Quaternion(-1.7881393e-07, 0.70710677, -8.940696e-08, 0.70710677)
+bones/13/rotation = Quaternion(-0.1880235, 0.6813952, 0.17784446, 0.68463075)
+bones/14/rotation = Quaternion(0.05450885, -9.735674e-05, 0.17590353, 0.98289716)
+bones/15/rotation = Quaternion(1.04308114e-07, -0.000105470404, -0.00019744036, 1)
+bones/16/rotation = Quaternion(-0.008151993, 0, 0.029906958, 0.9995195)
+bones/17/rotation = Quaternion(0.09462592, -5.9604645e-08, 0.028850138, 0.99509484)
+bones/18/rotation = Quaternion(-7.450581e-08, 0, -2.9802326e-08, 1)
+bones/20/rotation = Quaternion(0.08308309, -4.4703484e-08, -0.05000925, 0.99528706)
+bones/21/rotation = Quaternion(0.011741549, 1.4901161e-08, 0.026370555, 0.9995833)
+bones/22/rotation = Quaternion(-1.4901161e-08, -2.9802322e-08, -6.2584877e-07, 1)
+bones/24/rotation = Quaternion(0.64708275, -0.3231882, -0.42981565, -0.54045534)
+bones/25/rotation = Quaternion(-0.22901866, 0.97138786, 0.06289854, -1.4901163e-07)
+bones/26/rotation = Quaternion(-0.0246619, 0.7058119, -0.055236846, 0.7058118)
+bones/27/rotation = Quaternion(-2.2351743e-07, -0.7071067, 1.7881393e-07, 0.7071068)
+bones/28/rotation = Quaternion(0.28055796, -0.49819717, -0.7082925, 0.41401523)
+bones/35/rotation = Quaternion(0.45359576, -0.31654546, -0.59163237, 0.586533)
+bones/39/rotation = Quaternion(-9.313227e-08, -0.074887656, 0.997065, 0.015917294)
+bones/41/rotation = Quaternion(2.9802326e-08, 0.70710677, -0.70710677, -8.940697e-08)
+bones/42/rotation = Quaternion(-1.4901159e-08, 1, -3.8743013e-07, -7.45058e-08)
+bones/46/rotation = Quaternion(-9.685755e-08, 0.70710677, -0.70710677, -2.235174e-08)
+bones/47/rotation = Quaternion(5.9604638e-08, 1, -2.980232e-07, 8.940695e-08)
+
+[node name="Vehicles" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -209.14255, 35.01503, -140.26239)
+
+[node name="SM_Veh_Car_Ambo_01" parent="Vehicles" instance=ExtResource("86_fa8df")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 494.47458, -35.01503, 109.15601)
+
+[node name="SM_Veh_Car_Medium_01" parent="Vehicles" instance=ExtResource("87_bbokf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 494.47458, -35.01503, 123.17631)
+
+[node name="SM_Veh_Car_Muscle_01" parent="Vehicles" instance=ExtResource("88_injk7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 517.6426, -35.01503, 109.16239)
+
+[node name="SM_Veh_Car_Police_01" parent="Vehicles" instance=ExtResource("89_t4wek")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 506.34256, -35.01503, 123.06239)
+
+[node name="SM_Veh_Car_Sedan_01" parent="Vehicles" instance=ExtResource("90_qlwwn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 494.47458, -35.01503, 136.6714)
+
+[node name="SM_Veh_Car_Small_01" parent="Vehicles" instance=ExtResource("91_6mbkf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 506.32996, -35.01503, 136.66501)
+
+[node name="SM_Veh_Car_Taxi_01" parent="Vehicles" instance=ExtResource("92_k6lnc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 517.6426, -35.01503, 123.10341)
+
+[node name="SM_Veh_Car_Van_01" parent="Vehicles" instance=ExtResource("93_akv2h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 506.34256, -35.01503, 109.20585)
+
+[node name="SM_Veh_Steering_Wheel_01" parent="Vehicles" instance=ExtResource("94_whscv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 517.6426, -35.01503, 136.78596)
+
+[node name="Props" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79.4, -13.58725, -123.120316)
+
+[node name="SM_Prop_Aircon_01" parent="Props" instance=ExtResource("95_x82kq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 84.41506)
+
+[node name="SM_Prop_ATM_01" parent="Props" instance=ExtResource("96_hhhl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6782, 13.58725, 121.16027)
+
+[node name="SM_Prop_Barrier_01" parent="Props" instance=ExtResource("97_quguq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680122, 13.58725, 94.450386)
+
+[node name="SM_Prop_Billboard_01" parent="Props" instance=ExtResource("98_ovk2v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 6.9686127)
+
+[node name="SM_Prop_Billboard_Pole_01" parent="Props" instance=ExtResource("99_017t5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 121.120316)
+
+[node name="SM_Prop_Billboard_Roof_01" parent="Props" instance=ExtResource("100_trw1b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 7.364151)
+
+[node name="SM_Prop_Billboard_Sign_01" parent="Props" instance=ExtResource("101_jxydj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 21.216995)
+
+[node name="SM_Prop_Billboard_Sign_02" parent="Props" instance=ExtResource("102_utg20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Billboard_Sign_03" parent="Props" instance=ExtResource("103_4vtgp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Billboard_Sign_04" parent="Props" instance=ExtResource("104_qejaj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Billboard_Sign_05" parent="Props" instance=ExtResource("105_8md5j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Billboard_Sign_06" parent="Props" instance=ExtResource("106_4l6qq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Billboard_Sign_07" parent="Props" instance=ExtResource("107_3args")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 7.1203156)
+
+[node name="SM_Prop_Burger_01" parent="Props" instance=ExtResource("108_sf24q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 53.361053)
+
+[node name="SM_Prop_BusStop_01" parent="Props" instance=ExtResource("109_fod15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, -7.7622833)
+
+[node name="SM_Prop_CardboardBox_01" parent="Props" instance=ExtResource("110_6uye3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 41.050903)
+
+[node name="SM_Prop_CardboardBox_02" parent="Props" instance=ExtResource("111_bpoji")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82733, 13.58725, 97.0509)
+
+[node name="SM_Prop_CardboardBox_03" parent="Props" instance=ExtResource("112_dkkqg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.15152, 13.58725, 15.414551)
+
+[node name="SM_Prop_CardboardBox_04" parent="Props" instance=ExtResource("113_d16ui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 84.74076)
+
+[node name="SM_Prop_Cone_01" parent="Props" instance=ExtResource("114_xbd4b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 103.20598)
+
+[node name="SM_Prop_Cone_02" parent="Props" instance=ExtResource("115_t61y4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29254, 13.58725, 15.430618)
+
+[node name="SM_Prop_Couch_01" parent="Props" instance=ExtResource("116_m2a3k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 66.25703)
+
+[node name="SM_Prop_Deckchair_01" parent="Props" instance=ExtResource("117_o6k7x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 21.585693)
+
+[node name="SM_Prop_Door_01" parent="Props" instance=ExtResource("118_6q0n5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 94.265015)
+
+[node name="SM_Prop_Door_02" parent="Props" instance=ExtResource("119_rdmju")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 81.22015)
+
+[node name="SM_Prop_HotdogStand_01" parent="Props" instance=ExtResource("120_1ptty")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680122, 13.58725, 51.160347)
+
+[node name="SM_Prop_Hydrant_01" parent="Props" instance=ExtResource("121_iapfn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.75778, 13.58725, 2.1203156)
+
+[node name="SM_Prop_LargeSign_Beer_01" parent="Props" instance=ExtResource("122_4ydg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680107, 13.58725, 66.25702)
+
+[node name="SM_Prop_LargeSign_Bottle_01" parent="Props" instance=ExtResource("123_t1238")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 66.25702)
+
+[node name="SM_Prop_LargeSign_BowlingBall_01" parent="Props" instance=ExtResource("124_wqpnw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 36.063667)
+
+[node name="SM_Prop_LargeSign_BowlingPin_01" parent="Props" instance=ExtResource("125_rk7n6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.775642, 13.58725, 81.345894)
+
+[node name="SM_Prop_LargeSign_Burger_01" parent="Props" instance=ExtResource("126_vicp3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 21.46083)
+
+[node name="SM_Prop_LargeSign_Coffee_01" parent="Props" instance=ExtResource("127_bva0r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.447914, 13.58725, 51.160347)
+
+[node name="SM_Prop_LargeSign_Donut_01" parent="Props" instance=ExtResource("128_cr0gb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 21.46083)
+
+[node name="SM_Prop_LargeSign_Guitar_01" parent="Props" instance=ExtResource("129_0cybr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 66.25703)
+
+[node name="SM_Prop_LargeSign_Hotdog_01" parent="Props" instance=ExtResource("130_gfkyl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 94.45038)
+
+[node name="SM_Prop_LargeSign_Icecream_01" parent="Props" instance=ExtResource("131_kblou")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 66.25703)
+
+[node name="SM_Prop_LargeSign_Lollypop_01" parent="Props" instance=ExtResource("132_fxshv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 21.46083)
+
+[node name="SM_Prop_LargeSign_Milkshake_01" parent="Props" instance=ExtResource("133_5cn5b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 73.12867, 13.58725, 51.160347)
+
+[node name="SM_Prop_LargeSign_Noodles_01" parent="Props" instance=ExtResource("134_xm6jq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 36.120316)
+
+[node name="SM_Prop_LargeSign_Pizza_01" parent="Props" instance=ExtResource("135_lxqd3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 21.460815)
+
+[node name="SM_Prop_LargeSign_Popcorn_01" parent="Props" instance=ExtResource("136_wqk4k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680122, 13.58725, 81.3537)
+
+[node name="SM_Prop_LargeSign_Soda_01" parent="Props" instance=ExtResource("137_odmg4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 66.25702)
+
+[node name="SM_Prop_LargeSign_Taco_01" parent="Props" instance=ExtResource("138_myswj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 107.54706)
+
+[node name="SM_Prop_Light_Attachment_01" parent="Props" instance=ExtResource("139_3kqyn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 119.791176)
+
+[node name="SM_Prop_LightPole_Arm_01" parent="Props" instance=ExtResource("140_58hr6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.16569, 13.58725, 118.084915)
+
+[node name="SM_Prop_LightPole_Base_01" parent="Props" instance=ExtResource("141_cscvh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 120.05382)
+
+[node name="SM_Prop_LightPole_Base_02" parent="Props" instance=ExtResource("142_cb40r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 121.120316)
+
+[node name="SM_Prop_LightPole_Box_01" parent="Props" instance=ExtResource("143_0p75r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.20807, 13.58725, 59.572525)
+
+[node name="SM_Prop_LightPole_CrossButton_01" parent="Props" instance=ExtResource("144_errop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 65.03524)
+
+[node name="SM_Prop_LightPole_CrossLights_01" parent="Props" instance=ExtResource("145_twu7b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.65863, 13.58725, 47.08425)
+
+[node name="SM_Prop_LightPole_Lights_01" parent="Props" instance=ExtResource("146_g7crg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.68228, 13.58725, 103.20376)
+
+[node name="SM_Prop_LightPole_Lights_02" parent="Props" instance=ExtResource("147_s5a8e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.30472, 13.58725, 53.14084)
+
+[node name="SM_Prop_Mailbox_01" parent="Props" instance=ExtResource("148_e4joq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 34.89583)
+
+[node name="SM_Prop_Manhole_01" parent="Props" instance=ExtResource("149_hwcec")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 71.43062)
+
+[node name="SM_Prop_Manhole_02" parent="Props" instance=ExtResource("150_oskn7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 8.275543)
+
+[node name="SM_Prop_Newspaper_01" parent="Props" instance=ExtResource("151_wbu8k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 47.206543)
+
+[node name="SM_Prop_Newspaper_02" parent="Props" instance=ExtResource("152_n8i0k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 41.050903)
+
+[node name="SM_Prop_Pallet_01" parent="Props" instance=ExtResource("153_xbl0k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.873466, 13.58725, 51.159508)
+
+[node name="SM_Prop_Paper_01" parent="Props" instance=ExtResource("154_2dshe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 115.51611)
+
+[node name="SM_Prop_Paper_02" parent="Props" instance=ExtResource("155_ugxhm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 115.51612)
+
+[node name="SM_Prop_Paper_03" parent="Props" instance=ExtResource("156_74rcf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13748, 13.58725, 59.51612)
+
+[node name="SM_Prop_Paper_04" parent="Props" instance=ExtResource("157_y1ln0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 144.20807, 13.58725, 8.120316)
+
+[node name="SM_Prop_Paper_05" parent="Props" instance=ExtResource("158_3i1bt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.97455, 13.58725, 109.39007)
+
+[node name="SM_Prop_ParkBench_01" parent="Props" instance=ExtResource("159_q0q4g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8426437, 13.58725, 66.25897)
+
+[node name="SM_Prop_ParkingMeter_01" parent="Props" instance=ExtResource("160_ddyux")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.75778, 13.58725, 8.120316)
+
+[node name="SM_Prop_ParkingMeter_02" parent="Props" instance=ExtResource("161_202k2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 28.74076)
+
+[node name="SM_Prop_Phones_01" parent="Props" instance=ExtResource("162_7s43v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.970146, 13.58725, 36.063667)
+
+[node name="SM_Prop_PicnicTable_01" parent="Props" instance=ExtResource("163_wktnk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 36.063667)
+
+[node name="SM_Prop_Pipe_Part_Connect_01" parent="Props" instance=ExtResource("164_neb1c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.23749, 13.58725, 64.96509)
+
+[node name="SM_Prop_Pipe_Part_Corner_01" parent="Props" instance=ExtResource("165_fqofh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98465, 13.58725, 47.274155)
+
+[node name="SM_Prop_Pipe_Part_Straight_01" parent="Props" instance=ExtResource("166_50mkc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.1723, 13.58725, 71.27539)
+
+[node name="SM_Prop_Pipe_Part_T_01" parent="Props" instance=ExtResource("167_o67jx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.20807, 13.58725, -3.8796844)
+
+[node name="SM_Prop_Pipe_Preset_01" parent="Props" instance=ExtResource("168_do0sp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, -8.142624)
+
+[node name="SM_Prop_Pipe_Preset_02" parent="Props" instance=ExtResource("169_d13u2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.3303757, 13.58725, 22.547897)
+
+[node name="SM_Prop_Pipe_Preset_03" parent="Props" instance=ExtResource("170_tfs60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 35.814484)
+
+[node name="SM_Prop_Pipe_Small_01" parent="Props" instance=ExtResource("171_xgwe2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.20807, 13.58725, 121.042244)
+
+[node name="SM_Prop_Pipe_Small_02" parent="Props" instance=ExtResource("172_xr6lh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91.11234, 13.58725, 94.3723)
+
+[node name="SM_Prop_Planter_01" parent="Props" instance=ExtResource("173_57ure")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 51.160347)
+
+[node name="SM_Prop_Planter_02" parent="Props" instance=ExtResource("174_056l0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 94.45038)
+
+[node name="SM_Prop_PlanterWindow_01" parent="Props" instance=ExtResource("175_p5an6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 71.31428)
+
+[node name="SM_Prop_PlanterWindow_02" parent="Props" instance=ExtResource("176_raxlg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.65515, 13.58725, 77.45862)
+
+[node name="SM_Prop_Police_Baton_01" parent="Props" instance=ExtResource("177_0mbe2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 161.20807, 13.58725, 8.120316)
+
+[node name="SM_Prop_Poster_01" parent="Props" instance=ExtResource("178_rrllw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.21027, 13.58725, 34.87078)
+
+[node name="SM_Prop_Poster_02" parent="Props" instance=ExtResource("179_62l6s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 34.87078)
+
+[node name="SM_Prop_Poster_03" parent="Props" instance=ExtResource("180_ls8tb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.2923, 13.58725, 34.87078)
+
+[node name="SM_Prop_Poster_Frame_01" parent="Props" instance=ExtResource("181_ael2q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.81342, 13.58725, -3.4665375)
+
+[node name="SM_Prop_PotPlant_01" parent="Props" instance=ExtResource("182_md8v7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 41.050903)
+
+[node name="SM_Prop_PotPlant_02" parent="Props" instance=ExtResource("183_eg5lk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 90.89583)
+
+[node name="SM_Prop_Power_Cables_01" parent="Props" instance=ExtResource("184_b12c5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.66578, 13.58725, -7.8934174)
+
+[node name="SM_Prop_Power_Cables_02" parent="Props" instance=ExtResource("185_ypwrn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9076462, 13.58725, -7.8934174)
+
+[node name="SM_Prop_Power_Cables_03" parent="Props" instance=ExtResource("186_i581i")]
+transform = Transform3D(0.0036157966, 0, 0.9999934, 0, 1, 0, -0.9999934, 0, 0.0036157966, 148.20807, 13.58725, -8.879684)
+
+[node name="SM_Prop_PowerBox_01" parent="Props" instance=ExtResource("187_7prxk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 66.25703)
+
+[node name="SM_Prop_Roof_Aircon_01" parent="Props" instance=ExtResource("188_pwbql")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 15.430618)
+
+[node name="SM_Prop_Roof_Aircon_02" parent="Props" instance=ExtResource("189_qafyd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 81.3537)
+
+[node name="SM_Prop_Roof_Aircon_03" parent="Props" instance=ExtResource("190_6vvjm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 81.3537)
+
+[node name="SM_Prop_SatDish_01" parent="Props" instance=ExtResource("191_nu4ay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 107.40581)
+
+[node name="SM_Prop_SecurityCamera_01" parent="Props" instance=ExtResource("192_w13ic")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 109.04068)
+
+[node name="SM_Prop_SecurityCamera_Arm_01" parent="Props" instance=ExtResource("193_41cjn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 59.274612)
+
+[node name="SM_Prop_ShopInterior_Cafe_01" parent="Props" instance=ExtResource("194_ht4qy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, -7.8934174)
+
+[node name="SM_Prop_ShopInterior_Chair_01" parent="Props" instance=ExtResource("195_lexnb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 47.20598)
+
+[node name="SM_Prop_ShopInterior_Desk_01" parent="Props" instance=ExtResource("196_dic0o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 81.3537)
+
+[node name="SM_Prop_ShopInterior_Desk_02" parent="Props" instance=ExtResource("197_8gmi2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 36.04193)
+
+[node name="SM_Prop_ShopInterior_Display_01" parent="Props" instance=ExtResource("198_3cjet")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 97.0509)
+
+[node name="SM_Prop_ShopInterior_Display_02" parent="Props" instance=ExtResource("199_q6dpr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 97.0509)
+
+[node name="SM_Prop_ShopInterior_Shelf_01" parent="Props" instance=ExtResource("200_dvb28")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 94.44628)
+
+[node name="SM_Prop_ShopInterior_Shelf_02" parent="Props" instance=ExtResource("201_1242m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 107.54706)
+
+[node name="SM_Prop_ShopInterior_Shelf_03" parent="Props" instance=ExtResource("202_nwamn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87348, 13.58725, 107.54706)
+
+[node name="SM_Prop_ShopInterior_Shelf_04" parent="Props" instance=ExtResource("203_qq4xy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.776802, 13.58725, 107.54706)
+
+[node name="SM_Prop_ShopInterior_Table_01" parent="Props" instance=ExtResource("204_crqd4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 121.120316)
+
+[node name="SM_Prop_Sidewalk_Panel_01" parent="Props" instance=ExtResource("205_vrx5g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 144.20807, 13.58725, 2.1203156)
+
+[node name="SM_Prop_Sidewalk_Panel_02" parent="Props" instance=ExtResource("206_s6avw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 109.36105)
+
+[node name="SM_Prop_Sidewalk_Panel_03" parent="Props" instance=ExtResource("207_t5pme")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82928, 13.58725, 103.209435)
+
+[node name="SM_Prop_Sidewalk_Panel_04" parent="Props" instance=ExtResource("208_jc4xq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.81342, 13.58725, 2.1203156)
+
+[node name="SM_Prop_Sidewalk_Panel_05" parent="Props" instance=ExtResource("209_lytef")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 28.74076)
+
+[node name="SM_Prop_SidewalkPoles_01" parent="Props" instance=ExtResource("210_77g4k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 21.46083)
+
+[node name="SM_Prop_SidewalkPoles_02" parent="Props" instance=ExtResource("211_6m5lu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 121.120316)
+
+[node name="SM_Prop_Sign_Arrow_01" parent="Props" instance=ExtResource("212_dnhvs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162.20807, 13.58725, -3.5693817)
+
+[node name="SM_Prop_Sign_Attachment_01" parent="Props" instance=ExtResource("213_ylu5x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 36.063667)
+
+[node name="SM_Prop_Sign_Attachment_02" parent="Props" instance=ExtResource("214_wsx87")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 120.949234)
+
+[node name="SM_Prop_Sign_Attachment_03" parent="Props" instance=ExtResource("215_0t4vq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 96.44218)
+
+[node name="SM_Prop_Sign_Bar_01" parent="Props" instance=ExtResource("216_265bu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 94.45038)
+
+[node name="SM_Prop_Sign_Barber_01" parent="Props" instance=ExtResource("217_4m573")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 115.27894)
+
+[node name="SM_Prop_Sign_Bustop_01" parent="Props" instance=ExtResource("218_0p7n1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 121.120316)
+
+[node name="SM_Prop_Sign_Cafe_01" parent="Props" instance=ExtResource("219_l0r87")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 94.45038)
+
+[node name="SM_Prop_Sign_Chinese_Noodles_01" parent="Props" instance=ExtResource("220_k8aij")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 21.496368)
+
+[node name="SM_Prop_Sign_DeliPizza_01" parent="Props" instance=ExtResource("221_u05ag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 115.51611)
+
+[node name="SM_Prop_Sign_Entrance_01" parent="Props" instance=ExtResource("222_rfl4l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 71.43062)
+
+[node name="SM_Prop_Sign_FireDepartment_01" parent="Props" instance=ExtResource("223_5naty")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680122, 13.58725, 7.364151)
+
+[node name="SM_Prop_Sign_GiveWay_01" parent="Props" instance=ExtResource("224_r66ht")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 21.583664)
+
+[node name="SM_Prop_Sign_GiveWay_02" parent="Props" instance=ExtResource("225_qawe2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.13751, 13.58725, 21.583664)
+
+[node name="SM_Prop_Sign_GiveWay_03" parent="Props" instance=ExtResource("226_d3und")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 15.4285965)
+
+[node name="SM_Prop_Sign_Hospital_01" parent="Props" instance=ExtResource("227_3avfk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 111.16352, 13.58725, 21.46083)
+
+[node name="SM_Prop_Sign_Hotel_01" parent="Props" instance=ExtResource("228_wm2wf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.607399, 13.58725, 107.55461)
+
+[node name="SM_Prop_Sign_Parking_01" parent="Props" instance=ExtResource("229_ays27")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 109.36339)
+
+[node name="SM_Prop_Sign_Pizza_01" parent="Props" instance=ExtResource("230_c2v76")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.06684, 13.58725, 51.160347)
+
+[node name="SM_Prop_Sign_Police_01" parent="Props" instance=ExtResource("231_3uat2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.87623, 13.58725, 66.25464)
+
+[node name="SM_Prop_Sign_Pub_01" parent="Props" instance=ExtResource("232_5r2ut")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 121.120316)
+
+[node name="SM_Prop_Sign_Stop_01" parent="Props" instance=ExtResource("233_q5no8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 28.73999)
+
+[node name="SM_Prop_Sign_Street_01" parent="Props" instance=ExtResource("234_1383u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 107.54706)
+
+[node name="SM_Prop_Sign_Street_02" parent="Props" instance=ExtResource("235_msdyn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 107.54706)
+
+[node name="SM_Prop_Sign_Warning_01" parent="Props" instance=ExtResource("236_8g72f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 84.74076)
+
+[node name="SM_Prop_Sign_XXX_01" parent="Props" instance=ExtResource("237_88x12")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 51.160347)
+
+[node name="SM_Prop_Skip_01" parent="Props" instance=ExtResource("238_t1vmv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888802, 13.58725, 51.160378)
+
+[node name="SM_Prop_Skip_02" parent="Props" instance=ExtResource("239_mix83")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.792122, 13.58725, 51.15641)
+
+[node name="SM_Prop_Skylight_01" parent="Props" instance=ExtResource("240_f6ond")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.680122, 13.58725, 21.46083)
+
+[node name="SM_Prop_SmartPhone_01" parent="Props" instance=ExtResource("241_elhq4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 65.120316)
+
+[node name="SM_Prop_Soda_01" parent="Props" instance=ExtResource("242_wu31x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 121.11283)
+
+[node name="SM_Prop_Soda_02" parent="Props" instance=ExtResource("243_8q1wk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 65.120316)
+
+[node name="SM_Prop_Soda_03" parent="Props" instance=ExtResource("244_ru1vf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89783, 13.58725, 59.5048)
+
+[node name="SM_Prop_Table_02" parent="Props" instance=ExtResource("245_twd16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 107.54706)
+
+[node name="SM_Prop_TrafficLight_01" parent="Props" instance=ExtResource("246_xirw4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 53.248764)
+
+[node name="SM_Prop_TrafficLight_02" parent="Props" instance=ExtResource("247_1vxd8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 168.20807, 13.58725, 53.295715)
+
+[node name="SM_Prop_TrafficLight_03" parent="Props" instance=ExtResource("248_a4ili")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 103.07458)
+
+[node name="SM_Prop_TrashBag_01" parent="Props" instance=ExtResource("249_2uah0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 154.29257, 13.58725, 41.050903)
+
+[node name="SM_Prop_TrashBag_02" parent="Props" instance=ExtResource("250_m0ga1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 84.74076)
+
+[node name="SM_Prop_TrashBag_03" parent="Props" instance=ExtResource("251_nwy4r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 90.895836)
+
+[node name="SM_Prop_Trashbin_01" parent="Props" instance=ExtResource("252_7gkb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 161.65836, 13.58725, 2.1203156)
+
+[node name="SM_Prop_Trashbin_02" parent="Props" instance=ExtResource("253_84xdf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 153.67227, 13.58725, 90.89584)
+
+[node name="SM_Prop_TrashCan_01" parent="Props" instance=ExtResource("254_tw8vo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 90.895836)
+
+[node name="SM_Prop_TrashCan_Lid_01" parent="Props" instance=ExtResource("255_ecgx6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.89792, 13.58725, 28.740768)
+
+[node name="SM_Prop_Umbrella_01" parent="Props" instance=ExtResource("256_huk4f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.97016, 13.58725, 81.3537)
+
+[node name="SM_Prop_Vents_Corner_01" parent="Props" instance=ExtResource("257_kgdsm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.809776, 13.58725, 34.59665)
+
+[node name="SM_Prop_Vents_Corner_02" parent="Props" instance=ExtResource("258_uikt3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.713097, 13.58725, 34.59664)
+
+[node name="SM_Prop_Vents_End_01" parent="Props" instance=ExtResource("259_ntlsh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 145.51721, 13.58725, 77.041824)
+
+[node name="SM_Prop_Vents_Exhaust_01" parent="Props" instance=ExtResource("260_htea5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.82736, 13.58725, 76.22238)
+
+[node name="SM_Prop_Vents_Straight_01" parent="Props" instance=ExtResource("261_mweep")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 167.98242, 13.58725, 76.33569)
+
+[node name="SM_Prop_Vents_Transition_01" parent="Props" instance=ExtResource("262_ww6ig")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7919235, 13.58725, 80.1037)
+
+[node name="SM_Prop_Vents_Wide_01" parent="Props" instance=ExtResource("263_pa4i1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.888603, 13.58725, 80.1037)
+
+[node name="SM_Prop_Washingline_01" parent="Props" instance=ExtResource("264_y3ekj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.3722, 13.58725, -7.8722687)
+
+[node name="SM_Prop_Washingline_02" parent="Props" instance=ExtResource("265_mv6k5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.46888, 13.58725, -7.875931)
+
+[node name="SM_Prop_Washingline_03" parent="Props" instance=ExtResource("266_yb7op")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.27552, 13.58725, -7.867752)
+
+[node name="SM_Prop_Washingline_04" parent="Props" instance=ExtResource("267_t7tpg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75.56556, 13.58725, -7.8796844)
+
+[node name="SM_Prop_Window_01" parent="Props" instance=ExtResource("268_eao4r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130.2602, 13.58725, 94.26557)
+
+[node name="Environments" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44.2, 27.59166, -80.75221)
+
+[node name="SM_Env_Bridge_Edge_01" parent="Environments" instance=ExtResource("269_4cjp0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.773417, -27.59166, -81.78673)
+
+[node name="SM_Env_Bridge_Pillar_01" parent="Environments" instance=ExtResource("270_5430y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.3549, -27.59166, 79.75223)
+
+[node name="SM_Env_Bridge_Support_01" parent="Environments" instance=ExtResource("271_g8vy1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.503481, -27.59166, -46.247787)
+
+[node name="SM_Env_Bridge_Underside_01" parent="Environments" instance=ExtResource("272_u6ql4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.305656, -27.59166, 58.818077)
+
+[node name="SM_Env_Bridge_Wall_01" parent="Environments" instance=ExtResource("273_m2lgw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -89.17393, -27.59166, 57.147495)
+
+[node name="SM_Env_Cloud_01" parent="Environments" instance=ExtResource("274_y7nl8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.50348, -27.59166, 15.752213)
+
+[node name="SM_Env_Cloud_02" parent="Environments" instance=ExtResource("275_orhmu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.50348, -27.59166, -5.2477875)
+
+[node name="SM_Env_Cloud_03" parent="Environments" instance=ExtResource("276_0r3wc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.50348, -27.59166, -28.247787)
+
+[node name="SM_Env_Fence_01" parent="Environments" instance=ExtResource("277_sjecs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.503481, -27.59166, 79.75221)
+
+[node name="SM_Env_Fence_End_01" parent="Environments" instance=ExtResource("278_uwb8b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44.80567, -27.59166, 79.75221)
+
+[node name="SM_Env_Flower_01" parent="Environments" instance=ExtResource("279_etjtm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.383099, -27.59166, 79.75997)
+
+[node name="SM_Env_Grass_01" parent="Environments" instance=ExtResource("280_3v4in")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.87152, -27.59166, 35.38394)
+
+[node name="SM_Env_GrassPath_Corner_01" parent="Environments" instance=ExtResource("281_e0nf7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136.0422, -27.59166, 35.38394)
+
+[node name="SM_Env_GrassPath_Junction_01" parent="Environments" instance=ExtResource("282_vjcih")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.305656, -27.59166, 35.38394)
+
+[node name="SM_Env_GrassPath_Straight_01" parent="Environments" instance=ExtResource("283_356yq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136.0422, -27.59166, 58.818077)
+
+[node name="SM_Env_GrassPath_T_01" parent="Environments" instance=ExtResource("284_avc1a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112.60806, -27.59166, 58.818077)
+
+[node name="SM_Env_Ocean_Tile_01" parent="Environments" instance=ExtResource("285_dudqk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.496519, -27.59166, -88.24779)
+
+[node name="SM_Env_Path_Corner_01" parent="Environments" instance=ExtResource("286_cx63q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.49652, -27.59166, 58.193077)
+
+[node name="SM_Env_Path_Junction_01" parent="Environments" instance=ExtResource("287_agfbb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -89.17393, -27.59166, 35.38394)
+
+[node name="SM_Env_Path_Straight_01" parent="Environments" instance=ExtResource("288_jwwbx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -136.0422, -27.59166, 82.25221)
+
+[node name="SM_Env_Path_T_01" parent="Environments" instance=ExtResource("289_8h28v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65.73979, -27.59166, 34.75894)
+
+[node name="SM_Env_Road_01" parent="Environments" instance=ExtResource("290_1arao")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.17393, -27.59166, -11.484329)
+
+[node name="SM_Env_Road_02" parent="Environments" instance=ExtResource("291_gheve")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -117.60806, -27.59166, -11.484329)
+
+[node name="SM_Env_Road_03" parent="Environments" instance=ExtResource("292_avh7t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.305656, -27.59166, 11.949806)
+
+[node name="SM_Env_Road_Arrow_01" parent="Environments" instance=ExtResource("293_ab51w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -117.60806, -27.59166, 11.949806)
+
+[node name="SM_Env_Road_Arrow_02" parent="Environments" instance=ExtResource("294_ldbe2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.17393, -27.59166, -34.918465)
+
+[node name="SM_Env_Road_Bare_01" parent="Environments" instance=ExtResource("295_o766v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141.0422, -27.59166, -11.484329)
+
+[node name="SM_Env_Road_Crossing_01" parent="Environments" instance=ExtResource("296_ee5vp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141.0422, -27.59166, -34.918465)
+
+[node name="SM_Env_Road_Lines_01" parent="Environments" instance=ExtResource("297_yl0rn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.305656, -27.59166, -11.484329)
+
+[node name="SM_Env_Road_Lines_02" parent="Environments" instance=ExtResource("298_q856c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.87152, -27.59166, -11.484329)
+
+[node name="SM_Env_Road_Median_01" parent="Environments" instance=ExtResource("299_3eymb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.17393, -27.59166, 11.949806)
+
+[node name="SM_Env_Road_Median_02" parent="Environments" instance=ExtResource("300_xhibw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141.0422, -27.59166, 11.949806)
+
+[node name="SM_Env_Road_ParkingLines_01" parent="Environments" instance=ExtResource("301_q14h5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -96.67393, -27.59166, -81.78673)
+
+[node name="SM_Env_Road_Patch_01" parent="Environments" instance=ExtResource("302_ofko5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.503481, -27.59166, 78.75221)
+
+[node name="SM_Env_Road_YellowLines_01" parent="Environments" instance=ExtResource("303_u3hj8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.87152, -27.59166, 11.949806)
+
+[node name="SM_Env_Road_YellowLines_02" parent="Environments" instance=ExtResource("304_us7od")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -117.60806, -27.59166, -34.918465)
+
+[node name="SM_Env_Sidewalk_01" parent="Environments" instance=ExtResource("305_r7nmx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.87152, -27.59166, -58.3526)
+
+[node name="SM_Env_Sidewalk_Construction_01" parent="Environments" instance=ExtResource("306_bavie")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -120.10806, -27.59166, -81.81685)
+
+[node name="SM_Env_Sidewalk_Corner_01" parent="Environments" instance=ExtResource("307_26s6n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.173935, -27.59166, -58.352615)
+
+[node name="SM_Env_Sidewalk_Corner_02" parent="Environments" instance=ExtResource("308_6sw61")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141.04219, -27.59166, -58.352615)
+
+[node name="SM_Env_Sidewalk_Dip_01" parent="Environments" instance=ExtResource("309_i40mp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.87152, -27.59166, -34.918472)
+
+[node name="SM_Env_Sidewalk_Dip_Corner_01" parent="Environments" instance=ExtResource("310_q7gbi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -117.60806, -27.59166, -58.3526)
+
+[node name="SM_Env_Sidewalk_Grate_01" parent="Environments" instance=ExtResource("311_gg73t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.73979, -27.59166, 11.949806)
+
+[node name="SM_Env_Sidewalk_Grate_02" parent="Environments" instance=ExtResource("312_f8abt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.305656, -27.59166, -34.918465)
+
+[node name="SM_Env_Sidewalk_Gutter_01" parent="Environments" instance=ExtResource("313_jelvc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.305656, -27.59166, -58.3526)
+
+[node name="SM_Env_Sidewalk_Merger_01" parent="Environments" instance=ExtResource("314_hku2s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -73.23979, -27.59166, -81.78673)
+
+[node name="SM_Env_Sidewalk_Panel_01" parent="Environments" instance=ExtResource("315_vs0cy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.73979, -27.59166, -34.918465)
+
+[node name="SM_Env_Sidewalk_Panel_02" parent="Environments" instance=ExtResource("316_f5fi8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.73979, -27.59166, -11.484329)
+
+[node name="SM_Env_Sidewalk_Straight_01" parent="Environments" instance=ExtResource("317_moa78")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.73979, -27.59166, -58.3526)
+
+[node name="SM_Env_Sidewalk_Straight_02" parent="Environments" instance=ExtResource("318_ctfku")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.73979, -27.59166, 58.818077)
+
+[node name="SM_Env_Street_Divider_01" parent="Environments" instance=ExtResource("319_w6ujf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.49652, -27.59166, -87.24779)
+
+[node name="SM_Env_Street_Divider_02" parent="Environments" instance=ExtResource("320_phlu0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91.67393, -27.59166, 81.161736)
+
+[node name="SM_Env_Tree_01" parent="Environments" instance=ExtResource("321_d6tqf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5034809, -27.59166, -28.247787)
+
+[node name="SM_Env_Tree_02" parent="Environments" instance=ExtResource("322_s541q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4965191, -27.59166, 15.752213)
+
+[node name="SM_Env_Tree_03" parent="Environments" instance=ExtResource("323_tuu3e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4965191, -27.59166, -5.2477875)
+
+[node name="SM_Env_WaterEdge_Corner_01" parent="Environments" instance=ExtResource("324_7acyy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.503481, -27.59166, 37.752213)
+
+[node name="SM_Env_WaterEdge_Corner_02" parent="Environments" instance=ExtResource("325_qh8ib")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.50348, -27.59166, 59.752213)
+
+[node name="SM_Env_WaterEdge_Pipe_01" parent="Environments" instance=ExtResource("326_8clyg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -115.10806, -27.59166, 80.25137)
+
+[node name="SM_Env_WaterEdge_Rock_01" parent="Environments" instance=ExtResource("327_temru")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5034809, -27.59166, 56.752213)
+
+[node name="SM_Env_WaterEdge_Straight_01" parent="Environments" instance=ExtResource("328_rect2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.37113, -27.59166, -81.92561)
+
+[node name="SM_Env_WaterEdge_Straight_02" parent="Environments" instance=ExtResource("329_ggm7n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.50348, -27.59166, 35.752213)
+
+[node name="SM_Env_WaterEdge_Straight_03" parent="Environments" instance=ExtResource("330_mhevs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112.60806, -27.59166, 33.637638)
+
+[node name="Custom" type="Node3D" parent="Environments"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.793784, -28.693113, -104.85867)
+
+[node name="SM_Env_Skyline_01" parent="Environments/Custom" instance=ExtResource("331_bb4hk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 91, 1.1014531, -291)
+
+[node name="SM_Env_SubwayEntrance_01" parent="Environments/Custom" instance=ExtResource("332_tlce6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.709698, 1.1014531, 2.6108856)
+
+[node name="SM_Env_SubwayEntrance_02" parent="Environments/Custom" instance=ExtResource("333_4uhxg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.290303, 1.1014531, 2.6108856)
+
+[node name="Main Camera" type="Node3D" parent="."]
+transform = Transform3D(-0.9659265, -0.15455627, -0.20760122, 3.7252907e-08, 0.80211776, -0.5971659, 0.25881636, -0.57681835, -0.77478683, -127, 255, 177)
+
+[node name="Camera" type="Camera3D" parent="Main Camera"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+cull_mask = 16777215
+current = true
+fov = 60.0
+near = 0.3
+far = 1000.0
+
+[editable path="Buildings/Custom/SM_Bld_Apartment_Stairs_Corner_01"]
+[editable path="Buildings/SM_Bld_Apartment_01"]
+[editable path="Buildings/SM_Bld_Apartment_02"]
+[editable path="Buildings/SM_Bld_Apartment_03"]
+[editable path="Buildings/SM_Bld_Apartment_Corner_01"]
+[editable path="Buildings/SM_Bld_Apartment_Corner_02"]
+[editable path="Buildings/SM_Bld_Apartment_Corner_03"]
+[editable path="Buildings/SM_Bld_Apartment_Door_01"]
+[editable path="Buildings/SM_Bld_Apartment_Door_02"]
+[editable path="Buildings/SM_Bld_Apartment_Door_Corner_01"]
+[editable path="Buildings/SM_Bld_Apartment_Door_Corner_02"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_01"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_02"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_03"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_Corner_01"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_Corner_02"]
+[editable path="Buildings/SM_Bld_Apartment_Roof_Corner_03"]
+[editable path="Buildings/SM_Bld_Apartment_Stack_01"]
+[editable path="Buildings/SM_Bld_Apartment_Stack_02"]
+[editable path="Buildings/SM_Bld_Apartment_Stack_03"]
+[editable path="Buildings/SM_Bld_Apartment_Stairs_01"]
+[editable path="Buildings/SM_Bld_Apartment_Stairs_02"]
+[editable path="Buildings/SM_Bld_Apartment_Stairs_03"]
+[editable path="Buildings/SM_Bld_Apartment_Stairs_Planter_01"]
+[editable path="Buildings/SM_Bld_Apartment_Stairs_Planter_02"]
+[editable path="Buildings/SM_Bld_CityHall_01"]
+[editable path="Buildings/SM_Bld_Cover_01"]
+[editable path="Buildings/SM_Bld_Cover_02"]
+[editable path="Buildings/SM_Bld_FireEscape_01"]
+[editable path="Buildings/SM_Bld_FireEscape_01/SM_Bld_OfficeOld_Small_02"]
+[editable path="Buildings/SM_Bld_FireEscape_02"]
+[editable path="Buildings/SM_Bld_FireEscape_03"]
+[editable path="Buildings/SM_Bld_OfficeOctagon_01"]
+[editable path="Buildings/SM_Bld_OfficeOctagon_Base_01"]
+[editable path="Buildings/SM_Bld_OfficeOctagon_Floor_01"]
+[editable path="Buildings/SM_Bld_OfficeOctagon_Roof_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Large_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Large_02"]
+[editable path="Buildings/SM_Bld_OfficeOld_Large_Base_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Large_Floor_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Large_Roof_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Small_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Small_Base_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Small_Floor_01"]
+[editable path="Buildings/SM_Bld_OfficeOld_Small_Roof_01"]
+[editable path="Buildings/SM_Bld_OfficeRound_01"]
+[editable path="Buildings/SM_Bld_OfficeRound_02"]
+[editable path="Buildings/SM_Bld_OfficeRound_03"]
+[editable path="Buildings/SM_Bld_OfficeRound_04"]
+[editable path="Buildings/SM_Bld_OfficeRound_Base_01"]
+[editable path="Buildings/SM_Bld_OfficeRound_Roof_01"]
+[editable path="Buildings/SM_Bld_OfficeSquare_01"]
+[editable path="Buildings/SM_Bld_OfficeSquare_02"]
+[editable path="Buildings/SM_Bld_OfficeSquare_03"]
+[editable path="Buildings/SM_Bld_OfficeSquare_04"]
+[editable path="Buildings/SM_Bld_OfficeSquare_Base_01"]
+[editable path="Buildings/SM_Bld_OfficeSquare_Roof_01"]
+[editable path="Buildings/SM_Bld_Roof_Access_01"]
+[editable path="Buildings/SM_Bld_Shop_01"]
+[editable path="Buildings/SM_Bld_Shop_02"]
+[editable path="Buildings/SM_Bld_Shop_03"]
+[editable path="Buildings/SM_Bld_Shop_04"]
+[editable path="Buildings/SM_Bld_Shop_05"]
+[editable path="Buildings/SM_Bld_Shop_06"]
+[editable path="Buildings/SM_Bld_Shop_Corner_01"]
+[editable path="Buildings/SM_Bld_Shop_Corner_02"]
+[editable path="Buildings/SM_Bld_Shop_Cover_01"]
+[editable path="Buildings/SM_Bld_Shop_Cover_02"]
+[editable path="Buildings/SM_Bld_Shop_Cover_03"]
+[editable path="Buildings/SM_Bld_Shop_Cover_04"]
+[editable path="Buildings/SM_Bld_Shop_Cover_05"]
+[editable path="Buildings/SM_Bld_Spire_01"]
+[editable path="Buildings/SM_Bld_Station_01"]
+[editable path="Buildings/SM_Bld_Station_02"]
+[editable path="Buildings/SM_Bld_Station_03"]
+[editable path="Buildings/SM_Prop_Water_Tower_01"]
+[editable path="Characters/Character_BusinessMan_Shirt"]
+[editable path="Characters/Character_BusinessMan_Suit"]
+[editable path="Characters/Character_BusinessWoman"]
+[editable path="Characters/Character_Female_Coat"]
+[editable path="Characters/Character_Female_Jacket"]
+[editable path="Characters/Character_Female_Police"]
+[editable path="Characters/Character_Male_Hoodie"]
+[editable path="Characters/Character_Male_Jacket"]
+[editable path="Characters/Character_Male_Police"]
+[editable path="Vehicles/SM_Veh_Car_Ambo_01"]
+[editable path="Vehicles/SM_Veh_Car_Medium_01"]
+[editable path="Vehicles/SM_Veh_Car_Muscle_01"]
+[editable path="Vehicles/SM_Veh_Car_Police_01"]
+[editable path="Vehicles/SM_Veh_Car_Sedan_01"]
+[editable path="Vehicles/SM_Veh_Car_Small_01"]
+[editable path="Vehicles/SM_Veh_Car_Taxi_01"]
+[editable path="Vehicles/SM_Veh_Car_Van_01"]
+[editable path="Vehicles/SM_Veh_Steering_Wheel_01"]
+[editable path="Props/SM_Prop_Aircon_01"]
+[editable path="Props/SM_Prop_ATM_01"]
+[editable path="Props/SM_Prop_Barrier_01"]
+[editable path="Props/SM_Prop_Billboard_01"]
+[editable path="Props/SM_Prop_Billboard_Pole_01"]
+[editable path="Props/SM_Prop_Billboard_Roof_01"]
+[editable path="Props/SM_Prop_Billboard_Sign_01"]
+[editable path="Props/SM_Prop_Billboard_Sign_02"]
+[editable path="Props/SM_Prop_Billboard_Sign_03"]
+[editable path="Props/SM_Prop_Billboard_Sign_04"]
+[editable path="Props/SM_Prop_Billboard_Sign_05"]
+[editable path="Props/SM_Prop_Billboard_Sign_06"]
+[editable path="Props/SM_Prop_Billboard_Sign_07"]
+[editable path="Props/SM_Prop_Burger_01"]
+[editable path="Props/SM_Prop_BusStop_01"]
+[editable path="Props/SM_Prop_CardboardBox_01"]
+[editable path="Props/SM_Prop_CardboardBox_02"]
+[editable path="Props/SM_Prop_CardboardBox_03"]
+[editable path="Props/SM_Prop_CardboardBox_04"]
+[editable path="Props/SM_Prop_Cone_01"]
+[editable path="Props/SM_Prop_Cone_02"]
+[editable path="Props/SM_Prop_Couch_01"]
+[editable path="Props/SM_Prop_Deckchair_01"]
+[editable path="Props/SM_Prop_Door_01"]
+[editable path="Props/SM_Prop_Door_02"]
+[editable path="Props/SM_Prop_HotdogStand_01"]
+[editable path="Props/SM_Prop_Hydrant_01"]
+[editable path="Props/SM_Prop_LargeSign_Beer_01"]
+[editable path="Props/SM_Prop_LargeSign_Bottle_01"]
+[editable path="Props/SM_Prop_LargeSign_BowlingBall_01"]
+[editable path="Props/SM_Prop_LargeSign_BowlingPin_01"]
+[editable path="Props/SM_Prop_LargeSign_Burger_01"]
+[editable path="Props/SM_Prop_LargeSign_Coffee_01"]
+[editable path="Props/SM_Prop_LargeSign_Donut_01"]
+[editable path="Props/SM_Prop_LargeSign_Guitar_01"]
+[editable path="Props/SM_Prop_LargeSign_Hotdog_01"]
+[editable path="Props/SM_Prop_LargeSign_Icecream_01"]
+[editable path="Props/SM_Prop_LargeSign_Lollypop_01"]
+[editable path="Props/SM_Prop_LargeSign_Milkshake_01"]
+[editable path="Props/SM_Prop_LargeSign_Noodles_01"]
+[editable path="Props/SM_Prop_LargeSign_Pizza_01"]
+[editable path="Props/SM_Prop_LargeSign_Popcorn_01"]
+[editable path="Props/SM_Prop_LargeSign_Soda_01"]
+[editable path="Props/SM_Prop_LargeSign_Taco_01"]
+[editable path="Props/SM_Prop_Light_Attachment_01"]
+[editable path="Props/SM_Prop_LightPole_Arm_01"]
+[editable path="Props/SM_Prop_LightPole_Base_01"]
+[editable path="Props/SM_Prop_LightPole_Base_02"]
+[editable path="Props/SM_Prop_LightPole_Box_01"]
+[editable path="Props/SM_Prop_LightPole_CrossButton_01"]
+[editable path="Props/SM_Prop_LightPole_CrossLights_01"]
+[editable path="Props/SM_Prop_LightPole_Lights_01"]
+[editable path="Props/SM_Prop_LightPole_Lights_02"]
+[editable path="Props/SM_Prop_Mailbox_01"]
+[editable path="Props/SM_Prop_Manhole_01"]
+[editable path="Props/SM_Prop_Manhole_02"]
+[editable path="Props/SM_Prop_Newspaper_01"]
+[editable path="Props/SM_Prop_Newspaper_02"]
+[editable path="Props/SM_Prop_Pallet_01"]
+[editable path="Props/SM_Prop_Paper_01"]
+[editable path="Props/SM_Prop_Paper_02"]
+[editable path="Props/SM_Prop_Paper_03"]
+[editable path="Props/SM_Prop_Paper_04"]
+[editable path="Props/SM_Prop_Paper_05"]
+[editable path="Props/SM_Prop_ParkBench_01"]
+[editable path="Props/SM_Prop_ParkingMeter_01"]
+[editable path="Props/SM_Prop_ParkingMeter_02"]
+[editable path="Props/SM_Prop_Phones_01"]
+[editable path="Props/SM_Prop_PicnicTable_01"]
+[editable path="Props/SM_Prop_Pipe_Part_Connect_01"]
+[editable path="Props/SM_Prop_Pipe_Part_Corner_01"]
+[editable path="Props/SM_Prop_Pipe_Part_Straight_01"]
+[editable path="Props/SM_Prop_Pipe_Part_T_01"]
+[editable path="Props/SM_Prop_Pipe_Preset_01"]
+[editable path="Props/SM_Prop_Pipe_Preset_02"]
+[editable path="Props/SM_Prop_Pipe_Preset_03"]
+[editable path="Props/SM_Prop_Pipe_Small_01"]
+[editable path="Props/SM_Prop_Pipe_Small_02"]
+[editable path="Props/SM_Prop_Planter_01"]
+[editable path="Props/SM_Prop_Planter_02"]
+[editable path="Props/SM_Prop_PlanterWindow_01"]
+[editable path="Props/SM_Prop_PlanterWindow_02"]
+[editable path="Props/SM_Prop_Police_Baton_01"]
+[editable path="Props/SM_Prop_Poster_01"]
+[editable path="Props/SM_Prop_Poster_02"]
+[editable path="Props/SM_Prop_Poster_03"]
+[editable path="Props/SM_Prop_Poster_Frame_01"]
+[editable path="Props/SM_Prop_PotPlant_01"]
+[editable path="Props/SM_Prop_PotPlant_02"]
+[editable path="Props/SM_Prop_Power_Cables_01"]
+[editable path="Props/SM_Prop_Power_Cables_02"]
+[editable path="Props/SM_Prop_Power_Cables_03"]
+[editable path="Props/SM_Prop_PowerBox_01"]
+[editable path="Props/SM_Prop_Roof_Aircon_01"]
+[editable path="Props/SM_Prop_Roof_Aircon_02"]
+[editable path="Props/SM_Prop_Roof_Aircon_03"]
+[editable path="Props/SM_Prop_SatDish_01"]
+[editable path="Props/SM_Prop_SecurityCamera_01"]
+[editable path="Props/SM_Prop_SecurityCamera_Arm_01"]
+[editable path="Props/SM_Prop_ShopInterior_Cafe_01"]
+[editable path="Props/SM_Prop_ShopInterior_Chair_01"]
+[editable path="Props/SM_Prop_ShopInterior_Desk_01"]
+[editable path="Props/SM_Prop_ShopInterior_Desk_02"]
+[editable path="Props/SM_Prop_ShopInterior_Display_01"]
+[editable path="Props/SM_Prop_ShopInterior_Display_02"]
+[editable path="Props/SM_Prop_ShopInterior_Shelf_01"]
+[editable path="Props/SM_Prop_ShopInterior_Shelf_02"]
+[editable path="Props/SM_Prop_ShopInterior_Shelf_03"]
+[editable path="Props/SM_Prop_ShopInterior_Shelf_04"]
+[editable path="Props/SM_Prop_ShopInterior_Table_01"]
+[editable path="Props/SM_Prop_Sidewalk_Panel_01"]
+[editable path="Props/SM_Prop_Sidewalk_Panel_02"]
+[editable path="Props/SM_Prop_Sidewalk_Panel_03"]
+[editable path="Props/SM_Prop_Sidewalk_Panel_04"]
+[editable path="Props/SM_Prop_Sidewalk_Panel_05"]
+[editable path="Props/SM_Prop_SidewalkPoles_01"]
+[editable path="Props/SM_Prop_SidewalkPoles_02"]
+[editable path="Props/SM_Prop_Sign_Arrow_01"]
+[editable path="Props/SM_Prop_Sign_Attachment_01"]
+[editable path="Props/SM_Prop_Sign_Attachment_02"]
+[editable path="Props/SM_Prop_Sign_Attachment_03"]
+[editable path="Props/SM_Prop_Sign_Bar_01"]
+[editable path="Props/SM_Prop_Sign_Barber_01"]
+[editable path="Props/SM_Prop_Sign_Bustop_01"]
+[editable path="Props/SM_Prop_Sign_Cafe_01"]
+[editable path="Props/SM_Prop_Sign_Chinese_Noodles_01"]
+[editable path="Props/SM_Prop_Sign_DeliPizza_01"]
+[editable path="Props/SM_Prop_Sign_Entrance_01"]
+[editable path="Props/SM_Prop_Sign_FireDepartment_01"]
+[editable path="Props/SM_Prop_Sign_GiveWay_01"]
+[editable path="Props/SM_Prop_Sign_GiveWay_02"]
+[editable path="Props/SM_Prop_Sign_GiveWay_03"]
+[editable path="Props/SM_Prop_Sign_Hospital_01"]
+[editable path="Props/SM_Prop_Sign_Hotel_01"]
+[editable path="Props/SM_Prop_Sign_Parking_01"]
+[editable path="Props/SM_Prop_Sign_Pizza_01"]
+[editable path="Props/SM_Prop_Sign_Police_01"]
+[editable path="Props/SM_Prop_Sign_Pub_01"]
+[editable path="Props/SM_Prop_Sign_Stop_01"]
+[editable path="Props/SM_Prop_Sign_Street_01"]
+[editable path="Props/SM_Prop_Sign_Street_02"]
+[editable path="Props/SM_Prop_Sign_Warning_01"]
+[editable path="Props/SM_Prop_Sign_XXX_01"]
+[editable path="Props/SM_Prop_Skip_01"]
+[editable path="Props/SM_Prop_Skip_02"]
+[editable path="Props/SM_Prop_Skylight_01"]
+[editable path="Props/SM_Prop_SmartPhone_01"]
+[editable path="Props/SM_Prop_Soda_01"]
+[editable path="Props/SM_Prop_Soda_02"]
+[editable path="Props/SM_Prop_Soda_03"]
+[editable path="Props/SM_Prop_Table_02"]
+[editable path="Props/SM_Prop_TrafficLight_01"]
+[editable path="Props/SM_Prop_TrafficLight_02"]
+[editable path="Props/SM_Prop_TrafficLight_03"]
+[editable path="Props/SM_Prop_TrashBag_01"]
+[editable path="Props/SM_Prop_TrashBag_02"]
+[editable path="Props/SM_Prop_TrashBag_03"]
+[editable path="Props/SM_Prop_Trashbin_01"]
+[editable path="Props/SM_Prop_Trashbin_02"]
+[editable path="Props/SM_Prop_TrashCan_01"]
+[editable path="Props/SM_Prop_TrashCan_Lid_01"]
+[editable path="Props/SM_Prop_Umbrella_01"]
+[editable path="Props/SM_Prop_Vents_Corner_01"]
+[editable path="Props/SM_Prop_Vents_Corner_02"]
+[editable path="Props/SM_Prop_Vents_End_01"]
+[editable path="Props/SM_Prop_Vents_Exhaust_01"]
+[editable path="Props/SM_Prop_Vents_Straight_01"]
+[editable path="Props/SM_Prop_Vents_Transition_01"]
+[editable path="Props/SM_Prop_Vents_Wide_01"]
+[editable path="Props/SM_Prop_Washingline_01"]
+[editable path="Props/SM_Prop_Washingline_02"]
+[editable path="Props/SM_Prop_Washingline_03"]
+[editable path="Props/SM_Prop_Washingline_04"]
+[editable path="Props/SM_Prop_Window_01"]
+[editable path="Environments/SM_Env_Bridge_Edge_01"]
+[editable path="Environments/SM_Env_Bridge_Pillar_01"]
+[editable path="Environments/SM_Env_Bridge_Support_01"]
+[editable path="Environments/SM_Env_Bridge_Underside_01"]
+[editable path="Environments/SM_Env_Bridge_Wall_01"]
+[editable path="Environments/SM_Env_Cloud_01"]
+[editable path="Environments/SM_Env_Cloud_02"]
+[editable path="Environments/SM_Env_Cloud_03"]
+[editable path="Environments/SM_Env_Fence_01"]
+[editable path="Environments/SM_Env_Fence_End_01"]
+[editable path="Environments/SM_Env_Flower_01"]
+[editable path="Environments/SM_Env_Grass_01"]
+[editable path="Environments/SM_Env_GrassPath_Corner_01"]
+[editable path="Environments/SM_Env_GrassPath_Junction_01"]
+[editable path="Environments/SM_Env_GrassPath_Straight_01"]
+[editable path="Environments/SM_Env_GrassPath_T_01"]
+[editable path="Environments/SM_Env_Ocean_Tile_01"]
+[editable path="Environments/SM_Env_Path_Corner_01"]
+[editable path="Environments/SM_Env_Path_Junction_01"]
+[editable path="Environments/SM_Env_Path_Straight_01"]
+[editable path="Environments/SM_Env_Path_T_01"]
+[editable path="Environments/SM_Env_Road_01"]
+[editable path="Environments/SM_Env_Road_02"]
+[editable path="Environments/SM_Env_Road_03"]
+[editable path="Environments/SM_Env_Road_Arrow_01"]
+[editable path="Environments/SM_Env_Road_Arrow_02"]
+[editable path="Environments/SM_Env_Road_Bare_01"]
+[editable path="Environments/SM_Env_Road_Crossing_01"]
+[editable path="Environments/SM_Env_Road_Lines_01"]
+[editable path="Environments/SM_Env_Road_Lines_02"]
+[editable path="Environments/SM_Env_Road_Median_01"]
+[editable path="Environments/SM_Env_Road_Median_02"]
+[editable path="Environments/SM_Env_Road_ParkingLines_01"]
+[editable path="Environments/SM_Env_Road_Patch_01"]
+[editable path="Environments/SM_Env_Road_YellowLines_01"]
+[editable path="Environments/SM_Env_Road_YellowLines_02"]
+[editable path="Environments/SM_Env_Sidewalk_01"]
+[editable path="Environments/SM_Env_Sidewalk_Construction_01"]
+[editable path="Environments/SM_Env_Sidewalk_Corner_01"]
+[editable path="Environments/SM_Env_Sidewalk_Corner_02"]
+[editable path="Environments/SM_Env_Sidewalk_Dip_01"]
+[editable path="Environments/SM_Env_Sidewalk_Dip_Corner_01"]
+[editable path="Environments/SM_Env_Sidewalk_Grate_01"]
+[editable path="Environments/SM_Env_Sidewalk_Grate_02"]
+[editable path="Environments/SM_Env_Sidewalk_Gutter_01"]
+[editable path="Environments/SM_Env_Sidewalk_Merger_01"]
+[editable path="Environments/SM_Env_Sidewalk_Panel_01"]
+[editable path="Environments/SM_Env_Sidewalk_Panel_02"]
+[editable path="Environments/SM_Env_Sidewalk_Straight_01"]
+[editable path="Environments/SM_Env_Sidewalk_Straight_02"]
+[editable path="Environments/SM_Env_Street_Divider_01"]
+[editable path="Environments/SM_Env_Street_Divider_02"]
+[editable path="Environments/SM_Env_Tree_01"]
+[editable path="Environments/SM_Env_Tree_02"]
+[editable path="Environments/SM_Env_Tree_03"]
+[editable path="Environments/SM_Env_WaterEdge_Corner_01"]
+[editable path="Environments/SM_Env_WaterEdge_Corner_02"]
+[editable path="Environments/SM_Env_WaterEdge_Pipe_01"]
+[editable path="Environments/SM_Env_WaterEdge_Rock_01"]
+[editable path="Environments/SM_Env_WaterEdge_Straight_01"]
+[editable path="Environments/SM_Env_WaterEdge_Straight_02"]
+[editable path="Environments/SM_Env_WaterEdge_Straight_03"]
+[editable path="Environments/Custom/SM_Env_Skyline_01"]
+[editable path="Environments/Custom/SM_Env_SubwayEntrance_01"]
+[editable path="Environments/Custom/SM_Env_SubwayEntrance_02"]
+

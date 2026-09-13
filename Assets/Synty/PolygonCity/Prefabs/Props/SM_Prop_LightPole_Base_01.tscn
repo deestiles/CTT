@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cxd0sl1vukekx"]
 
-[ext_resource type="ArrayMesh" uid="uid://r4r5ws1leljd" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Prop_LightPole_Base_01.res" id="1_poj0n"]
+[ext_resource type="ArrayMesh" uid="uid://r4r5ws1leljd" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LightPole_Base_01.res" id="1_poj0n"]
 [ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_7kn8w"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wcp4t"]

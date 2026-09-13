@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://oqy43vu4ted7"]
+
+[ext_resource type="ArrayMesh" uid="uid://ddypoi4c7m4yn" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Police_Baton_01.res" id="1_50qwr"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_r2iya"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8aal1"]
+points = PackedVector3Array(0.0034097414, -0.1769553, 0.084685184, -0.00115785, -0.1888022, 0.082104065, -0.0147436205, -0.39268434, 0.073390625, 0.018308586, -0.41643593, 0.075001664, 0.02323153, -0.2737531, 0.07992137, 0.018308586, 0.1739439, 0.075001664, -0.014726287, 0.14984563, 0.07330402, -0.016130365, -0.41643593, 0.050420396, -0.016130365, 0.1739439, 0.050420396, 0.018308586, -0.41643593, 0.050420396, 0.023222866, -0.013063639, -0.08244662, 0.023222866, 0.026291162, -0.077526905, 0.008467028, 0.1739439, 0.045500673, -0.021040311, -0.013063639, -0.08244662, -0.016126033, 0.0066426694, -0.09228606, 0.0035484154, -0.013063639, -0.09228606)
+
+[node name="SM_Prop_Police_Baton_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_50qwr")
+surface_material_override/0 = ExtResource("2_r2iya")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_8aal1")

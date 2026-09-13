@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://djgo6gfmx4dnn"]
+
+[ext_resource type="ArrayMesh" uid="uid://c2prarbaac5si" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sidewalk_Panel_04.res" id="1_rdus5"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_cjp7d"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lnplg"]
+size = Vector3(0.7445221, 0.058110118, 0.74452114)
+
+[node name="SM_Prop_Sidewalk_Panel_04" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_rdus5")
+surface_material_override/0 = ExtResource("2_cjp7d")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6293945e-06, 0.029055059, 2.3841858e-06)
+shape = SubResource("BoxShape3D_lnplg")

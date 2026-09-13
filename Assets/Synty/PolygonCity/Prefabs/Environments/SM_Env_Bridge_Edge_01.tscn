@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dghdclgpbenc7"]
+
+[ext_resource type="ArrayMesh" uid="uid://bdig7btank4y8" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Bridge_Edge_01.res" id="1_buxes"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_rbp5w"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yrkri"]
+size = Vector3(5.196206, 0.97776556, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4yxy1"]
+size = Vector3(0.5399718, 3.250443, 5)
+
+[node name="SM_Env_Bridge_Edge_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_buxes")
+surface_material_override/0 = ExtResource("2_rbp5w")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.598103, -1.3562963, -2.5)
+shape = SubResource("BoxShape3D_yrkri")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.92622, -0.21995759, -2.5)
+shape = SubResource("BoxShape3D_4yxy1")

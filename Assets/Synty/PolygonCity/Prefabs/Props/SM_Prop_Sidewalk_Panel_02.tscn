@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://du0rrv3pvetnq"]
+
+[ext_resource type="ArrayMesh" uid="uid://b2i7ahya1buvu" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sidewalk_Panel_02.res" id="1_ainne"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_1sqny"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_njfip"]
+points = PackedVector3Array(0.19737947, 0.05340945, 0.034319162, 0.16295218, 0.05340945, 0.15816525, 0.16623878, -0.0036665313, 0.18324682, 0.18090531, -0.0036665313, -0.16863039, 0.1222803, 0.062331002, -0.14667252, -0.009677306, 0.062331002, 0.19059673, 0.012301937, -0.0036665313, 0.23465028, -0.024343833, -0.0036665313, -0.23464182, 0.004701644, 0.05340945, -0.21328112, -0.14163491, 0.062331002, -0.12466871, -0.16722944, 0.05340945, 0.15816525, -0.17092688, -0.0036665313, 0.19059673, -0.19298829, -0.0036665313, -0.1759803, -0.17409025, 0.05340945, -0.15820271, -0.22232133, -0.0036665313, 0.021962106, -0.21213283, 0.011837979, 0.02095151)
+
+[node name="SM_Prop_Sidewalk_Panel_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_ainne")
+surface_material_override/0 = ExtResource("2_1sqny")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_njfip")

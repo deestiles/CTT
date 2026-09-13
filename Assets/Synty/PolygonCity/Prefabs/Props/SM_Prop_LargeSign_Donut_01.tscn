@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://drgiw4n7kcnnn"]
+
+[ext_resource type="ArrayMesh" uid="uid://dcdw5al420sm0" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LargeSign_Donut_01.res" id="1_vmqg6"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_jy0as"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_dyjbk"]
+points = PackedVector3Array(1.4905479, -0.49796337, -0.8029884, -0.80276346, -0.49796337, -1.4909625, 0.11606789, -0.09755641, -1.8543726, 0.9815054, 0.30680448, -1.5588523, 1.4017768, 0.63445807, 7.164478e-05, 1.4256892, -0.4954592, 0.91204584, 1.2985923, -0.6602086, 0.056343913, -1.8558981, 0.07628715, -0.11537731, -0.9092234, 0.68625534, -1.1511505, 0.1157403, 0.018163562, -1.8511052, -1.2990307, -0.6602086, -0.056200624, -0.60589445, 0.68625534, 1.3927201, 0.8606324, 0.47722125, 1.4918319, -0.115851045, -0.09755641, 1.8545159, -0.91282666, -0.4954592, 1.4257573, -1.3330978, 0.68625534, 0.12024021)
+
+[node name="SM_Prop_LargeSign_Donut_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_vmqg6")
+surface_material_override/0 = ExtResource("2_jy0as")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_dyjbk")

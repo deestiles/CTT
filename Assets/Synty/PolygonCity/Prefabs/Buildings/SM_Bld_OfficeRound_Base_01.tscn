@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://cnu3kuosia0cl"]
+
+[ext_resource type="ArrayMesh" uid="uid://dvp4swaanjjvq" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeRound_Base_01.res" id="1_ws532"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ym6g2"]
+[ext_resource type="ArrayMesh" uid="uid://dwnoxeo6mytnw" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeRound_Base_01_Glass.res" id="3_ym6g2"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_8w2wi"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3ocv6"]
+points = PackedVector3Array(10.564795, 4.9395704, 0.36317348, 9.833761, 4.9395704, 4.388151, 10.149435, -4.440892e-16, 2.374588, 9.127651, -4.440892e-16, -5.0951524, 9.10273, 4.9395704, -5.85588, 6.1765213, 4.9395704, 8.780601, 7.090313, -4.440892e-16, 7.813573, 3.3520784, -4.440892e-16, -9.8529215, 6.1432934, 0.659512, -8.59149, 2.8806458, 4.9395704, -10.24403, -0.043484688, 4.9395704, 10.609353, -0.043484688, 0.9148069, 10.976823, -4.4566784, -4.440892e-16, 9.511241, 2.3323708, -4.440892e-16, -10.194604, -0.043484688, 0.9148069, -10.976821, -1.5034733, 4.9395704, -10.6115, -6.9903708, 4.9395704, 8.049958, -8.533431, -4.440892e-16, 6.113757, -5.135791, -4.440892e-16, -9.171705, -6.9924474, 4.9395704, -8.047806, -9.301846, 4.871395, 4.626685, -10.649687, 4.9395704, -1.4655809, -10.377626, 0.6561274, 2.0629911, -9.893733, -4.440892e-16, -3.3974843)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_r0h77"]
+points = PackedVector3Array(-1.8716669, 6.402718, -11.708611, -5.1655736, 4.9395704, -9.512672, -8.82165, 6.402718, -8.04795, 7.271961, 6.402718, -9.512672, 1.6927214, 5.6711445, -11.121804, 2.7631836, 5.320539, -10.881123, -10.650834, 4.9395704, -1.462429, -9.534527, 5.319966, -5.9734993, 5.0783157, 4.9395704, -9.512672, -11.751095, 6.402718, -1.82689, 10.932623, 6.402718, -4.7563353, 9.834654, 4.9395704, -4.3895817, -10.286372, 4.9395704, 3.2893238, -11.019879, 6.402718, 4.7540474, 11.66613, 6.402718, 2.189063, 9.834654, 4.9395704, 4.387293, -9.188403, 6.402718, 7.6812, -6.26125, 4.9395704, 8.776876, 9.470192, 6.402718, 7.3144455, 5.0783157, 4.9395704, 9.512676, -3.334097, 6.402718, 11.339567, 1.4199476, 4.9395704, 10.610645, 6.176285, 6.402718, 10.2416, 1.7867012, 6.402718, 11.708614)
+
+[node name="SM_Bld_OfficeRound_Base_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_ws532")
+surface_material_override/0 = ExtResource("2_ym6g2")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_3ocv6")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_r0h77")
+
+[node name="SM_Bld_OfficeRound_Base_01_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_ym6g2")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_8w2wi")

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dpbvh01ik78gp"]
+
+[ext_resource type="Material" uid="uid://doxw3mye6naa7" path="res://Assets/Synty/PolygonCity/Materials/Misc/Water_01_mat.tres" id="1_0k0xm"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3ffou"]
+resource_name = "Plane"
+size = Vector2(10, 10)
+subdivide_width = 10
+subdivide_depth = 10
+
+[node name="Ocean_Plane" type="MeshInstance3D"]
+transform = Transform3D(47.289425, 0, 0, 0, 47.289425, 0, 0, 0, 47.289425, 0, 0, 0)
+gi_mode = 2
+mesh = SubResource("PlaneMesh_3ffou")
+surface_material_override/0 = ExtResource("1_0k0xm")

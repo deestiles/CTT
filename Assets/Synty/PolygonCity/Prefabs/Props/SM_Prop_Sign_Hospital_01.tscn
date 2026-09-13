@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://lng6f5fpf81f"]
+
+[ext_resource type="ArrayMesh" uid="uid://bm7u3vb1eatmi" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_Hospital_01.res" id="1_gmejd"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_1paiq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gmejd"]
+size = Vector3(3.3377686, 0.65283203, 0.14453125)
+
+[node name="SM_Prop_Sign_Hospital_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_gmejd")
+surface_material_override/0 = ExtResource("2_1paiq")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0014038086, 0.32788086, 0)
+shape = SubResource("BoxShape3D_gmejd")

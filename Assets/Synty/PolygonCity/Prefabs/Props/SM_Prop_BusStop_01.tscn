@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://dsu2s8ss336b4"]
+
+[ext_resource type="ArrayMesh" uid="uid://d4hfinp00d0l7" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_BusStop_01.res" id="1_wrnth"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_rwnvr"]
+[ext_resource type="ArrayMesh" uid="uid://bret4echy7560" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_BusStop_01_Glass.res" id="3_rwnvr"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_h8fl4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wrnth"]
+size = Vector3(0.21557617, 2.125, 1.2006226)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ck3g4"]
+points = PackedVector3Array(-2.2914767, 2.6038015, -0.95225275, -2.2914767, 2.4605615, -0.45117444, -2.147923, 3.1049204, 0.121596694, -2.147923, 3.1049204, -0.3079431, -2.147923, 2.9616175, -0.73748285, 2.2914767, 2.8184404, -0.88056, 2.1874003, 2.4751315, -0.91663766, -2.1878488, 2.4751315, -0.91663766, 2.2914767, 2.4605615, -0.45117444, -2.147923, 2.532213, 0.6228292, -2.147923, 2.9616175, 0.47944367, 2.2914767, 3.1049204, 0.121596694, 2.2914767, 3.1049204, -0.3079431, 2.2914767, 2.9616175, -0.73748285, 2.2914767, 2.532213, 0.6228292, 2.2914767, 2.8185036, 0.6228292)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rwnvr"]
+size = Vector3(4.4815674, 2.602066, 0.3527832)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f5g1g"]
+size = Vector3(1.9872437, 0.6667175, 0.58862305)
+
+[node name="SM_Prop_BusStop_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_wrnth")
+surface_material_override/0 = ExtResource("2_rwnvr")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0659165, 1.3896484, 0.057769775)
+shape = SubResource("BoxShape3D_wrnth")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_ck3g4")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.010925293, 1.2974625, -0.7208252)
+shape = SubResource("BoxShape3D_rwnvr")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055236816, 0.33570862, -0.28479004)
+shape = SubResource("BoxShape3D_f5g1g")
+
+[node name="SM_Prop_BusStop_01_Glass" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0014572943, 0, 0)
+gi_mode = 2
+mesh = ExtResource("3_rwnvr")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_h8fl4")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b80hmm7pau03b"]
 
-[ext_resource type="ArrayMesh" uid="uid://b7q278ya0rdcc" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Prop_TrafficLight_01.res" id="1_60euy"]
+[ext_resource type="ArrayMesh" uid="uid://b7q278ya0rdcc" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_TrafficLight_01.res" id="1_60euy"]
 [ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_t83ui"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ph32w"]

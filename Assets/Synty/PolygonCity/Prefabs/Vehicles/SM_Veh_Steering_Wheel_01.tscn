@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bnx1x5jx3gx6"]
+
+[ext_resource type="ArrayMesh" uid="uid://ctasw0mncppis" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Veh_Steering_Wheel_01.res" id="1_wirnt"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_kig34"]
+
+[node name="SM_Veh_Steering_Wheel_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_wirnt")
+surface_material_override/0 = ExtResource("2_kig34")

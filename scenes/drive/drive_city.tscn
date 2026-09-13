@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=3 uid="uid://b7dr1vecity01"]
+
+[ext_resource type="PackedScene" uid="uid://d0ov8o0nijx7v" path="res://Assets/Synty/PolygonCity/Scenes/Demo.tscn" id="1_city"]
+[ext_resource type="Script" path="res://scripts/drive/drive_city.gd" id="2_bootstrap"]
+[ext_resource type="Script" path="res://scripts/drive/arcade_car.gd" id="3_arcade"]
+[ext_resource type="PackedScene" uid="uid://c0g5ucdccs0du" path="res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Police_01.tscn" id="4_car"]
+[ext_resource type="Script" path="res://scripts/drive/camera_rig.gd" id="5_cam"]
+
+[node name="DriveCity" type="Node3D"]
+script = ExtResource("2_bootstrap")
+
+[node name="City" parent="." instance=ExtResource("1_city")]
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -30.0, 1.0, -2.0)
+script = ExtResource("3_arcade")
+visual_path = NodePath("Visual")
+use_navigation = false
+
+[node name="Visual" type="Node3D" parent="Player"]
+
+[node name="CarMesh" parent="Player/Visual" instance=ExtResource("4_car")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true
+far = 3000.0
+script = ExtResource("5_cam")
+target_path = NodePath("../Player")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Info" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 430.0
+offset_bottom = 92.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.7)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "TOP-DOWN
+W/S drive   A/D steer   Space boost
+C camera   R reset"
+
+[node name="CameraButton" type="Button" parent="HUD"]
+offset_left = 16.0
+offset_top = 104.0
+offset_right = 168.0
+offset_bottom = 148.0
+text = "Camera (C)"
+
+[node name="ResetButton" type="Button" parent="HUD"]
+offset_left = 180.0
+offset_top = 104.0
+offset_right = 300.0
+offset_bottom = 148.0
+text = "Reset (R)"

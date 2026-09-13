@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://csnorfqtr7556"]
+
+[ext_resource type="ArrayMesh" uid="uid://gd5vcfcvypyj" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_Corner_02.res" id="1_52dcm"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_jnqpq"]
+[ext_resource type="ArrayMesh" uid="uid://63bjx6u8q70r" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_Corner_02_Glass.res" id="3_jnqpq"]
+[ext_resource type="Shape3D" uid="uid://bc25biwmdtdrb" path="res://Assets/Synty/PolygonCity/Models/Collisions/SM_Bld_Shop_Corner_02_Collision.res" id="3_sq5js"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_70ah2"]
+
+[node name="SM_Bld_Shop_Corner_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_52dcm")
+surface_material_override/0 = ExtResource("2_jnqpq")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = ExtResource("3_sq5js")
+
+[node name="SM_Bld_Shop_Corner_02_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_jnqpq")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_70ah2")

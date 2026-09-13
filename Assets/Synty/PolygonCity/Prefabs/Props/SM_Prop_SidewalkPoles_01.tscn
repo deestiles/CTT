@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://b18kwldpa3n5m"]
+
+[ext_resource type="ArrayMesh" uid="uid://dsnfvqw56lf3h" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_SidewalkPoles_01.res" id="1_i5day"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_pnuix"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i5day"]
+radius = 0.10986328
+height = 1.1760254
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_pnuix"]
+radius = 0.107421875
+height = 1.223877
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gh6cq"]
+radius = 0.107421875
+height = 1.2226563
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_10oru"]
+radius = 0.10644531
+height = 1.2216797
+
+[node name="SM_Prop_SidewalkPoles_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_i5day")
+surface_material_override/0 = ExtResource("2_pnuix")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4989078, 0.5406494, 0)
+shape = SubResource("CapsuleShape3D_i5day")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.49855632, 0.51672363, -0.0063598305)
+shape = SubResource("CapsuleShape3D_pnuix")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4973029, 0.51826084, -0.012395084)
+shape = SubResource("CapsuleShape3D_gh6cq")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.503354, 0.53466797, 0)
+shape = SubResource("CapsuleShape3D_10oru")

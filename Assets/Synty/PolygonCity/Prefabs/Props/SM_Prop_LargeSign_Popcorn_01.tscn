@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://fbllmb2n16fp"]
+
+[ext_resource type="ArrayMesh" uid="uid://b4582voo6u03o" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LargeSign_Popcorn_01.res" id="1_nxdmi"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_2rywu"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5cmwx"]
+points = PackedVector3Array(-0.7764408, 0.73519325, 0.8628854, 0.77539253, 0.7298007, 0.8564593, 0.04672748, 1.3763573, -0.0026080608, -0.3264175, 1.3148832, -0.1668117, -0.8508012, 0.6820774, 0.8079254, -0.6868054, -1.3781135, 0.68667513, 0.69129646, -1.3781135, 0.68633693, 0.8640208, 0.7319577, 0.77275103, 0.67383933, 1.0069735, -0.5899193, -0.7735872, 0.7327666, -0.86471945, -0.83871555, 0.7147019, -0.80147314, -0.79507285, -0.37754178, 0.039161563, -0.6866376, -1.3778439, -0.69138396, 0.69129646, -1.3778439, -0.69138396, 0.84320664, 0.2096976, -0.54899526, 0.7777425, 0.7322273, -0.86421216)
+
+[node name="SM_Prop_LargeSign_Popcorn_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_nxdmi")
+surface_material_override/0 = ExtResource("2_2rywu")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_5cmwx")

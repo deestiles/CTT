@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cr8guenxd152k"]
+
+[ext_resource type="ArrayMesh" uid="uid://biillnbmh0474" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_SecurityCamera_01.res" id="1_6adr4"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_7wne7"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_dsv86"]
+points = PackedVector3Array(0.0040778965, -0.30061287, 0.39772484, -0.005554557, -0.30051184, 0.39772484, 0.11014986, -0.19363062, 0.01183534, 0.14722133, -0.22080553, 0.44430083, 0.040880725, -0.15079732, 0.60719556, -0.120606564, -0.25995153, 0.43532524, -0.110168226, -0.19176172, 0.015898611, 0.11014986, 0.20166826, 0.01183534, 0.19584405, -0.010730386, 0.44484666, 0.0040778965, -0.0005271733, 0.63133264, -0.14424634, -0.15079732, 0.55158335, -0.19620779, -0.010932416, 0.44417953, -0.110168226, 0.19838506, 0.015898611, -0.117689975, 0.21540725, 0.08642973, -0.0055929273, 0.18439353, 0.51483196, 0.07142821, 0.15307671, 0.5128913)
+
+[node name="SM_Prop_SecurityCamera_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_6adr4")
+surface_material_override/0 = ExtResource("2_7wne7")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_dsv86")

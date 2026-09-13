@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dsx4gidngcoju"]
+
+[ext_resource type="ArrayMesh" uid="uid://gif87b44xr5w" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeRound_01.res" id="1_ext7q"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_q6arv"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_fq5rj"]
+points = PackedVector3Array(-10.597993, 0.73899096, 3.097211, -10.5667095, 0.796918, -3.2286386, -5.4362783, 0.6629617, -9.614833, -8.875336, 0.7281296, 6.55978, -10.589651, 37.602306, 3.09513, -10.5667095, 37.55886, -3.2286386, -8.804427, 37.48283, -6.6475105, 2.6493645, 0.77519536, -10.707291, 10.707896, 0.76795447, 2.5208092, -2.526949, 37.58058, -10.707291, -3.0942159, 0.8258815, 10.544649, -5.9013543, 37.359737, 9.306532, 10.161483, 37.649372, 4.260418, -3.0963016, 37.54076, 10.550892, 2.6493645, 37.58058, -10.707291, 6.582696, 1.035867, -8.853234, 10.0884905, 0.8439837, -4.3647943, 10.655757, 0.85484505, -2.6439133, 10.655757, 37.500935, -2.6439133, 8.878877, 0.9743196, 6.4723835, 3.202033, 0.9019107, 10.498871, 3.202033, 37.45387, 10.498871, 6.6202345, 37.421284, 8.765505, 6.582696, 37.319912, -8.853234)
+
+[node name="SM_Bld_OfficeRound_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_ext7q")
+surface_material_override/0 = ExtResource("2_q6arv")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_fq5rj")

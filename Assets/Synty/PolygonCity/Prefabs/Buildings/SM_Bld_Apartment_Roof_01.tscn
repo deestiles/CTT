@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://binv1mqt5n7jh"]
+
+[ext_resource type="ArrayMesh" uid="uid://cvapae0q2cw3r" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Apartment_Roof_01.res" id="1_0wywh"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_vqpjg"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5u4gx"]
+size = Vector3(5.309677, 0.4998675, 5.9175124)
+
+[node name="SM_Bld_Apartment_Roof_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_0wywh")
+surface_material_override/0 = ExtResource("2_vqpjg")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.24993375, -2.2094429)
+shape = SubResource("BoxShape3D_5u4gx")

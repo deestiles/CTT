@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://xsuw1hkei70n"]
+
+[ext_resource type="ArrayMesh" uid="uid://c1difvumhha7i" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LargeSign_BowlingBall_01.res" id="1_vw0cp"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_7rfiw"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vw0cp"]
+radius = 1.5282699
+
+[node name="SM_Prop_LargeSign_BowlingBall_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_vw0cp")
+surface_material_override/0 = ExtResource("2_7rfiw")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("SphereShape3D_vw0cp")

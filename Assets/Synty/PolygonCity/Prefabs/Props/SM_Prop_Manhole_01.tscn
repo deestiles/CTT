@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://be64tc0yv3o7t"]
+
+[ext_resource type="ArrayMesh" uid="uid://dctj5vtjclrni" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Manhole_01.res" id="1_562jp"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_sgys2"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_iy20r"]
+points = PackedVector3Array(-0.14518547, 0.040328566, -0.5056355, -0.3066487, -0.008062944, -0.42482513, -0.3066487, 0.040341426, -0.42482513, -0.020220816, 0.057612166, -0.053017825, 0.3064465, 0.040328566, -0.42502418, 0.14528656, -0.008062944, -0.5056355, -0.5164397, -0.008062944, 0.043019116, -0.4680108, 0.040341426, -0.23135796, 0.5001619, -0.008069374, 0.07516414, 0.32262313, -0.008069374, 0.41403025, 0.35487533, 0.040328566, 0.38178575, 0.5164397, 0.040328566, -0.053714484, -0.48408636, 0.040341426, 0.18831855, -0.048327744, 0.040328566, 0.5110624, 0.45183414, -0.008062944, -0.2636025, -0.32282534, -0.008062944, 0.4141298)
+
+[node name="SM_Prop_Manhole_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_562jp")
+surface_material_override/0 = ExtResource("2_sgys2")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_iy20r")

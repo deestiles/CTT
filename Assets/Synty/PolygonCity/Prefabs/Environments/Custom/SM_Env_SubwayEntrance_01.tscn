@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://civfk8t0r2awi"]
+
+[ext_resource type="ArrayMesh" uid="uid://11k3ix2qmon0" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_SubwayEntrance_01.res" id="1_im78f"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_dtd16"]
+[ext_resource type="ArrayMesh" uid="uid://ddi6vwt3nmtbs" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_SubwayEntrance_01_Glass.res" id="3_dtd16"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vlg4q"]
+points = PackedVector3Array(-4.7664895, -6.5551386, -8.519864, -4.7664895, -1.6662722, -14.632593, -4.5775537, -6.1374283, -13.995595, -0.42297602, -6.418823, -14.424344, -0.3671999, -6.5551386, -8.519864, -4.7664895, -3.8658237, -3.3917255, -5.0112014, -0.19990396, 0.03060627, -0.3671999, -1.6662722, -14.632593, -4.8157334, 1.5118322, -10.198109, 0.12222433, 1.2664638, -10.476795, 0.12222433, -0.19990396, 0.03060627, -0.3671999, -1.9106665, 0.03213787, 0.12222433, 3.2216206, 1.010603, -4.9061813, 3.2654362, 0.4532299, -4.84739, 3.3832521, -3.1513205, -0.038069725, 3.3920155, -3.145195)
+
+[node name="SM_Env_SubwayEntrance_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_im78f")
+surface_material_override/0 = ExtResource("2_dtd16")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_vlg4q")
+
+[node name="SM_Env_SubwayEntrance_01_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_dtd16")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_dtd16")

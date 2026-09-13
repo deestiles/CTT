@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://glhl3nogrctg"]
+
+[ext_resource type="ArrayMesh" uid="uid://dvp0wnrhrtscy" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_Chinese_Noodles_01.res" id="1_v4mua"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ictmp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v4mua"]
+size = Vector3(0.8671875, 0.49609375, 0.16885376)
+
+[node name="SM_Prop_Sign_Chinese_Noodles_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_v4mua")
+surface_material_override/0 = ExtResource("2_ictmp")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.001953125, 0, 0.09309387)
+shape = SubResource("BoxShape3D_v4mua")

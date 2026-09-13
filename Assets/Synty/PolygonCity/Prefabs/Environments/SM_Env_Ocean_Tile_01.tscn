@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://2621s00586h8"]
+
+[ext_resource type="ArrayMesh" uid="uid://bdg58jyb33rmu" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Dirt_Tile_Large_01.res" id="1_j1yca"]
+[ext_resource type="Material" uid="uid://kr7jkbuvvba4" path="res://Assets/Synty/PolygonCity/Materials/FX/Water_Mat_mat.tres" id="2_vr82g"]
+
+[node name="SM_Env_Ocean_Tile_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_j1yca")
+surface_material_override/0 = ExtResource("2_vr82g")

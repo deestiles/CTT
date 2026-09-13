@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cvuv81txijmol"]
+
+[ext_resource type="ArrayMesh" uid="uid://bf4vw2hudcrh3" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Bld_Apartment_Stairs_02.res" id="1_8whhh"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_nj0x0"]
+[ext_resource type="Shape3D" uid="uid://cybsmnrpyadjm" path="res://Assets/Synty/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_02_Collision.res" id="3_nj0x0"]
+
+[node name="SM_Bld_Apartment_Stairs_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_8whhh")
+surface_material_override/0 = ExtResource("2_nj0x0")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = ExtResource("3_nj0x0")

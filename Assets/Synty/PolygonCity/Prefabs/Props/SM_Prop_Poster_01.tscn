@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://y6c5in411qf8"]
+
+[ext_resource type="ArrayMesh" uid="uid://cxlfsa5stdv4j" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Poster_01.res" id="1_mw3tb"]
+[ext_resource type="Material" uid="uid://dgc0b4bcxe4f3" path="res://Assets/Synty/PolygonCity/Materials/Misc/Billboard_01_mat.tres" id="2_j30dm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8aj4n"]
+size = Vector3(0.65074337, 0.9561975, 0.03777471)
+
+[node name="SM_Prop_Poster_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_mw3tb")
+surface_material_override/0 = ExtResource("2_j30dm")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0021912456, 0.60013664, 0.025053695)
+shape = SubResource("BoxShape3D_8aj4n")

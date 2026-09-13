@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://j2rvgwjqt5dy"]
+
+[ext_resource type="ArrayMesh" uid="uid://npav0ui1w5ek" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Gen_Env_Skydome_01.res" id="1_4tgbq"]
+[ext_resource type="Material" uid="uid://dem4n6ihxvwgc" path="res://Assets/Synty/PolygonCity/Materials/Misc/Generic_SimpleSky_mat.tres" id="2_bbv0k"]
+
+[node name="SM_Gen_Env_Skydome_01" type="MeshInstance3D"]
+cast_shadow = 0
+gi_mode = 2
+mesh = ExtResource("1_4tgbq")
+surface_material_override/0 = ExtResource("2_bbv0k")

@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://cre3yg5ejkqw0"]
+[gd_scene load_steps=4 format=3 uid="uid://cre3yg5ejkqw0"]
 
-[ext_resource type="ArrayMesh" uid="uid://bu4bca3l7ap7s" path="res://Assets/Synty/PolygonCity/Models/extracted/SM_Env_Road_02.res" id="1_j2f5f"]
+[ext_resource type="ArrayMesh" uid="uid://bu4bca3l7ap7s" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Road_02.res" id="1_j2f5f"]
 [ext_resource type="Material" uid="uid://bx4fmd606u4sl" path="res://Assets/Synty/PolygonCity/Materials/Misc/Road_01_mat.tres" id="2_2jxwp"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g5fvw"]

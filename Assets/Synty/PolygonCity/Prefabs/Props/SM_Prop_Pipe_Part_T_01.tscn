@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://b85egd718sogw"]
+
+[ext_resource type="ArrayMesh" uid="uid://da7qhkqwks57x" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Pipe_Part_T_01.res" id="1_6qkre"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_sy1db"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_6qkre"]
+height = 0.55288696
+radius = 0.15478516
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_sy1db"]
+height = 1.0863953
+radius = 0.19091797
+
+[node name="SM_Prop_Pipe_Part_T_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_6qkre")
+surface_material_override/0 = ExtResource("2_sy1db")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55745, 0.2733612, 0.15640259)
+shape = SubResource("CylinderShape3D_6qkre")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.54377747, 2.3769267e-08, 0.1538406)
+shape = SubResource("CylinderShape3D_sy1db")

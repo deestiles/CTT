@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://35yjysby62ld"]
+
+[ext_resource type="ArrayMesh" uid="uid://d2js0vilq0wfh" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_02.res" id="1_hpkcx"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_4teu0"]
+[ext_resource type="ArrayMesh" uid="uid://f44x5klyvesd" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_Shop_02_Glass.res" id="3_4teu0"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_1rm6r"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hpkcx"]
+size = Vector3(5.039551, 2.980896, 5.252075)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8jb0m"]
+points = PackedVector3Array(-0.03755331, 3.0570276, -0.2207151, -0.03755331, 3.229117, 0.03763783, 0.04848285, 3.3152795, 0.03763783, 5.043056, 3.0570276, -0.2207151, -0.00025439635, 2.9734268, -0.21565862, -0.03755331, 2.9708986, 0.29585594, 0.04848285, 3.3152795, 0.38188368, 4.956523, 3.3152795, 0.03763783, 5.043056, 3.229117, 0.03763783, 5.043056, 2.9708986, 0.29585594, 4.999789, 2.9737978, -0.214917, 0.56519717, 3.0570276, 0.46804625, 0.13451901, 3.143089, 0.46804625, 0.13451901, 3.3152795, 0.46804625, 4.8699894, 3.3152795, 0.46804625, 4.8699894, 3.143089, 0.46804625)
+
+[node name="SM_Bld_Shop_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_hpkcx")
+surface_material_override/0 = ExtResource("2_4teu0")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4841309, 1.4977112, -2.3778687)
+shape = SubResource("BoxShape3D_hpkcx")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_8jb0m")
+
+[node name="SM_Bld_Shop_02_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_4teu0")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_1rm6r")

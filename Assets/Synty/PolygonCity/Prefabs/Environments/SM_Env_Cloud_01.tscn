@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bki6lfkbh8rrn"]
+
+[ext_resource type="ArrayMesh" uid="uid://bgntq1f1141al" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Env_Cloud_01.res" id="1_iumab"]
+[ext_resource type="Material" uid="uid://b1s01oalepedc" path="res://Assets/Synty/PolygonCity/Materials/FX/Cloud_Mat_mat.tres" id="2_lg8g5"]
+
+[node name="SM_Env_Cloud_01" type="MeshInstance3D"]
+cast_shadow = 0
+gi_mode = 2
+mesh = ExtResource("1_iumab")
+surface_material_override/0 = ExtResource("2_lg8g5")

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://ddi8mp1uip3x1"]
+
+[ext_resource type="ArrayMesh" uid="uid://bgk213u6y1qj5" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_SatDish_01.res" id="1_wfval"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_grc7c"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_t1oml"]
+points = PackedVector3Array(-0.6220722, 0.84250253, 0.17348306, -0.088676274, 0.9919634, 0.47226632, -0.4512868, 1.2054788, -0.039748356, -0.117943704, 0.06131716, -0.116226494, -0.13146076, -0.0105365515, 0.0882553, -0.43001205, 0.48016548, 0.3868441, 0.08187413, 0.9919634, 0.47226632, -0.0635227, 1.2956156, -0.15012316, 0.03591603, 0.31791928, 0.44653594, 0.01652193, 1.2342459, -0.18985291, 0.1178413, 0.025518157, -0.13132769, 0.124658644, -0.0105365515, 0.0882553, 0.46599448, 0.50151706, 0.36545616, 0.5787152, 0.7723109, 0.17160352, 0.4444846, 1.2054788, -0.039748356, 0.57036984, 0.77090454, 0.15144698)
+
+[node name="SM_Prop_SatDish_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_wfval")
+surface_material_override/0 = ExtResource("2_grc7c")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_t1oml")

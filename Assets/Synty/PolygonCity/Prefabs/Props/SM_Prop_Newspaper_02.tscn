@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b7oj2wlnnmc4p"]
+
+[ext_resource type="ArrayMesh" uid="uid://t6x6k0pt5yo5" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Newspaper_02.res" id="1_cejot"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_k3cse"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_jcfaj"]
+points = PackedVector3Array(-0.30512747, 0.012724623, -0.23889732, 0.30387035, 0.012724623, -0.23889732, 0.31565896, -0.009301305, 0.17959559, -0.29777476, 0.026592799, 0.23889926, -0.30142075, 0.9043668, -0.23595084, 0.3001636, 0.9043668, -0.23595084, 0.31565896, 0.7905079, -0.15518004, 0.29347935, 0.68958485, 0.23646724, 0.29651764, 0.026592799, 0.23889926, -0.29473647, 0.68958485, 0.23646724, -0.18657282, 1.1812642, -0.17384103, -0.1687076, 1.1239268, -0.22407141, 0.17170408, 1.1375619, -0.22982405, 0.18531567, 1.1812642, -0.17384103, 0.29475543, 0.88105893, -0.14475045)
+
+[node name="SM_Prop_Newspaper_02" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_cejot")
+surface_material_override/0 = ExtResource("2_k3cse")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_jcfaj")

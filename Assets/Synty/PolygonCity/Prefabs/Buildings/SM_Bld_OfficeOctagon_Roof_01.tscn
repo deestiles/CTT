@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dwewwn2bei4md"]
+
+[ext_resource type="ArrayMesh" uid="uid://dxhan8nai3nou" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeOctagon_Roof_01.res" id="1_22p7t"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ak0bw"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vfox8"]
+points = PackedVector3Array(-5.520428, -0.16241884, -10.392771, -10.391752, -0.16241884, -5.5221467, -5.520428, 5.6846585, -10.392771, 5.5204268, -0.16241884, -10.392771, -10.391752, 5.6846585, -5.5221467, -10.393787, -0.16241884, 5.5211906, 5.5204268, 5.6846585, -10.392771, 10.39175, -0.16241884, -5.5221467, -10.393787, 5.6846585, 5.5211906, -5.520428, -0.16241884, 10.391815, 10.39175, 5.6846585, -5.5221467, 10.393785, -0.16241884, 5.5211906, -5.520428, 5.6846585, 10.391815, 5.5204268, -0.16241884, 10.391815, 10.393785, 5.6846585, 5.5211906, 5.5204268, 5.6846585, 10.391815)
+
+[node name="SM_Bld_OfficeOctagon_Roof_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_22p7t")
+surface_material_override/0 = ExtResource("2_ak0bw")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_vfox8")

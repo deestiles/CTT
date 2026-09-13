@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://65lxwh83c3pm"]
+
+[ext_resource type="ArrayMesh" uid="uid://ckhk1pxwjocg" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeOctagon_Base_01.res" id="1_doih3"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_x4ogm"]
+[ext_resource type="ArrayMesh" uid="uid://csl065vx6uxiy" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeOctagon_Base_01_Glass.res" id="3_x4ogm"]
+[ext_resource type="Material" uid="uid://df3vbxqslc53b" path="res://Assets/Synty/PolygonCity/Materials/Misc/Glass_01_mat.tres" id="4_yo57v"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_dimol"]
+points = PackedVector3Array(10.555424, 4.123214, 5.6062794, 5.6061144, 4.123214, 10.555428, 5.5677557, -4.440892e-16, 9.743313, 10.136677, -4.440892e-16, 5.1743917, 10.555424, 4.123214, -5.6062794, 1.6498631, 4.123214, 10.555428, 1.9162414, -4.440892e-16, 9.743313, 10.136677, -4.440892e-16, -5.176458, 5.5677557, -4.440892e-16, -9.745379, 5.6061144, 4.123214, -10.555428, -0.3298607, 4.123214, 9.894163, 0.08782056, -4.440892e-16, 9.131643, 1.9162414, -4.440892e-16, -9.745379, 1.6498631, 4.123214, -10.555428, -0.3298607, 4.123214, -9.894163, 0.08782056, -4.440892e-16, -9.13371)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_0nyku"]
+points = PackedVector3Array(-0.3298607, 4.123214, 9.894163, -1.6510973, 4.123214, 10.555428, -1.9423695, -4.440892e-16, 9.743313, -0.72322845, -4.440892e-16, 9.131643, -0.3298607, 4.123214, -9.894163, -5.604798, 4.123214, 10.555428, -5.5927863, -4.440892e-16, 9.743313, -0.72322845, -4.440892e-16, -9.13371, -1.6510973, 4.123214, -10.555428, -9.566505, 4.123214, 6.5961094, -10.163064, -4.440892e-16, 5.172325, -5.5927863, -4.440892e-16, -9.745379, -5.604798, 4.123214, -10.555428, -10.555431, 4.123214, 5.6042137, -10.163064, -4.440892e-16, -5.1743913, -10.555431, 4.123214, -5.6042128)
+
+[node name="SM_Bld_OfficeOctagon_Base_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_doih3")
+surface_material_override/0 = ExtResource("2_x4ogm")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_dimol")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_0nyku")
+
+[node name="SM_Bld_OfficeOctagon_Base_01_Glass" type="MeshInstance3D" parent="."]
+gi_mode = 2
+mesh = ExtResource("3_x4ogm")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("4_yo57v")

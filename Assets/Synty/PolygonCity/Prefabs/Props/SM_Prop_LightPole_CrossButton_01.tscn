@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cqk3ib1dkfm37"]
+
+[ext_resource type="ArrayMesh" uid="uid://3w3m7gy7qck0" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LightPole_CrossButton_01.res" id="1_iiqgf"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_rfsxu"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_06ytw"]
+points = PackedVector3Array(-0.034955505, 1.1407733, 0.17317705, 0.07912054, 1.2805885, 0.15491761, -0.07786201, 1.2805885, 0.15491761, -0.073376335, 1.0249482, 0.15491761, 0.05040244, 1.1028574, 0.17317705, 0.08365498, 1.2878441, 0.073540434, 0.055164404, 1.3068606, 0.073540434, 0.07912054, 1.0294244, 0.15491761, -0.0823802, 1.2878441, 0.073540434, -0.0823802, 1.0221689, 0.073540434, 0.06465585, 1.0079796, 0.073540434, 0.038278103, 1.2480264, 0.003478711, 0.08365498, 1.0221689, 0.073540434, -0.037962213, 1.2503669, 0.0014106543, -0.037962213, 1.059646, 0.0014106543, 0.038278103, 1.0619864, 0.003478711)
+
+[node name="SM_Prop_LightPole_CrossButton_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_iiqgf")
+surface_material_override/0 = ExtResource("2_rfsxu")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_06ytw")

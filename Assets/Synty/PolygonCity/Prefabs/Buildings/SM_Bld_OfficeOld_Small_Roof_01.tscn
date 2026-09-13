@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bucqdx7qq4vqs"]
+
+[ext_resource type="ArrayMesh" uid="uid://c4x88uycwphh6" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Bld_OfficeOld_Small_Roof_01.res" id="1_gf01k"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_y3hvp"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ftjup"]
+points = PackedVector3Array(-0.68216705, 1.1552731, -10.726875, -0.14870793, -0.08888662, -10.19453, -0.68216705, 1.1552731, 0.6506157, -0.0005867481, 1.312937, -9.873786, 10.695324, 1.1552731, -10.726875, -0.14870793, -0.08888662, 0.11715698, 10.161865, -0.08888662, -10.19453, 0.20321918, 0.27899605, 0.27864265, 10.695324, 1.1552731, 0.6506157, -0.0005867481, 1.312937, -0.030964851, 9.999266, 1.3108788, -9.859308, 10.338943, -0.08888662, -10.016339, 10.161865, -0.08888662, 0.11715698, 9.999266, 1.3108788, -0.04544258, 10.338943, -0.08888662, -0.23922539)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gf01k"]
+size = Vector3(10.590393, 3.1975403, 10.340149)
+
+[node name="SM_Bld_OfficeOld_Small_Roof_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_gf01k")
+surface_material_override/0 = ExtResource("2_y3hvp")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_ftjup")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0105896, 2.6259613, -4.8628235)
+shape = SubResource("BoxShape3D_gf01k")

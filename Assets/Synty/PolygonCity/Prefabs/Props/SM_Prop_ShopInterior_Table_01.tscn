@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://b0c2ewcvf7ei4"]
+
+[ext_resource type="ArrayMesh" uid="uid://dw0eyvc1upfxl" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_ShopInterior_Table_01.res" id="1_fql7m"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_mmux1"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5c0n2"]
+points = PackedVector3Array(0.58194363, 0.8545544, 0.2131989, 0.52613115, 0.94654536, 0.27839333, 0.16890764, 0.8545544, 0.58861715, 0.37548357, 0.83846915, 0.345788, 0.35799873, 0.8383927, -0.35178128, 0.5445423, 0.8545544, -0.2938821, 0.5491741, 0.94528955, -0.20668593, 0.16369694, 0.94670916, 0.570321, 0.16230738, 0.9462505, -0.57121915, -0.3865546, 0.9473207, -0.45368382, -0.36108, 0.94626147, 0.4753663, -0.41295555, 0.83577186, 0.32575488, -0.31904688, 0.83577186, -0.38767874, 0.16890764, 0.8545544, -0.594263, -0.6010045, 0.8545544, -0.18121031, -0.5508658, 0.94543153, 0.20161903)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_fql7m"]
+height = 0.8845215
+radius = 0.049316406
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_mmux1"]
+height = 0.8840332
+radius = 0.05078125
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_5c0n2"]
+height = 0.8753662
+radius = 0.049316406
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_kh8r3"]
+height = 0.8823242
+radius = 0.04296875
+
+[node name="SM_Prop_ShopInterior_Table_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_fql7m")
+surface_material_override/0 = ExtResource("2_mmux1")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_5c0n2")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.333794, 0.43395996, 0.3215508)
+shape = SubResource("CylinderShape3D_fql7m")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3347235, 0.45422363, -0.33189347)
+shape = SubResource("CylinderShape3D_mmux1")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.336536, 0.43243408, 0.33705968)
+shape = SubResource("CylinderShape3D_5c0n2")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="MeshCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.34296608, 0.4411621, -0.31810504)
+shape = SubResource("CylinderShape3D_kh8r3")

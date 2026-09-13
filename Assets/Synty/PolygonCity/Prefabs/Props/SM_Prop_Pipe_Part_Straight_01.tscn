@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://qyqq45obn43m"]
+
+[ext_resource type="ArrayMesh" uid="uid://wicyr4vjsmok" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Pipe_Part_Straight_01.res" id="1_3t4p7"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_v1n51"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qylrv"]
+points = PackedVector3Array(0.0077369213, 0.17016596, 0.16669172, 0.0077369213, 0.122528195, 0.27774858, 0.0077369213, 0.10667071, 0.023857709, -1.0077395, 0.17016596, 0.16669172, 0.0077369213, 0.011395216, 0.32538167, -1.0077395, 0.122528195, 0.27774858, 0.0077369213, 0.027285337, -0.007919431, -1.0077395, 0.10667071, 0.023857709, 0.0077369213, -0.13138753, 0.26186, -1.0077395, 0.011395216, 0.32538167, 0.0077369213, -0.14724502, 0.087314114, -1.0077395, -0.067892276, 0.007969139, -1.0077395, -0.13138753, 0.26186, -1.0077395, -0.16316777, 0.18251504, -0.03927952, -0.14776708, 0.1371331, -1.0077395, -0.14724502, 0.087314114)
+
+[node name="SM_Prop_Pipe_Part_Straight_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_3t4p7")
+surface_material_override/0 = ExtResource("2_v1n51")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_qylrv")

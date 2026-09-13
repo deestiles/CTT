@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://n74ipx7mownx"]
+
+[ext_resource type="ArrayMesh" uid="uid://4x1e4ftfho5m" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_LargeSign_BowlingPin_01.res" id="1_4e7dm"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_ppcly"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_slvxy"]
+points = PackedVector3Array(-0.7653666, -1.0924251, -0.17133415, -0.41037446, -1.7852932, -0.54676783, -0.42417222, -2.4601402, 0.27907068, -0.6935283, -0.8756963, 0.41095644, -0.677331, -0.21507668, 0.18820971, -0.45161775, 2.370967, -0.19415778, 0.4231897, -2.4738932, -0.2597395, -0.03813511, -0.95394635, -0.75853616, -0.038735032, -1.7122599, 0.7171971, -0.2062577, 2.2068791, 0.46050388, 0.120988965, 2.2889233, 0.46050388, 0.20287561, 2.370967, -0.43958363, 0.6201076, -1.610772, -0.39176965, 0.7666337, -1.0990645, 0.046934545, 0.46563274, -1.2954009, 0.6215691, 0.44823557, 2.2889233, 0.215078)
+
+[node name="SM_Prop_LargeSign_BowlingPin_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_4e7dm")
+surface_material_override/0 = ExtResource("2_ppcly")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_slvxy")

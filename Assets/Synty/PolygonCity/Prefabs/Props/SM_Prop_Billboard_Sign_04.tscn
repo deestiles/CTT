@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://mn6u7tpsujyw"]
+
+[ext_resource type="ArrayMesh" uid="uid://dwf521153oytc" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Billboard_Sign_04.res" id="1_vgje7"]
+[ext_resource type="Material" uid="uid://dgc0b4bcxe4f3" path="res://Assets/Synty/PolygonCity/Materials/Misc/Billboard_01_mat.tres" id="2_582xe"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r1ln6"]
+size = Vector3(4.1927032, 2.0277252, 0.11808795)
+
+[node name="SM_Prop_Billboard_Sign_04" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_vgje7")
+surface_material_override/0 = ExtResource("2_582xe")
+
+[node name="BoxCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BoxCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8370991, 0.24381849)
+shape = SubResource("BoxShape3D_r1ln6")

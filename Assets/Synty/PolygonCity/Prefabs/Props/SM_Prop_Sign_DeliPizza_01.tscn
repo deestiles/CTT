@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://0pui6olnngk8"]
+
+[ext_resource type="ArrayMesh" uid="uid://261lw22s5a2i" path="res://assets/Synty/PolygonCity/Models/extracted/SM_Prop_Sign_DeliPizza_01.res" id="1_kggjw"]
+[ext_resource type="Material" uid="uid://bfyydshv32dtc" path="res://Assets/Synty/PolygonCity/Materials/Alts/PolygonCity_01_A_mat.tres" id="2_3xbvs"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_11xfs"]
+points = PackedVector3Array(-0.1574288, -0.78762823, -0.057451718, -0.1574288, -0.78762823, 0.04100904, -0.1574288, 0.78762823, -0.057451718, -0.10818275, -0.78762823, -0.08207956, -0.08355973, -0.78762823, 0.090247855, -0.1328371, 0.78762823, 0.065620005, -0.10818275, 0.78762823, -0.08207956, 0.08867614, -0.78762823, -0.08207956, 0.08867614, -0.78762823, 0.090247855, -0.08355973, 0.78762823, 0.090247855, 0.08867614, 0.78762823, -0.08207956, 0.16257653, -0.78762823, -0.057451718, 0.16257653, -0.78762823, 0.04100904, 0.08867614, 0.78762823, 0.090247855, 0.16257653, 0.78762823, -0.057451718, 0.16257653, 0.78762823, 0.04100904)
+
+[node name="SM_Prop_Sign_DeliPizza_01" type="MeshInstance3D"]
+gi_mode = 2
+mesh = ExtResource("1_kggjw")
+surface_material_override/0 = ExtResource("2_3xbvs")
+
+[node name="MeshCollider" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshCollider"]
+shape = SubResource("ConvexPolygonShape3D_11xfs")
