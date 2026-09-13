@@ -5,14 +5,29 @@ class_name DriveCity
 ## static city, lighting, player car, and camera are placed in the scene tree;
 ## this script only adds the moving life and the UI glue.
 
-const PED_SCENES: Array[PackedScene] = [
-	preload("res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Male_Jacket.tscn"),
-	preload("res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Female_Coat.tscn"),
-	preload("res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_BusinessMan_Suit.tscn"),
-	preload("res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_Male_Hoodie.tscn"),
-	preload("res://Assets/Synty/PolygonCity/Prefabs/Characters/Character_BusinessWoman.tscn"),
+# With-skin Mixamo characters (rigged; animate at runtime via MixamoChar). The
+# extracted-mesh prefabs do NOT skin when posed, so pedestrians use these instead.
+const PED_CHARS: Array[String] = [
+	"res://Assets/Animations/Character/SK_Character_Male_Jacket.fbx",
+	"res://Assets/Animations/Character/SK_Character_Female_Coat.fbx",
+	"res://Assets/Animations/Character/SK_Character_BusinessMan_Suit.fbx",
+	"res://Assets/Animations/Character/SK_Character_Male_Hoodie.fbx",
+	"res://Assets/Animations/Character/SK_Character_BusinessWoman.fbx",
+	"res://Assets/Animations/Character/SK_Character_Female_Police.fbx",
 ]
 const PED_SCRIPT := preload("res://scripts/drive/pedestrian.gd")
+
+# Stroll loops on the two sidewalk strips flanking the drive avenue, verified by
+# raycast probe (north strip z=-13, south strip z=2.5, floor y=0). Each loop is a
+# thin rectangle kept within the ~4 m sidewalk width and clear of props (hotdog
+# stand x=-28, sign x=-38 north; a prop x=-42 south). Y is ignored (raycast-seated).
+var SIDEWALK_LOOPS: Array[PackedVector3Array] = [
+	PackedVector3Array([Vector3(-16,0,-12.6), Vector3(-26,0,-12.6), Vector3(-26,0,-13.6), Vector3(-16,0,-13.6)]),
+	PackedVector3Array([Vector3(-30,0,-12.6), Vector3(-36,0,-12.6), Vector3(-36,0,-13.6), Vector3(-30,0,-13.6)]),
+	PackedVector3Array([Vector3(-40,0,-12.6), Vector3(-54,0,-12.6), Vector3(-54,0,-13.6), Vector3(-40,0,-13.6)]),
+	PackedVector3Array([Vector3(-14,0,2.0), Vector3(-38,0,2.0), Vector3(-38,0,3.0), Vector3(-14,0,3.0)]),
+	PackedVector3Array([Vector3(-46,0,2.0), Vector3(-54,0,2.0), Vector3(-54,0,3.0), Vector3(-46,0,3.0)]),
+]
 const SIGNAL_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Signal_Color.gdshader")
 const ATLAS_TEX := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
 const TRAFFIC_GREEN := 6.0
@@ -32,7 +47,7 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
-@export var pedestrian_count: int = 10
+@export var pedestrian_count: int = 5
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
 @export var ground_y: float = 43.08
 ## Approximate centre of the drivable district, used to scatter pedestrians.
@@ -120,6 +135,35 @@ func _ready() -> void:
 		call_deferred("_capture_topdown")
 	if OS.has_environment("CTT_ISHOT"):
 		call_deferred("_capture_signals")
+	if OS.has_environment("CTT_PEDSHOT"):
+		call_deferred("_capture_pedshot")
+
+## Eye-level angled capture aimed at a pedestrian loop, to check the walkers look
+## right in the city (textured, walking, grounded on the sidewalk). Env: PED_X/PED_Z
+## look target, PED_DIST camera distance, PED_WAIT settle seconds.
+func _capture_pedshot() -> void:
+	var wait := float(OS.get_environment("PED_WAIT")) if OS.has_environment("PED_WAIT") else 2.0
+	await get_tree().create_timer(wait).timeout
+	var hud := get_node_or_null(^"HUD") as CanvasLayer
+	if hud:
+		hud.visible = false
+	var tx := float(OS.get_environment("PED_X")) if OS.has_environment("PED_X") else -21.0
+	var tz := float(OS.get_environment("PED_Z")) if OS.has_environment("PED_Z") else -13.0
+	var dist := float(OS.get_environment("PED_DIST")) if OS.has_environment("PED_DIST") else 6.0
+	var target := Vector3(tx, 1.0, tz)
+	var cam := Camera3D.new()
+	cam.far = 500.0
+	cam.position = target + Vector3(dist * 0.7, maxf(2.2, dist * 0.5), dist * 0.7)
+	add_child(cam)
+	cam.look_at(target, Vector3.UP)
+	cam.current = true
+	for i in 6:
+		await get_tree().process_frame
+	await get_tree().create_timer(0.3).timeout
+	var img := get_viewport().get_texture().get_image()
+	img.save_png("user://pedshot.png")
+	print("[PEDSHOT] ", ProjectSettings.globalize_path("user://pedshot.png"))
+	get_tree().quit()
 
 func _capture_signals() -> void:
 	_tod_index = 2
@@ -419,27 +463,15 @@ func _collect_vehicles(node: Node, out: Array[Node]) -> void:
 		_collect_vehicles(c, out)
 
 func _spawn_pedestrians() -> void:
-	if PED_SCENES.is_empty():
+	if PED_CHARS.is_empty() or SIDEWALK_LOOPS.is_empty():
 		return
-	for i in pedestrian_count:
+	var count: int = mini(pedestrian_count, SIDEWALK_LOOPS.size())
+	for i in count:
 		var ped := Node3D.new()
 		ped.set_script(PED_SCRIPT)
 		_pedestrians.add_child(ped)
-		var scene: PackedScene = PED_SCENES[i % PED_SCENES.size()]
-		ped.setup(scene, _make_loop(), randf_range(1.1, 1.8))
-
-## A small rectangular stroll loop somewhere in the district, on the ground plane.
-func _make_loop() -> PackedVector3Array:
-	var cx := district_center.x + randf_range(-district_extent.x * 0.5, district_extent.x * 0.5)
-	var cz := district_center.z + randf_range(-district_extent.y * 0.5, district_extent.y * 0.5)
-	var w := randf_range(4.0, 12.0)
-	var h := randf_range(4.0, 12.0)
-	var pts := PackedVector3Array()
-	pts.append(Vector3(cx - w, ground_y, cz - h))
-	pts.append(Vector3(cx + w, ground_y, cz - h))
-	pts.append(Vector3(cx + w, ground_y, cz + h))
-	pts.append(Vector3(cx - w, ground_y, cz + h))
-	return pts
+		var char_path: String = PED_CHARS[i % PED_CHARS.size()]
+		ped.setup(char_path, SIDEWALK_LOOPS[i], randf_range(1.1, 1.6))
 
 func _process(delta: float) -> void:
 	_traffic_time += delta

@@ -1,9 +1,13 @@
 extends Node3D
 class_name Pedestrian
-## Ambient kinematic walker. Holds a Synty character prefab as its only child and
-## walks it around a loop of ground points, facing the direction of travel and
-## playing a walk clip if the rig ships one. Intentionally non-physical (no
-## collision fights with the car) — this is background life, not an obstacle.
+## Ambient kinematic walker. Holds a Mixamo-rigged Synty character (built by
+## MixamoChar) and strolls it around a loop of sidewalk points, facing the direction
+## of travel, playing "walk" while moving and "idle" while paused. Intentionally
+## non-physical (no collision fights with the car) — background life, not an obstacle.
+
+const MIXAMO_CHAR := preload("res://scripts/drive/mixamo_char.gd")
+const WALK_FBX := "res://Assets/Animations/Walking_01.fbx"
+const IDLE_FBX := "res://Assets/Animations/idle.fbx"
 
 var speed: float = 1.4
 var turn_speed: float = 7.0
@@ -12,18 +16,20 @@ var _i: int = 0
 var _char: Node3D
 var _anim: AnimationPlayer
 var _pause: float = 0.0
+var _state: String = ""
 
-func setup(character_scene: PackedScene, points: PackedVector3Array, walk_speed: float = 1.4) -> void:
+## character_path: a with-skin Mixamo FBX (Assets/Animations/Character/*.fbx).
+func setup(character_path: String, points: PackedVector3Array, walk_speed: float = 1.4) -> void:
 	speed = walk_speed
 	_points = points
 	if _points.size() > 0:
 		global_position = _points[0]
-	if character_scene:
-		_char = character_scene.instantiate()
+	_char = MIXAMO_CHAR.build(character_path, {"walk": WALK_FBX, "idle": IDLE_FBX})
+	if _char:
 		add_child(_char)
 		_disable_collision(_char)
 		_anim = _find_animation_player(_char)
-		_play_walk()
+		_play("walk")
 
 func _find_animation_player(node: Node) -> AnimationPlayer:
 	if node is AnimationPlayer:
@@ -34,23 +40,14 @@ func _find_animation_player(node: Node) -> AnimationPlayer:
 			return found
 	return null
 
-func _play_walk() -> void:
-	if _anim == null:
+## Play an "act/<name>" clip, ignoring repeats. Falls back gracefully if absent.
+func _play(name: String) -> void:
+	if _anim == null or _state == name:
 		return
-	var names := _anim.get_animation_list()
-	if names.is_empty():
-		return
-	var chosen := ""
-	for want in ["walk", "walking", "move", "run", "idle"]:
-		for n in names:
-			if String(n).to_lower().contains(want):
-				chosen = n
-				break
-		if chosen != "":
-			break
-	if chosen == "":
-		chosen = names[0]
-	_anim.play(chosen)
+	var key := "act/%s" % name
+	if _anim.has_animation(key):
+		_anim.play(key)
+		_state = name
 
 func _disable_collision(node: Node) -> void:
 	for c in node.get_children():
@@ -64,6 +61,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if _pause > 0.0:
 		_pause -= delta
+		_play("idle")
 		return
 	var goal := _points[_i]
 	var to_goal := goal - global_position
@@ -74,6 +72,7 @@ func _physics_process(delta: float) -> void:
 		if randf() < 0.25:
 			_pause = randf_range(0.6, 2.0)   # brief loiter, feels less robotic
 		return
+	_play("walk")
 	var dir := to_goal / dist
 	global_position += dir * speed * delta
 	# Smoothly face travel direction.
