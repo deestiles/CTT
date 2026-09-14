@@ -196,6 +196,27 @@ As of 2026-09-07:
 - Current headless output reports 142 generated lanes and 2 lanes without continuation (`Module_049_F0` and `Module_057_F0`). Determine whether these are intentional map boundaries; validation policy says playable networks should not contain accidental open ends.
 - Headless launch currently completes without GDScript errors, aside from local log/certificate warnings described above.
 
+### 2026-09-13 — branch `claude/synty-drive-city` (parallel free-drive sandbox)
+
+This branch is a **separate, self-contained sandbox**, intentionally decoupled from the lane-graph map/NPC AI system described above. It was started because of persistent driving/float bugs in the lane-graph maps; the owner approved a clean rebuild. It should be reviewed on its own and not assumed to share the map-builder/lane pipeline. Player driving is a direct arcade `CharacterBody3D`, not the `RoadLane` pipeline, so it cannot inherit the curb-yield/recovery bugs.
+
+Commits (oldest → newest):
+
+- `a1daafa` — Synty free-drive city sandbox. New scene `scenes/drive/drive_city.tscn` on the full Synty `Demo.tscn`. `scripts/drive/arcade_car.gd` (raycast-grounded arcade police car, joystick + WASD, headlights/tail/brake/reverse lights), `camera_rig.gd` (top-down ⇄ POV), `drive_city.gd` (road NavMesh bake, street lamps, cycling traffic signals via `Signal_Color.gdshader`, Sky3D day/dusk/night). City floor is world **y≈0** (Demo.tscn coords are local to nested City_Area nodes — do not read tile world positions from node transforms/AABBs; raycast the physics instead).
+- `dd469de` — initial Mixamo action FBX set (later superseded by e8ab642).
+- `33077d3` — **Character animation pipeline decided.** Two approaches were tried and rejected: (1) posing the extracted-mesh character *prefabs* — their skin does NOT deform when the skeleton is posed at runtime; (2) hand-retargeting Mixamo clips onto the Synty rig in code — arms splay (rest-pose mismatch) or the mesh shears (roll mismatch). **Adopted:** a Mixamo round-trip — upload the single-character source FBX (`Purchased Assets/.../FBX/Characters/SK_Character_*.fbx`), download the character once "With Skin" (T-pose) and each action "Without Skin". All Mixamo characters share one 48-bone skeleton, so any clip plays on any character's own mesh with **no retargeting**. Added `scenes/tools/char_preview.tscn` + `scripts/tools/char_preview.gd` (character isolator).
+- `773154c` — char_preview scans the character/clip folders and exposes both as dropdowns (any dropped-in FBX appears automatically).
+- `e8ab642` — full set: 9 with-skin characters in `Assets/Animations/Character/`, ~60 action clips in `Assets/Animations/` (walk/run/idle/turn/sit/gesture/sneak). FBX via Git LFS.
+- `d217e6a` — **Pedestrians integrated into the city.** `scripts/drive/mixamo_char.gd` builds a textured, animated character (with-skin FBX + clip map → one AnimationPlayer, position tracks stripped so it moves in place). `scripts/drive/pedestrian.gd` rewritten to build via that helper, play `walk` while moving / `idle` while paused, face travel, raycast-ground. `drive_city.gd` now spawns 5 walkers on **verified sidewalk stroll loops** (north strip z≈-13, south strip z≈2.5, x≈-12..-55, floor y=0), routed clear of sidewalk props. `scenes/tools/probe_ground.tscn` kept as the raycast tool for finding more sidewalk strips.
+- `225e4ee` — live **map-view angle slider** in the HUD (top-right, 15°–90°). `camera_rig.gd` map framing is now distance + angle (initialised from the old height/back, so the default look is unchanged). Env-gated capture `CTT_CAMSHOT`/`CTT_ANGLE` for previewing angles headless.
+- `2a8b544`, `8fcf65e` — Godot `.uid` sidecar syncs (no behavior change).
+
+Key files on this branch: `scenes/drive/drive_city.tscn`; `scripts/drive/{drive_city,arcade_car,camera_rig,pedestrian,mixamo_char}.gd`; `scripts/tools/char_preview.gd` + `scenes/tools/char_preview.tscn`; `scripts/tools/probe_ground.gd` + `scenes/tools/probe_ground.tscn`; `Assets/Animations/Character/*.fbx` (with-skin) and `Assets/Animations/*.fbx` (clips); `Assets/Synty/PolygonCity/Materials/Misc/Signal_Color.gdshader`.
+
+Tests performed: headless launches complete with **no GDScript errors**; headless screenshot captures confirm — pedestrians textured, walking, grounded on the correct sidewalks; map camera follows the car and re-frames across 40°/61°/90°. **Not yet done in an interactive editor driving session:** feel of car + pedestrians at speed; confirming the chosen final camera angle; behavior of peds near the on-sidewalk props.
+
+Unresolved / next: scale ped count and add more sidewalk loops (use `probe_ground`); richer ped behavior with the already-downloaded idle/sit/turn/gesture clips; ~30% lit building windows at night (still open from a1daafa); per-intersection traffic-signal opposition (parked). Owner will keep adding characters/animations. Convention: with-skin characters → `Assets/Animations/Character/`, action clips → `Assets/Animations/`; keep every clip/character on the same Mixamo skeleton settings so any clip plays on any character.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt
