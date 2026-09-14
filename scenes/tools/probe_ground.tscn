@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cprobegroundttt"]
+[gd_scene format=3 uid="uid://csulhc0x3xfmj"]
 
 [ext_resource type="Script" path="res://scripts/tools/probe_ground.gd" id="1_probe"]
 
