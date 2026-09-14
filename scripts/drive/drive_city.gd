@@ -94,6 +94,35 @@ func _ready() -> void:
 		hud_top.add_child(_time_button)
 		_time_button.pressed.connect(_on_cycle_time)
 
+	# Map-view angle slider (top-right): sweep the top-down camera from a low chase
+	# angle (15 deg) up to straight overhead (90 deg) live, to find the best view.
+	if hud_top and _cam:
+		var angle_box := VBoxContainer.new()
+		angle_box.name = "AngleBox"
+		angle_box.anchor_left = 1.0
+		angle_box.anchor_right = 1.0
+		angle_box.offset_left = -236.0
+		angle_box.offset_top = 16.0
+		angle_box.offset_right = -16.0
+		angle_box.offset_bottom = 90.0
+		hud_top.add_child(angle_box)
+		var angle_label := Label.new()
+		angle_label.text = "Map angle: %d°" % int(round(_cam.view_angle_deg))
+		angle_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+		angle_label.add_theme_constant_override("outline_size", 4)
+		angle_box.add_child(angle_label)
+		var slider := HSlider.new()
+		slider.min_value = 15.0
+		slider.max_value = 90.0
+		slider.step = 1.0
+		slider.value = _cam.view_angle_deg
+		slider.custom_minimum_size = Vector2(220, 24)
+		angle_box.add_child(slider)
+		slider.value_changed.connect(func(v: float) -> void:
+			if _cam:
+				_cam.view_angle_deg = v
+			angle_label.text = "Map angle: %d°" % int(round(v)))
+
 	# On-screen directional joystick (bottom-left) for touch / free-drive control.
 	var hud := get_node_or_null(^"HUD")
 	if hud:
@@ -137,6 +166,23 @@ func _ready() -> void:
 		call_deferred("_capture_signals")
 	if OS.has_environment("CTT_PEDSHOT"):
 		call_deferred("_capture_pedshot")
+	if OS.has_environment("CTT_CAMSHOT"):
+		call_deferred("_capture_camshot")
+
+## Screenshot the live game (map) camera at CTT_ANGLE degrees, to preview the angle
+## slider's effect. Uses the real DriveCameraRig, not a throwaway camera.
+func _capture_camshot() -> void:
+	if _cam and OS.has_environment("CTT_ANGLE"):
+		_cam.view_angle_deg = float(OS.get_environment("CTT_ANGLE"))
+	await get_tree().create_timer(2.0).timeout
+	var hud := get_node_or_null(^"HUD") as CanvasLayer
+	if hud:
+		hud.visible = false
+	await get_tree().create_timer(0.3).timeout
+	var img := get_viewport().get_texture().get_image()
+	img.save_png("user://camshot.png")
+	print("[CAMSHOT] ", ProjectSettings.globalize_path("user://camshot.png"))
+	get_tree().quit()
 
 ## Eye-level angled capture aimed at a pedestrian loop, to check the walkers look
 ## right in the city (textured, walking, grounded on the sidewalk). Env: PED_X/PED_Z
