@@ -187,6 +187,8 @@ func _ready() -> void:
 	add_child(_pedestrians)
 	_spawn_pedestrians()
 	_spawn_traffic_vehicles()
+	if OS.has_environment("CTT_PED_HIT_TEST"):
+		call_deferred("_run_pedestrian_hit_test")
 
 	if OS.has_environment("CTT_SHOT"):
 		call_deferred("_capture_topdown")
@@ -225,6 +227,8 @@ func _capture_pedshot() -> void:
 	var tz := float(OS.get_environment("PED_Z")) if OS.has_environment("PED_Z") else -13.0
 	var dist := float(OS.get_environment("PED_DIST")) if OS.has_environment("PED_DIST") else 6.0
 	var target := Vector3(tx, 1.0, tz)
+	if OS.has_environment("CTT_PED_HIT_TEST") and _pedestrians and _pedestrians.get_child_count() > 0:
+		target = (_pedestrians.get_child(0) as Node3D).global_position + Vector3.UP * 0.8
 	var cam := Camera3D.new()
 	cam.far = 500.0
 	cam.position = target + Vector3(dist * 0.7, maxf(2.2, dist * 0.5), dist * 0.7)
@@ -640,6 +644,17 @@ func _spawn_pedestrians() -> void:
 		var char_path: String = PED_CHARS[i % PED_CHARS.size()]
 		ped.setup(char_path, verified[i], randf_range(1.1, 1.6), verified_activity[i])
 
+func _run_pedestrian_hit_test() -> void:
+	await get_tree().create_timer(0.2).timeout
+	if _pedestrians == null or _pedestrians.get_child_count() == 0:
+		print("[PED HIT TEST] no pedestrian")
+		return
+	var ped := _pedestrians.get_child(0) as Node3D
+	var start := ped.global_position
+	ped.debug_simulate_vehicle_hit(Vector3(0.0, 0.0, -12.0))
+	await get_tree().create_timer(0.35).timeout
+	print("[PED HIT TEST] displacement=%.2f" % ped.global_position.distance_to(start))
+
 ## Spawn a small, varied ambient fleet on verified points along the main avenue.
 ## They reuse the road-only NavMesh and arcade grounding instead of lane-graph AI.
 func _spawn_traffic_vehicles() -> void:
@@ -665,6 +680,9 @@ func _spawn_traffic_vehicles() -> void:
 		car.set("max_speed", 13.0)
 		var visual := Node3D.new()
 		visual.name = "Visual"
+		# Polygon vehicle art faces +Z, while ArcadeCar drives along local -Z.
+		# Match the player's authored 180-degree visual correction.
+		visual.rotation.y = PI
 		visual.add_child(packed.instantiate())
 		car.add_child(visual)
 		car.transform = spawns[index]

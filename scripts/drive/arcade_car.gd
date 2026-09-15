@@ -69,6 +69,7 @@ var _stuck_time: float = 0.0
 var _reverse_time: float = 0.0       # >0 => backing out of an obstacle
 
 func _ready() -> void:
+	add_to_group("arcade_vehicle")
 	_spawn = global_transform
 	motion_mode = CharacterBody3D.MOTION_MODE_FLOATING   # no gravity / floor logic
 	_visual = get_node_or_null(visual_path)
@@ -76,6 +77,7 @@ func _ready() -> void:
 		_visual = get_node_or_null("Visual")
 	_neutralize_prefab_colliders(self)
 	_fit_visual_and_collision()
+	_setup_pedestrian_impact_sensor()
 	_setup_vehicle_lights()
 	_grounded_y = global_position.y
 	_last_pos = global_position
@@ -89,6 +91,23 @@ func _ready() -> void:
 		add_child(_agent)
 	# Seat on the road under the spawn immediately (physics space is ready).
 	call_deferred("_ground_car")
+
+## A non-blocking overlap volume lets the fast arcade car trigger pedestrian
+## reactions without pedestrians becoming hard walls that can wedge the vehicle.
+func _setup_pedestrian_impact_sensor() -> void:
+	if _shape == null or _shape.shape == null:
+		return
+	var sensor := Area3D.new()
+	sensor.name = "PedestrianImpactSensor"
+	sensor.collision_layer = 4
+	sensor.collision_mask = 2
+	sensor.monitoring = true
+	sensor.monitorable = true
+	var sensor_shape := CollisionShape3D.new()
+	sensor_shape.shape = _shape.shape.duplicate()
+	sensor_shape.transform = _shape.transform
+	sensor.add_child(sensor_shape)
+	add_child(sensor)
 
 ## The Synty vehicle prefab ships its own StaticBody3D colliders (body + wheels).
 ## Disable them so they never interfere with our single kinematic body.
@@ -460,3 +479,6 @@ func reset_to_spawn() -> void:
 
 func get_speed_kmh() -> float:
 	return absf(speed) * 3.6
+
+func get_impact_velocity() -> Vector3:
+	return velocity
