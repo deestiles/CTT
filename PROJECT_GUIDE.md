@@ -114,6 +114,15 @@ Vehicle lighting must use the model's real meshes/material surfaces:
 - Brake lights: the same real rear lamp area, brighter red; work by day and night, including automatic slowing before turns.
 - Reverse lights: the real white reverse-lamp area; work by day and night.
 
+Future garage/settings requirement: offer a regional driving-style profile so
+players can use familiar traffic conventions. Initial choices should include
+North American and European profiles, with the underlying traffic-side setting
+kept separate/extensible for left-hand-driving regions (for example the UK,
+Ireland, Australia, Japan, and others). A profile must switch the complete city
+consistently—player/NPC spawns, route direction, stop approaches, lane-change and
+yield behavior—not merely mirror one vehicle. The current free-drive default is
+North American right-hand traffic.
+
 ## Time of day
 
 The free-drive test cycles day/dusk/night from the TIME button. Street lamps and appropriate building rooms illuminate at dusk/night. Traffic signals continue operating independently of time of day. Validate vehicle lights in both day and night modes.
@@ -242,6 +251,12 @@ Verification: `drive_city.tscn` ran for 1,800 headless physics frames without GD
 The owner's driving capture showed that an ambient vehicle began on the sidewalk and requested US right-hand traffic plus a legal police spawn. A live physics cross-section at `x=-30/-70/-120` identified the actual main-avenue carriageways near `z=-8` and `z=-2.5`; the previously authored `z=+3` path is sidewalk. The fixed circuit, all four civilian spawns, and their stop points now use westbound/north `z=-8` and eastbound/south `z=-2.5`. The west-facing police player now starts in the westbound `z=-8` lane, with the first following civilian held behind it rather than overlapping it. `scripts/tools/probe_ground.gd` retains the opt-in `CTT_ROAD_SWEEP` diagnostic so future placement changes can be checked against live Demo physics instead of unreliable nested transforms. Changed files: `scenes/drive/drive_city.tscn`, `scripts/drive/drive_city.gd`, and `scripts/tools/probe_ground.gd`.
 
 Verification: the raycast sweep classified `z=+3` as `SM_Env_Sidewalk_*` and both new centers as road surfaces along the tested avenue sections (apart from expected removable/roadside colliders). Godot 4.7.2 ran the scene for 1,800 headless physics frames without GDScript/runtime errors. A follow-up lane diagnostic reported westbound headings near `(-1,0,0)`, eastbound headings near `(1,0,0)`, and `max_lane_error=0.05 m`; the lead westbound civilian stopped at its 10 m following threshold behind the newly co-located police lane. Interactive editor driving remains required to confirm the visual lane markings, clearance past median props, complete end U-turns, and traffic flow across full signal cycles.
+
+### 2026-09-15 — branch `codex/free-drive-city-features` (ambient vehicle night lights)
+
+The owner visually approved the corrected NPC lanes and reported that civilian headlights and rear lights stayed off at night. The time-of-day controller had only forwarded its dark-state flag to the player car. It now updates every `arcade_vehicle`, including NPCs already in the scene, and each newly spawned NPC immediately inherits the current time state. `ArcadeCar.set_night_lights()` applies the state immediately to the two modeled-front spotlight children and the real vehicle material's rear running-light emission; braking and reversing continue to layer their existing emissions independently. An opt-in `CTT_NPC_LIGHT_TEST` diagnostic reports light setup/state for every ambient car. Changed files: `scripts/drive/arcade_car.gd` and `scripts/drive/drive_city.gd`.
+
+Verification: Godot 4.7.2 ran `drive_city.tscn` headless through the forced-night diagnostic without GDScript/runtime errors. All four ambient vehicles reported `material_ready=true`, `headlights=2`, `visible_headlights=2`, `night_lights=true`, and `tail_energy=3.0`. Interactive night driving remains required to approve beam placement/intensity on each different vehicle body and visually confirm rear lens masking. The future garage/settings backlog now also records regional driving profiles (North American and European initially, extensible to left-hand-driving regions); this change only records the requirement and does not add that UI yet.
 
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 

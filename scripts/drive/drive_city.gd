@@ -196,6 +196,10 @@ func _ready() -> void:
 		_update_traffic_state(true)
 	_spawn_pedestrians()
 	_spawn_traffic_vehicles()
+	if OS.has_environment("CTT_NPC_LIGHT_TEST"):
+		_tod_index = 2
+		_apply_time_preset()
+		call_deferred("_run_npc_light_test")
 	if OS.has_environment("CTT_TRAFFIC_TEST"):
 		call_deferred("_run_traffic_lane_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
@@ -445,8 +449,10 @@ func _apply_time_preset() -> void:
 	if _sky:
 		_sky.current_time = float(preset[1])
 		_sky.tonemap_exposure = float(preset[2])
-	if _car:
-		_car.night_lights = dark
+	for node in get_tree().get_nodes_in_group("arcade_vehicle"):
+		var vehicle := node as ArcadeCar
+		if vehicle:
+			vehicle.set_night_lights(dark)
 	for l in _lamp_lights:
 		(l as Node3D).visible = dark
 	for material in _window_lights:
@@ -708,9 +714,19 @@ func _spawn_traffic_vehicles() -> void:
 		car.add_child(visual)
 		car.transform = spawns[index]
 		add_child(car)
+		(car as ArcadeCar).set_night_lights(_tod_index != 0)
 		car.begin_autopilot()
 	if OS.has_environment("CTT_CITY_FEATURES"):
 		print("[TRAFFIC] requested=%d spawned=%d" % [traffic_vehicle_count, count])
+
+func _run_npc_light_test() -> void:
+	await get_tree().physics_frame
+	for node in get_tree().get_nodes_in_group("arcade_vehicle"):
+		if node == _car:
+			continue
+		var vehicle := node as ArcadeCar
+		if vehicle:
+			print("[NPC LIGHT TEST] %s %s" % [vehicle.name, vehicle.get_vehicle_light_debug()])
 
 func _run_traffic_lane_test() -> void:
 	await get_tree().create_timer(1.5).timeout

@@ -74,6 +74,10 @@ var _last_pos: Vector3 = Vector3.ZERO
 var _stuck_time: float = 0.0
 var _reverse_time: float = 0.0       # >0 => backing out of an obstacle
 
+func set_night_lights(enabled: bool) -> void:
+	night_lights = enabled
+	_update_vehicle_lights()
+
 func _ready() -> void:
 	add_to_group("arcade_vehicle")
 	_spawn = global_transform
@@ -390,6 +394,22 @@ func _update_vehicle_lights() -> void:
 	if _body:
 		for hl in _body.find_children("Headlight*", "SpotLight3D", false, false):
 			(hl as SpotLight3D).visible = night_lights
+
+func get_vehicle_light_debug() -> Dictionary:
+	var headlights := 0
+	var visible_headlights := 0
+	if _body:
+		for node in _body.find_children("Headlight*", "SpotLight3D", false, false):
+			headlights += 1
+			if (node as SpotLight3D).visible:
+				visible_headlights += 1
+	return {
+		"material_ready": _light_mat != null,
+		"headlights": headlights,
+		"visible_headlights": visible_headlights,
+		"night_lights": night_lights,
+		"tail_energy": float(_light_mat.get_shader_parameter("tail_energy")) if _light_mat else 0.0,
+	}
 
 ## Keep the car on the drivable NavMesh: if it strays too far off (onto a
 ## sidewalk during a wide/U-turn), pull it back toward the nearest road point.
