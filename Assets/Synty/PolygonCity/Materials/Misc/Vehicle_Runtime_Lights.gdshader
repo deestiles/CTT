@@ -4,6 +4,9 @@ uniform sampler2D albedo_texture : source_color, filter_linear_mipmap_anisotropi
 uniform float tail_energy = 0.0;
 uniform float brake_energy = 0.0;
 uniform float reverse_energy = 0.0;
+uniform vec2 tail_z_range = vec2(-2.30, -2.05);
+uniform vec2 tail_y_range = vec2(0.75, 1.06);
+uniform vec2 tail_abs_x_range = vec2(0.50, 0.98);
 
 varying vec3 model_position;
 
@@ -18,12 +21,12 @@ void fragment() {
 	METALLIC = 0.08;
 	// Polygon City bakes the lamp lenses into the body mesh. Restrict emission
 	// to rear, lamp-height polygons and select the authored red/white pixels.
-	float rear = 1.0 - smoothstep(-1.15, -0.72, model_position.z);
-	// Mesh inspection places the authored rear lenses at z -2.26..-2.09 and
-	// y 0.81..1.01. SOURCE_COLOR sampling is linear, so thresholds must also
-	// be linear rather than copied from the sRGB atlas values.
-	float lamp_height = smoothstep(0.70, 0.80, model_position.y) * (1.0 - smoothstep(1.02, 1.12, model_position.y));
-	float lamp_side = smoothstep(0.30, 0.48, abs(model_position.x));
+	// Every Polygon vehicle has different lamp geometry. Runtime code supplies
+	// ranges measured from each individual body mesh rather than applying the
+	// police car's coordinates to the entire fleet.
+	float rear = smoothstep(tail_z_range.x, tail_z_range.x + 0.035, model_position.z) * (1.0 - smoothstep(tail_z_range.y - 0.035, tail_z_range.y, model_position.z));
+	float lamp_height = smoothstep(tail_y_range.x, tail_y_range.x + 0.035, model_position.y) * (1.0 - smoothstep(tail_y_range.y - 0.035, tail_y_range.y, model_position.y));
+	float lamp_side = smoothstep(tail_abs_x_range.x, tail_abs_x_range.x + 0.035, abs(model_position.x)) * (1.0 - smoothstep(tail_abs_x_range.y - 0.035, tail_abs_x_range.y, abs(model_position.x)));
 	float red_pixel = smoothstep(0.12, 0.32, base.r) * (1.0 - smoothstep(0.10, 0.24, base.g)) * (1.0 - smoothstep(0.12, 0.27, base.b));
 	float tail = rear * lamp_height * lamp_side * red_pixel;
 	// The reverse section is an inner subsection of each authored lamp cluster.

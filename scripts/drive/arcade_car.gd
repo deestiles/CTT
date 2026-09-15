@@ -74,6 +74,17 @@ var _last_pos: Vector3 = Vector3.ZERO
 var _stuck_time: float = 0.0
 var _reverse_time: float = 0.0       # >0 => backing out of an obstacle
 
+# Mesh-audited lamp positions and rear-lens bounds. Values are body-local and
+# intentionally keyed per model: these vehicles do not share lamp geometry.
+const VEHICLE_LIGHT_PROFILES := {
+	"SM_Veh_Car_Police_01": {"head": Vector3(0.78, 0.75, 2.63), "tail_z": Vector2(-2.30, -2.05), "tail_y": Vector2(0.75, 1.06), "tail_x": Vector2(0.50, 0.98)},
+	"SM_Veh_Car_Sedan_01": {"head": Vector3(0.55, 0.75, 2.58), "tail_z": Vector2(-2.30, -2.05), "tail_y": Vector2(0.75, 1.06), "tail_x": Vector2(0.50, 0.98)},
+	"SM_Veh_Car_Taxi_01": {"head": Vector3(0.55, 0.75, 2.58), "tail_z": Vector2(-2.30, -2.05), "tail_y": Vector2(0.75, 1.06), "tail_x": Vector2(0.50, 0.98)},
+	"SM_Veh_Car_Small_01": {"head": Vector3(0.62, 0.60, 2.02), "tail_z": Vector2(-1.85, -1.44), "tail_y": Vector2(0.72, 1.22), "tail_x": Vector2(0.48, 0.82)},
+	"SM_Veh_Car_Van_01": {"head": Vector3(0.90, 0.88, 2.48), "tail_z": Vector2(-2.33, -2.16), "tail_y": Vector2(0.75, 1.07), "tail_x": Vector2(0.73, 1.08)},
+	"SM_Veh_Car_Muscle_01": {"head": Vector3(0.94, 0.58, 2.82), "tail_z": Vector2(-2.67, -2.49), "tail_y": Vector2(0.47, 0.88), "tail_x": Vector2(0.34, 1.08)},
+}
+
 func set_night_lights(enabled: bool) -> void:
 	night_lights = enabled
 	_update_vehicle_lights()
@@ -368,13 +379,17 @@ func _setup_vehicle_lights() -> void:
 	_light_mat.set_shader_parameter("tail_energy", 0.0)
 	_light_mat.set_shader_parameter("brake_energy", 0.0)
 	_light_mat.set_shader_parameter("reverse_energy", 0.0)
+	var profile: Dictionary = VEHICLE_LIGHT_PROFILES.get(String(_body.name), VEHICLE_LIGHT_PROFILES["SM_Veh_Car_Police_01"])
+	_light_mat.set_shader_parameter("tail_z_range", profile["tail_z"])
+	_light_mat.set_shader_parameter("tail_y_range", profile["tail_y"])
+	_light_mat.set_shader_parameter("tail_abs_x_range", profile["tail_x"])
 	_body.set_surface_override_material(0, _light_mat)
-	# Headlights sit at the modeled front lamps (body-local space) and point +Z
-	# (the body's front); they illuminate the road only at dusk/night.
+	var head: Vector3 = profile["head"]
+	# Each source sits at that model's authored front lamp in body-local space.
 	for i in 2:
 		var hl := SpotLight3D.new()
 		hl.name = "Headlight%d" % i
-		hl.position = Vector3(-0.76 if i == 0 else 0.76, 0.74, 2.5)
+		hl.position = Vector3(-head.x if i == 0 else head.x, head.y, head.z)
 		hl.rotation_degrees.y = 180.0
 		hl.light_color = Color("#fff3cf")
 		hl.light_energy = 7.0
@@ -409,6 +424,8 @@ func get_vehicle_light_debug() -> Dictionary:
 		"visible_headlights": visible_headlights,
 		"night_lights": night_lights,
 		"tail_energy": float(_light_mat.get_shader_parameter("tail_energy")) if _light_mat else 0.0,
+		"body": String(_body.name) if _body else "none",
+		"headlight_position": (_body.get_node_or_null("Headlight0") as SpotLight3D).position if _body and _body.get_node_or_null("Headlight0") else Vector3.ZERO,
 	}
 
 ## Keep the car on the drivable NavMesh: if it strays too far off (onto a
