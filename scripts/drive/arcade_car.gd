@@ -41,6 +41,12 @@ class_name ArcadeCar
 ## Drive by pathfinding on the baked road NavMesh instead of a fixed route.
 @export var use_navigation: bool = false
 
+@export_group("Ambient traffic rules")
+@export var obey_traffic_rules: bool = false
+@export var following_distance: float = 9.0
+@export var traffic_stop_points: PackedVector3Array = PackedVector3Array()
+@export var traffic_axis_x: bool = true
+
 var _agent: NavigationAgent3D
 var _nav_ready_frames: int = 0
 
@@ -238,6 +244,12 @@ func _physics_process(delta: float) -> void:
 		steer_cmd = m_steer
 		boosting = Input.is_action_pressed("boost")
 
+	if obey_traffic_rules and not manual:
+		var rule_brake := _traffic_rule_brake()
+		if rule_brake > 0.0:
+			accel_cmd = 0.0
+			brake_cmd = maxf(brake_cmd, rule_brake)
+
 	var top := max_speed * (boost_mult if boosting else 1.0)
 
 	if accel_cmd > 0.0:
@@ -292,6 +304,34 @@ func _physics_process(delta: float) -> void:
 			_stuck_time = maxf(0.0, _stuck_time - delta)
 	_last_pos = global_position
 	_update_vehicle_lights()
+
+## Maintain a safe queue gap and stop before authored signal lines. These checks
+## supplement the lane route; they never choose a new direction or cross a lane.
+func _traffic_rule_brake() -> float:
+	var forward := -global_transform.basis.z.normalized()
+	var from := global_position + Vector3.UP * 0.7
+	var query := PhysicsRayQueryParameters3D.create(from, from + forward * following_distance)
+	query.exclude = [get_rid()]
+	query.collision_mask = 1
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty():
+		var other := hit.collider as Node
+		if other and other.is_in_group("arcade_vehicle"):
+			var distance := from.distance_to(hit.position)
+			return clampf(1.0 - distance / following_distance, 0.35, 1.0)
+	var city := get_parent()
+	if city == null or not city.has_method("get_traffic_state_for_axis"):
+		return 0.0
+	if int(city.get_traffic_state_for_axis(traffic_axis_x)) == 2:
+		return 0.0
+	for stop_point in traffic_stop_points:
+		var offset := stop_point - global_position
+		offset.y = 0.0
+		var ahead := offset.dot(forward)
+		var lateral := (offset - forward * ahead).length()
+		if ahead > 0.0 and ahead < 13.0 and lateral < 2.2:
+			return clampf(1.0 - ahead / 13.0, 0.45, 1.0)
+	return 0.0
 
 ## CharacterBody motion does not automatically transfer satisfying momentum to
 ## lightweight rigid props, so explicitly turn slide contacts into an arcade hit.

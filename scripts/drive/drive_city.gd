@@ -65,6 +65,12 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 	Vector3(-145, 0, -3),
 	Vector3(-15, 0, -3),
 ])
+## Stop lines for the two verified cross intersections on the main avenue.
+## z=+3 travels west (-X); z=-3 travels east (+X).
+var MAIN_AVENUE_STOP_LINES := PackedVector3Array([
+	Vector3(-34.0, 0.0, 3.0), Vector3(-94.0, 0.0, 3.0),
+	Vector3(-106.0, 0.0, -3.0), Vector3(-46.0, 0.0, -3.0),
+])
 
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
@@ -185,8 +191,13 @@ func _ready() -> void:
 	_pedestrians = Node3D.new()
 	_pedestrians.name = "Pedestrians"
 	add_child(_pedestrians)
+	if OS.has_environment("CTT_TRAFFIC_RED_TEST"):
+		_traffic_time = TRAFFIC_GREEN + TRAFFIC_AMBER + 0.2
+		_update_traffic_state(true)
 	_spawn_pedestrians()
 	_spawn_traffic_vehicles()
+	if OS.has_environment("CTT_TRAFFIC_TEST"):
+		call_deferred("_run_traffic_lane_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
 		call_deferred("_run_pedestrian_hit_test")
 
@@ -382,11 +393,12 @@ func _setup_traffic_lights(city: Node) -> void:
 	if OS.has_environment("CTT_CITY_FEATURES"):
 		print("[SIGNALS] x_phase=%d z_phase=%d" % [axis_x, axis_z])
 
-## Demo transforms are baked/unhelpful for placement, but each signal mesh AABB
-## still reveals whether its arm/head geometry predominantly spans X or Z.
+## Signal props retain their placed orientation even though the large Demo road
+## tiles cannot be located reliably from node bounds. Perpendicular approaches
+## therefore derive phase from each signal's world-facing basis.
 func _signal_axis_group(mi: MeshInstance3D) -> bool:
-	var size := mi.get_aabb().size
-	return size.x >= size.z
+	var facing := mi.global_transform.basis.z.normalized()
+	return absf(facing.x) >= absf(facing.z)
 
 func _make_signal_material() -> ShaderMaterial:
 	var m := ShaderMaterial.new()
@@ -419,6 +431,9 @@ func _update_traffic_state(force: bool) -> void:
 	for sig in _signals:
 		var state: int = sa if sig["group"] else sb
 		(sig["mat"] as ShaderMaterial).set_shader_parameter("signal_state", state)
+
+func get_traffic_state_for_axis(axis_x: bool) -> int:
+	return _last_state_a if axis_x else _last_state_b
 
 func _on_cycle_time() -> void:
 	_tod_index = (_tod_index + 1) % _tod_presets.size()
@@ -659,13 +674,12 @@ func _run_pedestrian_hit_test() -> void:
 ## They reuse the road-only NavMesh and arcade grounding instead of lane-graph AI.
 func _spawn_traffic_vehicles() -> void:
 	var spawns: Array[Transform3D] = [
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-58, 1.0, 3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-88, 1.0, -3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-112, 1.0, 3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-136, 1.0, -3.0)),
-		Transform3D(Basis.IDENTITY, Vector3(-30, 1.0, 24.0)),
-		Transform3D(Basis.from_euler(Vector3(0, PI, 0)), Vector3(18, 1.0, 42.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-22, 1.0, 3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-72, 1.0, 3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-132, 1.0, -3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-78, 1.0, -3.0)),
 	]
+	var legal_route := _densify(ROUTE, 10.0)
 	var count := mini(traffic_vehicle_count, mini(spawns.size(), TRAFFIC_CARS.size()))
 	for index in count:
 		var packed := load(TRAFFIC_CARS[index]) as PackedScene
@@ -675,7 +689,14 @@ func _spawn_traffic_vehicles() -> void:
 		car.name = "AmbientTraffic_%02d" % (index + 1)
 		car.set_script(ARCADE_CAR_SCRIPT)
 		car.set("visual_path", NodePath("Visual"))
-		car.set("use_navigation", true)
+		car.set("use_navigation", false)
+		car.set("autopilot", true)
+		car.set("route", legal_route)
+		car.set("waypoint_reach", 3.5)
+		car.set("obey_traffic_rules", true)
+		car.set("following_distance", 10.0)
+		car.set("traffic_stop_points", MAIN_AVENUE_STOP_LINES)
+		car.set("traffic_axis_x", true)
 		car.set("autopilot_speed", 7.5 + index * 0.65)
 		car.set("max_speed", 13.0)
 		var visual := Node3D.new()
@@ -687,8 +708,22 @@ func _spawn_traffic_vehicles() -> void:
 		car.add_child(visual)
 		car.transform = spawns[index]
 		add_child(car)
+		car.begin_autopilot()
 	if OS.has_environment("CTT_CITY_FEATURES"):
 		print("[TRAFFIC] requested=%d spawned=%d" % [traffic_vehicle_count, count])
+
+func _run_traffic_lane_test() -> void:
+	await get_tree().create_timer(1.5).timeout
+	var max_lane_error := 0.0
+	for car in get_tree().get_nodes_in_group("arcade_vehicle"):
+		if car == _car:
+			continue
+		var node := car as Node3D
+		var lane_error := minf(absf(node.global_position.z - 3.0), absf(node.global_position.z + 3.0))
+		max_lane_error = maxf(max_lane_error, lane_error)
+		var forward := -node.global_transform.basis.z.normalized()
+		print("[TRAFFIC TEST] %s pos=%s forward=%s speed=%.2f" % [node.name, node.global_position, forward, float(car.speed)])
+	print("[TRAFFIC TEST] max_lane_error=%.2f" % max_lane_error)
 
 ## Accept a route only when every waypoint hits live walkable physics at a
 ## consistent height. Demo mesh transforms/AABBs are not trusted for placement.

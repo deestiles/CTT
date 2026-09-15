@@ -231,6 +231,12 @@ Corrected spawned civilian visuals by applying the same 180-degree visual rotati
 
 Verification: all four FBXs imported in Godot 4.7.2; `drive_city.tscn` ran headless for 720 frames without GDScript/runtime failures. The environment-gated forced-hit test selected `hit_2`, produced launch velocity `(0.0, 6.14, -8.64)`, and measured 3.27 m displacement after 0.35 seconds; a second run selected `hit_3`, demonstrating random selection. Interactive driving remains required to approve NPC visual direction in motion and tune pedestrian launch, spin, landing, animation timing, repeated impacts, and recovery. A diagnostic Forward Mobile capture did not keep the fast-moving pedestrian centered, so it is not treated as visual proof.
 
+### 2026-09-15 — branch `codex/free-drive-city-features` (authored ambient traffic lanes/laws)
+
+Replaced unsafe random-NavMesh civilian roaming with a densified, verified two-lane circuit on the main avenue (`z=+3` westbound, `z=-3` eastbound), with two staggered cars per direction and controlled U-turns only at the route ends. Ambient cars now use 10 m forward vehicle detection for queue spacing, remain on their assigned route instead of choosing cross-lane destinations, and stop for red/amber at four authored stop lines before the two verified cross intersections. Traffic-signal phase grouping was corrected to use each placed signal's world-facing basis rather than the reusable mesh AABB, producing 27 X-facing and 33 Z-facing signal surfaces. NPC spawn yaw was corrected after a top-down capture caught initial cross-lane U-turns.
+
+Verification: `drive_city.tscn` ran for 1,800 headless physics frames without GDScript/runtime errors. The lane diagnostic measured `max_lane_error=0.00`; westbound cars reported forward `(-1,0,0)` at `z=3`, eastbound cars `(1,0,0)` at `z=-3`. A forced-red test stopped the lead westbound car at `0.00 m/s` before its line and showed the following car decelerating. A Forward Mobile top-down capture confirmed the corrected cars are visually aligned east/west. Still requires interactive driving review for queue smoothness, full-cycle red/green release, U-turn spacing at both remote ends, police obstruction response, and prolonged traffic circulation.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt
