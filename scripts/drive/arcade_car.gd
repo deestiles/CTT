@@ -110,8 +110,14 @@ func _ready() -> void:
 		_agent.path_max_distance = 50.0
 		_agent.avoidance_enabled = false
 		add_child(_agent)
-	# Seat on the road under the spawn immediately (physics space is ready).
-	call_deferred("_ground_car")
+	# Store the respawn only after live physics has seated the wheels on the road.
+	call_deferred("_seat_and_capture_spawn")
+
+func _seat_and_capture_spawn() -> void:
+	await get_tree().physics_frame
+	_grounded_once = false
+	_ground_car()
+	_spawn = global_transform
 
 ## A non-blocking overlap volume lets the fast arcade car trigger pedestrian
 ## reactions without pedestrians becoming hard walls that can wedge the vehicle.
@@ -356,6 +362,8 @@ func _push_knockable_props() -> void:
 		var body := hit.get_collider() as RigidBody3D
 		if body == null or not body.is_in_group("knockable_city_prop"):
 			continue
+		body.freeze = false
+		body.sleeping = false
 		var direction := Vector3(velocity.x, 0.0, velocity.z).normalized()
 		if direction == Vector3.ZERO:
 			direction = -global_transform.basis.z.normalized()
@@ -550,7 +558,15 @@ func _autopilot_command() -> Vector3:
 func reset_to_spawn() -> void:
 	speed = 0.0
 	velocity = Vector3.ZERO
+	_steer_smooth = 0.0
+	_stuck_time = 0.0
+	_reverse_time = 0.0
+	touch_input = Vector2.ZERO
 	global_transform = _spawn
+	_grounded_y = _spawn.origin.y
+	_grounded_once = false
+	_ground_car()
+	_last_pos = global_position
 	if autopilot:
 		begin_autopilot()
 

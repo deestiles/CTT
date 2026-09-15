@@ -37,7 +37,7 @@ func _ready() -> void:
 	td_distance = sqrt(td_height * td_height + td_back * td_back)
 	view_angle_deg = rad_to_deg(atan2(td_height, td_back))
 	if _target:
-		_snap_to_target()
+		snap_to_target()
 
 ## Map-view offset split into (horizontal behind-distance, height) for the current
 ## angle at td_distance. angle 90 = straight overhead, small angle = low chase.
@@ -47,7 +47,11 @@ func _td_ground_up() -> Vector2:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_camera"):
-		mode = 1 - mode
+		toggle_mode()
+
+func toggle_mode() -> void:
+	mode = 1 - mode
+	snap_to_target()
 
 func _process(delta: float) -> void:
 	if _target == null:
@@ -74,9 +78,16 @@ func _look_smooth(focus: Vector3, weight: float) -> void:
 	var target_xf := current_xf.looking_at(focus, Vector3.UP)
 	global_transform.basis = current_xf.basis.slerp(target_xf.basis, clampf(weight, 0.0, 1.0)).orthonormalized()
 
-func _snap_to_target() -> void:
+func snap_to_target() -> void:
+	if _target == null:
+		return
 	var t := _target.global_transform
-	var back := t.basis.z.normalized()
-	var gu := _td_ground_up()
-	global_position = t.origin + back * gu.x + Vector3.UP * gu.y
-	look_at(t.origin, Vector3.UP)
+	if mode == 0:
+		var back := t.basis.z.normalized()
+		var gu := _td_ground_up()
+		global_position = t.origin + back * gu.x + Vector3.UP * gu.y
+		look_at(t.origin, Vector3.UP)
+	else:
+		var forward := -t.basis.z.normalized()
+		global_position = t.origin + forward * pov_front + Vector3.UP * pov_height
+		look_at(t.origin + forward * pov_forward_look + Vector3.UP * (pov_height - 0.3), Vector3.UP)

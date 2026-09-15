@@ -76,7 +76,7 @@ var MAIN_AVENUE_STOP_LINES := PackedVector3Array([
 @export var camera_path: NodePath = ^"Camera3D"
 @export var pedestrian_count: int = 5
 @export_range(0, 8) var traffic_vehicle_count: int = 4
-@export_range(0, 64) var max_knockable_props: int = 24
+@export_range(0, 160) var max_knockable_props: int = 128
 @export var camera_customization_unlocked: bool = false
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
 @export var ground_y: float = 43.08
@@ -200,6 +200,10 @@ func _ready() -> void:
 		_tod_index = 2
 		_apply_time_preset()
 		call_deferred("_run_npc_light_test")
+	if OS.has_environment("CTT_RESET_TEST"):
+		call_deferred("_run_reset_test")
+	if OS.has_environment("CTT_KNOCKABLE_TEST"):
+		call_deferred("_run_knockable_test")
 	if OS.has_environment("CTT_TRAFFIC_TEST"):
 		call_deferred("_run_traffic_lane_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
@@ -540,11 +544,19 @@ func _setup_window_lights(city: Node) -> void:
 		print("[WINDOWS] eligible=%d lit=%d" % [eligible.size(), _window_lights.size()])
 
 ## Preserve existing meshes/transforms while replacing their static collision
-## child with a lightweight rigid wrapper. A cap keeps the mobile physics budget
-## predictable; trash bags/cans/bins nearest scene order become interactive.
+## child with a lightweight rigid wrapper. Bodies remain frozen until first hit,
+## keeping the expanded prop set inexpensive while idle.
 func _setup_knockable_garbage(city: Node) -> void:
-	var candidates: Array[Node] = city.find_children("*Trash*", "MeshInstance3D", true, false)
+	var candidates: Array[Node] = []
+	var seen := {}
+	for pattern in ["*Trash*", "*Cardboard*", "*Mailbox*", "*Cone*", "*Barrier*"]:
+		for node in city.find_children(pattern, "MeshInstance3D", true, false):
+			var id := node.get_instance_id()
+			if not seen.has(id):
+				seen[id] = true
+				candidates.append(node)
 	var converted := 0
+	var category_counts := {"trash": 0, "cardboard": 0, "mailbox": 0, "cone": 0, "barrier": 0}
 	for node in candidates:
 		if converted >= max_knockable_props:
 			break
@@ -556,9 +568,27 @@ func _setup_knockable_garbage(city: Node) -> void:
 		var old_transform := mesh.transform
 		var body := RigidBody3D.new()
 		body.name = "%s_Knockable" % mesh.name
-		body.mass = 0.65 if String(mesh.name).contains("Bag") else 2.2
+		var prop_name := String(mesh.name)
+		var category := "trash"
+		body.mass = 2.2
+		if prop_name.contains("Bag"):
+			body.mass = 0.55
+		elif prop_name.contains("Cardboard"):
+			category = "cardboard"
+			body.mass = 0.8
+		elif prop_name.contains("Mailbox"):
+			category = "mailbox"
+			body.mass = 5.0
+		elif prop_name.contains("Cone"):
+			category = "cone"
+			body.mass = 0.7
+		elif prop_name.contains("Barrier"):
+			category = "barrier"
+			body.mass = 3.0
 		body.linear_damp = 0.7
 		body.angular_damp = 0.55
+		body.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+		body.freeze = true
 		body.add_to_group("knockable_city_prop")
 		parent.add_child(body)
 		body.transform = old_transform
@@ -569,9 +599,10 @@ func _setup_knockable_garbage(city: Node) -> void:
 				var copy := (child as CollisionShape3D).duplicate() as CollisionShape3D
 				body.add_child(copy)
 		static_body.queue_free()
+		category_counts[category] = int(category_counts[category]) + 1
 		converted += 1
 	if OS.has_environment("CTT_CITY_FEATURES"):
-		print("[KNOCKABLES] candidates=%d converted=%d" % [candidates.size(), converted])
+		print("[KNOCKABLES] candidates=%d converted=%d categories=%s" % [candidates.size(), converted, category_counts])
 
 func _first_static_body(node: Node) -> StaticBody3D:
 	if node is StaticBody3D:
@@ -778,8 +809,45 @@ func _on_joystick(v: Vector2) -> void:
 
 func _on_toggle_camera() -> void:
 	if _cam:
-		_cam.mode = 1 - _cam.mode
+		_cam.toggle_mode()
 
 func _on_reset() -> void:
 	if _car:
 		_car.reset_to_spawn()
+	if _cam:
+		_cam.snap_to_target()
+
+func _run_reset_test() -> void:
+	await get_tree().create_timer(0.5).timeout
+	for i in 5:
+		_on_toggle_camera()
+	var displaced := _car.global_position
+	displaced.y = -25.0
+	_car.global_position = displaced
+	_on_reset()
+	await get_tree().physics_frame
+	print("[RESET TEST] car=%s camera=%s mode=%d" % [_car.global_position, _cam.global_position, _cam.mode])
+
+func _run_knockable_test() -> void:
+	await get_tree().physics_frame
+	var tested := {}
+	for node in get_tree().get_nodes_in_group("knockable_city_prop"):
+		var body := node as RigidBody3D
+		if body == null:
+			continue
+		var name_text := String(body.name)
+		var category := ""
+		for candidate in ["Cardboard", "Bag", "Mailbox", "Cone"]:
+			if name_text.contains(candidate):
+				category = candidate
+				break
+		if category.is_empty() or tested.has(category):
+			continue
+		var start := body.global_position
+		body.freeze = false
+		body.apply_central_impulse(Vector3(2.0, 4.0, 0.5) * body.mass)
+		await get_tree().create_timer(0.25).timeout
+		print("[KNOCKABLE TEST] %s displacement=%.2f" % [body.name, body.global_position.distance_to(start)])
+		tested[category] = true
+		if tested.size() >= 4:
+			break
