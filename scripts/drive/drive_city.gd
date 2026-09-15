@@ -27,6 +27,18 @@ var SIDEWALK_LOOPS: Array[PackedVector3Array] = [
 	PackedVector3Array([Vector3(-40,0,-12.6), Vector3(-54,0,-12.6), Vector3(-54,0,-13.6), Vector3(-40,0,-13.6)]),
 	PackedVector3Array([Vector3(-14,0,2.0), Vector3(-38,0,2.0), Vector3(-38,0,3.0), Vector3(-14,0,3.0)]),
 	PackedVector3Array([Vector3(-46,0,2.0), Vector3(-54,0,2.0), Vector3(-54,0,3.0), Vector3(-46,0,3.0)]),
+	PackedVector3Array([Vector3(-58,0,-12.6), Vector3(-72,0,-12.6), Vector3(-72,0,-13.6), Vector3(-58,0,-13.6)]),
+	PackedVector3Array([Vector3(-76,0,-12.6), Vector3(-90,0,-12.6), Vector3(-90,0,-13.6), Vector3(-76,0,-13.6)]),
+	PackedVector3Array([Vector3(-58,0,2.0), Vector3(-72,0,2.0), Vector3(-72,0,3.0), Vector3(-58,0,3.0)]),
+	PackedVector3Array([Vector3(-76,0,2.0), Vector3(-90,0,2.0), Vector3(-90,0,3.0), Vector3(-76,0,3.0)]),
+]
+# Each entry names waypoints where the character may use nearby street furniture
+# (sit/gesture) rather than merely walking through it. Routes themselves remain
+# clear of pole footprints and are accepted only after live downward raycasts.
+var SIDEWALK_ACTIVITY_POINTS: Array[PackedInt32Array] = [
+	PackedInt32Array(), PackedInt32Array([1]), PackedInt32Array(),
+	PackedInt32Array([1]), PackedInt32Array(), PackedInt32Array([2]),
+	PackedInt32Array(), PackedInt32Array([1]), PackedInt32Array(),
 ]
 const SIGNAL_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Signal_Color.gdshader")
 const ATLAS_TEX := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
@@ -48,6 +60,7 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
 @export var pedestrian_count: int = 5
+@export var camera_customization_unlocked: bool = false
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
 @export var ground_y: float = 43.08
 ## Approximate centre of the drivable district, used to scatter pedestrians.
@@ -94,9 +107,9 @@ func _ready() -> void:
 		hud_top.add_child(_time_button)
 		_time_button.pressed.connect(_on_cycle_time)
 
-	# Map-view angle slider (top-right): sweep the top-down camera from a low chase
-	# angle (15 deg) up to straight overhead (90 deg) live, to find the best view.
-	if hud_top and _cam:
+	# Camera customization is reserved for the future garage drone upgrade. The
+	# base game uses the authored 25-degree close framing without showing a slider.
+	if hud_top and _cam and camera_customization_unlocked:
 		var angle_box := VBoxContainer.new()
 		angle_box.name = "AngleBox"
 		angle_box.anchor_left = 1.0
@@ -511,13 +524,41 @@ func _collect_vehicles(node: Node, out: Array[Node]) -> void:
 func _spawn_pedestrians() -> void:
 	if PED_CHARS.is_empty() or SIDEWALK_LOOPS.is_empty():
 		return
-	var count: int = mini(pedestrian_count, SIDEWALK_LOOPS.size())
+	var verified: Array[PackedVector3Array] = []
+	var verified_activity: Array[PackedInt32Array] = []
+	for i in SIDEWALK_LOOPS.size():
+		var grounded := _raycast_verify_loop(SIDEWALK_LOOPS[i])
+		if not grounded.is_empty():
+			verified.append(grounded)
+			verified_activity.append(SIDEWALK_ACTIVITY_POINTS[i] if i < SIDEWALK_ACTIVITY_POINTS.size() else PackedInt32Array())
+	if OS.has_environment("CTT_PED_ROUTES"):
+		print("[PED ROUTES] candidates=%d verified=%d" % [SIDEWALK_LOOPS.size(), verified.size()])
+	var count: int = mini(pedestrian_count, verified.size())
 	for i in count:
 		var ped := Node3D.new()
 		ped.set_script(PED_SCRIPT)
 		_pedestrians.add_child(ped)
 		var char_path: String = PED_CHARS[i % PED_CHARS.size()]
-		ped.setup(char_path, SIDEWALK_LOOPS[i], randf_range(1.1, 1.6))
+		ped.setup(char_path, verified[i], randf_range(1.1, 1.6), verified_activity[i])
+
+## Accept a route only when every waypoint hits live walkable physics at a
+## consistent height. Demo mesh transforms/AABBs are not trusted for placement.
+func _raycast_verify_loop(points: PackedVector3Array) -> PackedVector3Array:
+	var grounded := PackedVector3Array()
+	var first_y := INF
+	var space := get_world_3d().direct_space_state
+	for point in points:
+		var query := PhysicsRayQueryParameters3D.create(point + Vector3.UP * 8.0, point + Vector3.DOWN * 20.0)
+		var hit := space.intersect_ray(query)
+		if hit.is_empty():
+			return PackedVector3Array()
+		var hit_y := float(hit.position.y)
+		if first_y == INF:
+			first_y = hit_y
+		elif absf(hit_y - first_y) > 0.6:
+			return PackedVector3Array()
+		grounded.append(Vector3(point.x, hit_y, point.z))
+	return grounded
 
 func _process(delta: float) -> void:
 	_traffic_time += delta
