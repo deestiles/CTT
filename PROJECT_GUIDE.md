@@ -272,6 +272,14 @@ Expanded the existing knockable conversion from the first 24 trash meshes to eve
 
 Verification: Godot 4.7.2 completed the combined reset/city-feature run without GDScript/runtime failures. After five camera toggles and a forced `y=-25` displacement, Reset placed the police car at road height `(-30, 0.106, -8.17)` and the active POV camera at `(-31.6, 1.606, -8.17)`. The four-category impulse diagnostic measured `0.64–0.72 m` displacement after 0.25 seconds for the tested bag, cone, cardboard box, and mailbox. Interactive driving is still required to confirm the original touch-button sequence, approve camera transitions in both modes, and tune how far/heavy each prop category feels when struck at different vehicle speeds.
 
+### 2026-09-15 — branch `codex/free-drive-city-features` (first playable arcade thief chase)
+
+The owner approved the reset/prop work and requested the first actual chase. Ambient civilian vehicle NPCs have been removed from the free-drive runtime and replaced by one labeled muscle-car thief; sidewalk pedestrians remain. The thief starts roughly 35 m ahead of police in the same verified westbound US lane and runs the existing two-lane circuit at 11.5 m/s, while police retains the higher manual top speed. There is deliberately no chase timer and no player-loss condition in this pass.
+
+The lane-graph chase's damage system was not coupled to this self-contained arcade sandbox, so `drive_city.gd` now owns a small arcade capture model: close same-lane impacts above the speed threshold deal `9–28` speed-scaled thief damage, apply a 0.9 s repeat cooldown, and slow both vehicles. A centered HUD shows distance and `THIEF DAMAGE`; reaching 100% stops both cars and displays a full-screen `YOU WIN / THIEF CAPTURED` overlay with `CHASE AGAIN`. Reset during an active chase restores both cars and clears thief damage. The existing per-model muscle-car night-light calibration applies to the thief. Changed file: `scripts/drive/drive_city.gd`; the old lane-graph chase/damage code remains untouched.
+
+Verification: Godot 4.7.2 ran a forced capture test without GDScript/runtime errors: a 16 m/s relative contact dealt the capped 28 damage, advanced the prepared 92% state to 100%, stopped play, and reported the win overlay visible. A separate 900-frame circulation/night-light run showed exactly one non-player vehicle (`ThiefCar`), no ambient civilian fleet, lane error `0.00 m`, westbound heading `(-1,0,0)`, steady `11.50 m/s`, and the muscle car's two calibrated headlights/rear emission active. Interactive editor play is still required to tune hit distance/damage/cooldown, confirm the chase is fun and winnable through full U-turns, and visually approve the portrait HUD/win overlay.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt

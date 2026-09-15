@@ -44,13 +44,7 @@ var SIDEWALK_ACTIVITY_POINTS: Array[PackedInt32Array] = [
 const SIGNAL_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Signal_Color.gdshader")
 const WINDOW_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Window_Night_Glow.gdshader")
 const ATLAS_TEX := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
-const TRAFFIC_CARS: Array[String] = [
-	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Sedan_01.tscn",
-	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Taxi_01.tscn",
-	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Small_01.tscn",
-	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Van_01.tscn",
-	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Muscle_01.tscn",
-]
+const THIEF_CAR := preload("res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Muscle_01.tscn")
 const TRAFFIC_GREEN := 6.0
 const TRAFFIC_AMBER := 1.4
 
@@ -65,17 +59,9 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 	Vector3(-145, 0, -2.5),
 	Vector3(-15, 0, -2.5),
 ])
-## Stop lines for the two verified cross intersections on the main avenue.
-## z=-8 travels west (-X); z=-2.5 travels east (+X).
-var MAIN_AVENUE_STOP_LINES := PackedVector3Array([
-	Vector3(-34.0, 0.0, -8.0), Vector3(-94.0, 0.0, -8.0),
-	Vector3(-106.0, 0.0, -2.5), Vector3(-46.0, 0.0, -2.5),
-])
-
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
 @export var pedestrian_count: int = 5
-@export_range(0, 8) var traffic_vehicle_count: int = 4
 @export_range(0, 160) var max_knockable_props: int = 128
 @export var camera_customization_unlocked: bool = false
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
@@ -99,6 +85,14 @@ var _signals: Array = []
 var _last_state_a: int = -1
 var _last_state_b: int = -1
 var _traffic_time: float = 0.0
+var _thief: ArcadeCar
+var _thief_damage: float = 0.0
+var _capture_cooldown: float = 0.0
+var _chase_won: bool = false
+var _distance_label: Label
+var _damage_label: Label
+var _damage_bar: ProgressBar
+var _win_overlay: Control
 
 func _ready() -> void:
 	randomize()
@@ -124,6 +118,7 @@ func _ready() -> void:
 		_time_button.offset_bottom = 200.0
 		hud_top.add_child(_time_button)
 		_time_button.pressed.connect(_on_cycle_time)
+		_setup_chase_hud(hud_top)
 
 	# Camera customization is reserved for the future garage drone upgrade. The
 	# base game uses the authored 25-degree close framing without showing a slider.
@@ -195,7 +190,7 @@ func _ready() -> void:
 		_traffic_time = TRAFFIC_GREEN + TRAFFIC_AMBER + 0.2
 		_update_traffic_state(true)
 	_spawn_pedestrians()
-	_spawn_traffic_vehicles()
+	_spawn_thief_vehicle()
 	if OS.has_environment("CTT_NPC_LIGHT_TEST"):
 		_tod_index = 2
 		_apply_time_preset()
@@ -206,6 +201,8 @@ func _ready() -> void:
 		call_deferred("_run_knockable_test")
 	if OS.has_environment("CTT_TRAFFIC_TEST"):
 		call_deferred("_run_traffic_lane_test")
+	if OS.has_environment("CTT_CAPTURE_TEST"):
+		call_deferred("_run_capture_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
 		call_deferred("_run_pedestrian_hit_test")
 
@@ -217,6 +214,82 @@ func _ready() -> void:
 		call_deferred("_capture_pedshot")
 	if OS.has_environment("CTT_CAMSHOT"):
 		call_deferred("_capture_camshot")
+
+func _setup_chase_hud(hud: Node) -> void:
+	var panel := PanelContainer.new()
+	panel.name = "ChaseStatus"
+	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	panel.position = Vector2(-170.0, 14.0)
+	panel.size = Vector2(340.0, 92.0)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.015, 0.035, 0.07, 0.88)
+	panel_style.border_color = Color("#268dca")
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(16)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	hud.add_child(panel)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 3)
+	panel.add_child(box)
+	_distance_label = Label.new()
+	_distance_label.text = "35 m TO THIEF"
+	_distance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_distance_label.add_theme_font_size_override("font_size", 22)
+	_distance_label.add_theme_color_override("font_color", Color.WHITE)
+	box.add_child(_distance_label)
+	_damage_bar = ProgressBar.new()
+	_damage_bar.max_value = 100.0
+	_damage_bar.show_percentage = false
+	_damage_bar.custom_minimum_size = Vector2(310.0, 18.0)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = Color("#ff344d")
+	fill.set_corner_radius_all(8)
+	_damage_bar.add_theme_stylebox_override("fill", fill)
+	box.add_child(_damage_bar)
+	_damage_label = Label.new()
+	_damage_label.text = "THIEF DAMAGE 0%"
+	_damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_damage_label.add_theme_font_size_override("font_size", 14)
+	_damage_label.add_theme_color_override("font_color", Color("#ffb5bd"))
+	box.add_child(_damage_label)
+
+	_win_overlay = Control.new()
+	_win_overlay.name = "WinOverlay"
+	_win_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_win_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_win_overlay.visible = false
+	hud.add_child(_win_overlay)
+	var shade := ColorRect.new()
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.0, 0.015, 0.035, 0.88)
+	_win_overlay.add_child(shade)
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_win_overlay.add_child(center)
+	var win_box := VBoxContainer.new()
+	win_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	win_box.add_theme_constant_override("separation", 22)
+	center.add_child(win_box)
+	var title := Label.new()
+	title.text = "YOU WIN"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 72)
+	title.add_theme_color_override("font_color", Color("#42f5a7"))
+	title.add_theme_color_override("font_outline_color", Color("#062b22"))
+	title.add_theme_constant_override("outline_size", 12)
+	win_box.add_child(title)
+	var captured := Label.new()
+	captured.text = "THIEF CAPTURED"
+	captured.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	captured.add_theme_font_size_override("font_size", 28)
+	captured.add_theme_color_override("font_color", Color.WHITE)
+	win_box.add_child(captured)
+	var restart := Button.new()
+	restart.text = "CHASE AGAIN"
+	restart.custom_minimum_size = Vector2(260.0, 64.0)
+	restart.add_theme_font_size_override("font_size", 22)
+	restart.pressed.connect(func() -> void: get_tree().reload_current_scene())
+	win_box.add_child(restart)
 
 ## Screenshot the live game (map) camera at CTT_ANGLE degrees, to preview the angle
 ## slider's effect. Uses the real DriveCameraRig, not a throwaway camera.
@@ -707,48 +780,42 @@ func _run_pedestrian_hit_test() -> void:
 	await get_tree().create_timer(0.35).timeout
 	print("[PED HIT TEST] displacement=%.2f" % ped.global_position.distance_to(start))
 
-## Spawn a small, varied ambient fleet on verified points along the main avenue.
-## They reuse the road-only NavMesh and arcade grounding instead of lane-graph AI.
-func _spawn_traffic_vehicles() -> void:
-	var spawns: Array[Transform3D] = [
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-22, 1.0, -8.0)),
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-72, 1.0, -8.0)),
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-132, 1.0, -2.5)),
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-78, 1.0, -2.5)),
-	]
-	var legal_route := _densify(ROUTE, 10.0)
-	var count := mini(traffic_vehicle_count, mini(spawns.size(), TRAFFIC_CARS.size()))
-	for index in count:
-		var packed := load(TRAFFIC_CARS[index]) as PackedScene
-		if packed == null:
-			continue
-		var car := CharacterBody3D.new()
-		car.name = "AmbientTraffic_%02d" % (index + 1)
-		car.set_script(ARCADE_CAR_SCRIPT)
-		car.set("visual_path", NodePath("Visual"))
-		car.set("use_navigation", false)
-		car.set("autopilot", true)
-		car.set("route", legal_route)
-		car.set("waypoint_reach", 3.5)
-		car.set("obey_traffic_rules", true)
-		car.set("following_distance", 10.0)
-		car.set("traffic_stop_points", MAIN_AVENUE_STOP_LINES)
-		car.set("traffic_axis_x", true)
-		car.set("autopilot_speed", 7.5 + index * 0.65)
-		car.set("max_speed", 13.0)
-		var visual := Node3D.new()
-		visual.name = "Visual"
-		# Polygon vehicle art faces +Z, while ArcadeCar drives along local -Z.
-		# Match the player's authored 180-degree visual correction.
-		visual.rotation.y = PI
-		visual.add_child(packed.instantiate())
-		car.add_child(visual)
-		car.transform = spawns[index]
-		add_child(car)
-		(car as ArcadeCar).set_night_lights(_tod_index != 0)
-		car.begin_autopilot()
+## The arcade chase has one target and no ambient vehicle traffic. The thief
+## starts ahead in the same legal US lane and continuously runs the verified
+## circuit; pedestrians remain active city life.
+func _spawn_thief_vehicle() -> void:
+	var car := CharacterBody3D.new()
+	car.name = "ThiefCar"
+	car.set_script(ARCADE_CAR_SCRIPT)
+	car.set("visual_path", NodePath("Visual"))
+	car.set("use_navigation", false)
+	car.set("autopilot", true)
+	car.set("route", _densify(ROUTE, 8.0))
+	car.set("waypoint_reach", 3.2)
+	car.set("obey_traffic_rules", false)
+	car.set("autopilot_speed", 11.5)
+	car.set("max_speed", 16.0)
+	var visual := Node3D.new()
+	visual.name = "Visual"
+	visual.rotation.y = PI
+	visual.add_child(THIEF_CAR.instantiate())
+	car.add_child(visual)
+	car.transform = Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-65.0, 1.0, -8.0))
+	add_child(car)
+	_thief = car as ArcadeCar
+	_thief.set_night_lights(_tod_index != 0)
+	_thief.begin_autopilot()
+	var marker := Label3D.new()
+	marker.name = "ThiefMarker"
+	marker.text = "THIEF"
+	marker.font_size = 48
+	marker.modulate = Color("#ff344d")
+	marker.outline_size = 10
+	marker.position = Vector3(0.0, 2.7, 0.0)
+	marker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	_thief.add_child(marker)
 	if OS.has_environment("CTT_CITY_FEATURES"):
-		print("[TRAFFIC] requested=%d spawned=%d" % [traffic_vehicle_count, count])
+		print("[CHASE] ambient_traffic=0 thief_spawned=true")
 
 func _run_npc_light_test() -> void:
 	await get_tree().physics_frame
@@ -794,6 +861,8 @@ func _raycast_verify_loop(points: PackedVector3Array) -> PackedVector3Array:
 func _process(delta: float) -> void:
 	_traffic_time += delta
 	_update_traffic_state(false)
+	if not _chase_won:
+		_update_chase(delta)
 	if Input.is_action_just_pressed("reset_car"):
 		_on_reset()
 	if _label:
@@ -801,7 +870,59 @@ func _process(delta: float) -> void:
 		var kmh := 0.0
 		if _car:
 			kmh = _car.get_speed_kmh()
-		_label.text = "%s  |  %3.0f km/h\nFREE DRIVE — joystick or W/A/S/D\nC camera   R reset" % [mode_txt, kmh]
+		_label.text = "%s  |  %3.0f km/h\nCHASE — catch and ram the thief\nC camera   R reset" % [mode_txt, kmh]
+
+func _update_chase(delta: float) -> void:
+	if _car == null or _thief == null:
+		return
+	_capture_cooldown = maxf(0.0, _capture_cooldown - delta)
+	var separation := _thief.global_position - _car.global_position
+	separation.y = 0.0
+	var distance := separation.length()
+	if _distance_label:
+		_distance_label.text = "%d m TO THIEF" % int(round(distance))
+	if _damage_bar:
+		_damage_bar.value = _thief_damage
+	if _damage_label:
+		_damage_label.text = "THIEF DAMAGE %d%%" % int(round(_thief_damage))
+	# The combined vehicle length is a little over five metres. Lateral gating
+	# prevents a parallel lane from counting as a ram.
+	var local_offset := _car.global_transform.basis.inverse() * separation
+	if _capture_cooldown <= 0.0 and distance < 5.6 and absf(local_offset.x) < 2.25:
+		var relative_speed := absf(_car.speed - _thief.speed)
+		if relative_speed > 1.5 or absf(_car.speed) > 8.0:
+			_register_thief_hit(relative_speed)
+
+func _register_thief_hit(relative_speed: float) -> void:
+	var hit_damage := clampf(7.0 + relative_speed * 1.35, 9.0, 28.0)
+	_thief_damage = minf(100.0, _thief_damage + hit_damage)
+	_capture_cooldown = 0.9
+	_car.speed *= 0.72
+	_thief.speed = maxf(4.5, _thief.speed * 0.62)
+	if _damage_bar:
+		_damage_bar.value = _thief_damage
+	if _damage_label:
+		_damage_label.text = "THIEF DAMAGE %d%%  ·  HIT +%d" % [int(round(_thief_damage)), int(round(hit_damage))]
+	if OS.has_environment("CTT_CAPTURE_TEST"):
+		print("[CAPTURE TEST] hit=%.1f total=%.1f" % [hit_damage, _thief_damage])
+	if _thief_damage >= 100.0:
+		_win_chase()
+
+func _win_chase() -> void:
+	if _chase_won:
+		return
+	_chase_won = true
+	_car.speed = 0.0
+	_car.velocity = Vector3.ZERO
+	_car.touch_input = Vector2.ZERO
+	_thief.speed = 0.0
+	_thief.velocity = Vector3.ZERO
+	_car.set_physics_process(false)
+	_thief.set_physics_process(false)
+	if _win_overlay:
+		_win_overlay.visible = true
+	if OS.has_environment("CTT_CAPTURE_TEST"):
+		print("[CAPTURE TEST] won=true overlay=%s" % (_win_overlay != null and _win_overlay.visible))
 
 func _on_joystick(v: Vector2) -> void:
 	if _car:
@@ -812,10 +933,25 @@ func _on_toggle_camera() -> void:
 		_cam.toggle_mode()
 
 func _on_reset() -> void:
+	if _chase_won:
+		return
 	if _car:
 		_car.reset_to_spawn()
+	if _thief:
+		_thief.reset_to_spawn()
+	_thief_damage = 0.0
+	_capture_cooldown = 0.0
 	if _cam:
 		_cam.snap_to_target()
+
+func _run_capture_test() -> void:
+	await get_tree().create_timer(0.5).timeout
+	_thief_damage = 92.0
+	_car.speed = 20.0
+	_thief.speed = 4.0
+	var forward := -_car.global_transform.basis.z.normalized()
+	_thief.global_position = _car.global_position + forward * 4.8
+	_update_chase(0.016)
 
 func _run_reset_test() -> void:
 	await get_tree().create_timer(0.5).timeout
