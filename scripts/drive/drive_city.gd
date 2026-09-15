@@ -55,21 +55,21 @@ const TRAFFIC_GREEN := 6.0
 const TRAFFIC_AMBER := 1.4
 
 ## Autopilot patrol confined to ONE verified two-way avenue (E-W, centreline
-## z=0, running x=-15..-145 — the stretch that drives clean). The car cruises
-## west in the north lane (z=+3), U-turns at the west end, cruises east in the
-## south lane (z=-3), U-turns at the east end, and repeats. No one-way street is
-## involved, so there is no wrong-way/arrow conflict. Y is ignored (raycast).
+## running x=-15..-145 — the stretch that drives clean). Live physics sweeps put
+## the road carriageways at z=-8 and z=-2.5; z=+3 is sidewalk. US right-hand
+## traffic cruises west in the north lane (z=-8), U-turns at the west end, then
+## cruises east in the south lane (z=-2.5). Y is ignored (raycast).
 var ROUTE: PackedVector3Array = PackedVector3Array([
-	Vector3(-15, 0, 3),
-	Vector3(-145, 0, 3),
-	Vector3(-145, 0, -3),
-	Vector3(-15, 0, -3),
+	Vector3(-15, 0, -8),
+	Vector3(-145, 0, -8),
+	Vector3(-145, 0, -2.5),
+	Vector3(-15, 0, -2.5),
 ])
 ## Stop lines for the two verified cross intersections on the main avenue.
-## z=+3 travels west (-X); z=-3 travels east (+X).
+## z=-8 travels west (-X); z=-2.5 travels east (+X).
 var MAIN_AVENUE_STOP_LINES := PackedVector3Array([
-	Vector3(-34.0, 0.0, 3.0), Vector3(-94.0, 0.0, 3.0),
-	Vector3(-106.0, 0.0, -3.0), Vector3(-46.0, 0.0, -3.0),
+	Vector3(-34.0, 0.0, -8.0), Vector3(-94.0, 0.0, -8.0),
+	Vector3(-106.0, 0.0, -2.5), Vector3(-46.0, 0.0, -2.5),
 ])
 
 @export var player_path: NodePath = ^"Player"
@@ -674,10 +674,10 @@ func _run_pedestrian_hit_test() -> void:
 ## They reuse the road-only NavMesh and arcade grounding instead of lane-graph AI.
 func _spawn_traffic_vehicles() -> void:
 	var spawns: Array[Transform3D] = [
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-22, 1.0, 3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-72, 1.0, 3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-132, 1.0, -3.0)),
-		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-78, 1.0, -3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-22, 1.0, -8.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-72, 1.0, -8.0)),
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-132, 1.0, -2.5)),
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-78, 1.0, -2.5)),
 	]
 	var legal_route := _densify(ROUTE, 10.0)
 	var count := mini(traffic_vehicle_count, mini(spawns.size(), TRAFFIC_CARS.size()))
@@ -719,7 +719,7 @@ func _run_traffic_lane_test() -> void:
 		if car == _car:
 			continue
 		var node := car as Node3D
-		var lane_error := minf(absf(node.global_position.z - 3.0), absf(node.global_position.z + 3.0))
+		var lane_error := minf(absf(node.global_position.z + 8.0), absf(node.global_position.z + 2.5))
 		max_lane_error = maxf(max_lane_error, lane_error)
 		var forward := -node.global_transform.basis.z.normalized()
 		print("[TRAFFIC TEST] %s pos=%s forward=%s speed=%.2f" % [node.name, node.global_position, forward, float(car.speed)])

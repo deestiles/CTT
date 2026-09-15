@@ -18,6 +18,24 @@ func _physics_process(_delta: float) -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	var space := get_world_3d().direct_space_state
+	if OS.has_environment("CTT_ROAD_SWEEP"):
+		# Cross-sections through the main avenue. This is the authoritative way to
+		# locate lanes in Demo.tscn because its nested visual transforms are baked.
+		for x in [-30.0, -70.0, -120.0]:
+			print("=== X = %.1f  (z sweep, main avenue) ===" % x)
+			for zi in range(-20, 11):
+				var z := float(zi)
+				var q := PhysicsRayQueryParameters3D.create(Vector3(x, 40.0, z), Vector3(x, -20.0, z))
+				var hit := space.intersect_ray(q)
+				var nm := "(none)"
+				var yy := 0.0
+				if hit:
+					yy = float(hit.position.y)
+					if hit.collider is Node:
+						nm = _surface_name(hit.collider as Node)
+				print("  z=%5.0f  y=%6.2f  %s" % [z, yy, nm])
+		get_tree().quit()
+		return
 	# Sweep along X on the two sidewalk strips found at X=-30 (north z=-13, south z=2.5)
 	# to confirm they run continuously (a strip we can lay a stroll loop on).
 	for z in [-13.0, 2.5]:
