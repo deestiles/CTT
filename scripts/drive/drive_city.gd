@@ -16,6 +16,7 @@ const PED_CHARS: Array[String] = [
 	"res://Assets/Animations/Character/SK_Character_Female_Police.fbx",
 ]
 const PED_SCRIPT := preload("res://scripts/drive/pedestrian.gd")
+const ARCADE_CAR_SCRIPT := preload("res://scripts/drive/arcade_car.gd")
 
 # Stroll loops on the two sidewalk strips flanking the drive avenue, verified by
 # raycast probe (north strip z=-13, south strip z=2.5, floor y=0). Each loop is a
@@ -41,7 +42,15 @@ var SIDEWALK_ACTIVITY_POINTS: Array[PackedInt32Array] = [
 	PackedInt32Array(), PackedInt32Array([1]), PackedInt32Array(),
 ]
 const SIGNAL_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Signal_Color.gdshader")
+const WINDOW_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Window_Night_Glow.gdshader")
 const ATLAS_TEX := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
+const TRAFFIC_CARS: Array[String] = [
+	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Sedan_01.tscn",
+	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Taxi_01.tscn",
+	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Small_01.tscn",
+	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Van_01.tscn",
+	"res://Assets/Synty/PolygonCity/Prefabs/Vehicles/SM_Veh_Car_Muscle_01.tscn",
+]
 const TRAFFIC_GREEN := 6.0
 const TRAFFIC_AMBER := 1.4
 
@@ -60,6 +69,8 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
 @export var pedestrian_count: int = 5
+@export_range(0, 8) var traffic_vehicle_count: int = 4
+@export_range(0, 64) var max_knockable_props: int = 24
 @export var camera_customization_unlocked: bool = false
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
 @export var ground_y: float = 43.08
@@ -77,6 +88,7 @@ var _tod_index: int = 0
 # name, hour-of-day, exposure (night darker than dusk)
 var _tod_presets: Array = [["DAY", 12.0, 1.0], ["DUSK", 18.6, 0.7], ["NIGHT", 22.5, 0.4]]
 var _lamp_lights: Array = []
+var _window_lights: Array[ShaderMaterial] = []
 var _signals: Array = []
 var _last_state_a: int = -1
 var _last_state_b: int = -1
@@ -161,6 +173,8 @@ func _ready() -> void:
 		_setup_navigation(city)
 		_setup_street_lamps(city)
 		_setup_traffic_lights(city)
+		_setup_window_lights(city)
+		_setup_knockable_garbage(city)
 		_setup_sky(city)
 	if _cam:
 		_cam.current = true
@@ -172,6 +186,7 @@ func _ready() -> void:
 	_pedestrians.name = "Pedestrians"
 	add_child(_pedestrians)
 	_spawn_pedestrians()
+	_spawn_traffic_vehicles()
 
 	if OS.has_environment("CTT_SHOT"):
 		call_deferred("_capture_topdown")
@@ -338,6 +353,8 @@ func _setup_street_lamps(city: Node) -> void:
 ## gantry signals baked into LightPole_Arm, both heads, any orientation, with no
 ## per-mesh calibration. Signals facing perpendicular directions run opposite phases.
 func _setup_traffic_lights(city: Node) -> void:
+	var axis_x := 0
+	var axis_z := 0
 	for is_arm in [false, true]:
 		var pattern := "*LightPole_Arm*" if is_arm else "*LightPole_Lights*"
 		for node in city.find_children(pattern, "MeshInstance3D", true, false):
@@ -351,10 +368,21 @@ func _setup_traffic_lights(city: Node) -> void:
 				mat.set_shader_parameter("zmask_low", ab.position.z + ab.size.z * 0.28)
 				mat.set_shader_parameter("zmask_high", ab.position.z + ab.size.z * 0.72)
 			mi.set_surface_override_material(0, mat)
-			# All signals share one phase so every pole and overhead gantry stays in
-			# sync (per-intersection cross-street opposition is a future enhancement).
-			_signals.append({"group": true, "mat": mat})
+			var group_x := _signal_axis_group(mi)
+			_signals.append({"group": group_x, "mat": mat})
+			if group_x:
+				axis_x += 1
+			else:
+				axis_z += 1
 	_update_traffic_state(true)
+	if OS.has_environment("CTT_CITY_FEATURES"):
+		print("[SIGNALS] x_phase=%d z_phase=%d" % [axis_x, axis_z])
+
+## Demo transforms are baked/unhelpful for placement, but each signal mesh AABB
+## still reveals whether its arm/head geometry predominantly spans X or Z.
+func _signal_axis_group(mi: MeshInstance3D) -> bool:
+	var size := mi.get_aabb().size
+	return size.x >= size.z
 
 func _make_signal_material() -> ShaderMaterial:
 	var m := ShaderMaterial.new()
@@ -402,6 +430,8 @@ func _apply_time_preset() -> void:
 		_car.night_lights = dark
 	for l in _lamp_lights:
 		(l as Node3D).visible = dark
+	for material in _window_lights:
+		material.set_shader_parameter("emission_energy", 2.8 if dark else 0.0)
 	if _time_button:
 		_time_button.text = "Time: %s" % preset[0]
 
@@ -443,6 +473,9 @@ func _setup_navigation(city: Node) -> void:
 ## road/sidewalk ground keep their colliders (needed for walls + raycast seating).
 func _declutter_colliders(node: Node) -> void:
 	var n := String(node.name)
+	# Traffic signals and street lamps are intentional driving obstacles.
+	if n.contains("LightPole"):
+		return
 	# NOTE: trees are intentionally NOT decluttered — they stay solid and are fed
 	# into the NavMesh bake so the car routes around road-planted trees.
 	if n.contains("Prop") or n.contains("FireEscape") or n.contains("Billboard") or n.contains("Sign") or n.contains("Aircon") or n.contains("Planter"):
@@ -457,6 +490,72 @@ func _disable_colliders(node: Node) -> void:
 		(node as CollisionObject3D).collision_mask = 0
 	for c in node.get_children():
 		_disable_colliders(c)
+
+## Illuminate a deterministic 30% of the supplied standalone window meshes. This
+## modifies the real window material surface; it does not add fake geometry cards.
+func _setup_window_lights(city: Node) -> void:
+	var windows: Array[Node] = city.find_children("*Window*", "MeshInstance3D", true, false)
+	var eligible: Array[MeshInstance3D] = []
+	for node in windows:
+		if String(node.name).contains("Prop_Window_"):
+			eligible.append(node as MeshInstance3D)
+	eligible.sort_custom(func(a: MeshInstance3D, b: MeshInstance3D) -> bool:
+		return String(a.get_path()) < String(b.get_path()))
+	var target := int(round(eligible.size() * 0.30))
+	for index in target:
+		var mi := eligible[index]
+		var mat := ShaderMaterial.new()
+		mat.shader = WINDOW_SHADER
+		mat.set_shader_parameter("source_texture", ATLAS_TEX)
+		mat.set_shader_parameter("warm_light", Color("#ff9b45"))
+		mat.set_shader_parameter("emission_energy", 0.0)
+		mi.set_surface_override_material(0, mat)
+		_window_lights.append(mat)
+	if OS.has_environment("CTT_CITY_FEATURES"):
+		print("[WINDOWS] eligible=%d lit=%d" % [eligible.size(), _window_lights.size()])
+
+## Preserve existing meshes/transforms while replacing their static collision
+## child with a lightweight rigid wrapper. A cap keeps the mobile physics budget
+## predictable; trash bags/cans/bins nearest scene order become interactive.
+func _setup_knockable_garbage(city: Node) -> void:
+	var candidates: Array[Node] = city.find_children("*Trash*", "MeshInstance3D", true, false)
+	var converted := 0
+	for node in candidates:
+		if converted >= max_knockable_props:
+			break
+		var mesh := node as MeshInstance3D
+		var static_body := _first_static_body(mesh)
+		if static_body == null:
+			continue
+		var parent := mesh.get_parent()
+		var old_transform := mesh.transform
+		var body := RigidBody3D.new()
+		body.name = "%s_Knockable" % mesh.name
+		body.mass = 0.65 if String(mesh.name).contains("Bag") else 2.2
+		body.linear_damp = 0.7
+		body.angular_damp = 0.55
+		body.add_to_group("knockable_city_prop")
+		parent.add_child(body)
+		body.transform = old_transform
+		mesh.reparent(body, false)
+		mesh.transform = Transform3D.IDENTITY
+		for child in static_body.get_children():
+			if child is CollisionShape3D:
+				var copy := (child as CollisionShape3D).duplicate() as CollisionShape3D
+				body.add_child(copy)
+		static_body.queue_free()
+		converted += 1
+	if OS.has_environment("CTT_CITY_FEATURES"):
+		print("[KNOCKABLES] candidates=%d converted=%d" % [candidates.size(), converted])
+
+func _first_static_body(node: Node) -> StaticBody3D:
+	if node is StaticBody3D:
+		return node as StaticBody3D
+	for child in node.get_children():
+		var found := _first_static_body(child)
+		if found:
+			return found
+	return null
 
 ## Debug: drop a coordinate grid of coloured markers so a top-down photo reveals
 ## exactly which world coords land on asphalt. z=0 magenta, +z red, -z cyan; a
@@ -540,6 +639,38 @@ func _spawn_pedestrians() -> void:
 		_pedestrians.add_child(ped)
 		var char_path: String = PED_CHARS[i % PED_CHARS.size()]
 		ped.setup(char_path, verified[i], randf_range(1.1, 1.6), verified_activity[i])
+
+## Spawn a small, varied ambient fleet on verified points along the main avenue.
+## They reuse the road-only NavMesh and arcade grounding instead of lane-graph AI.
+func _spawn_traffic_vehicles() -> void:
+	var spawns: Array[Transform3D] = [
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-58, 1.0, 3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-88, 1.0, -3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, -PI * 0.5, 0)), Vector3(-112, 1.0, 3.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-136, 1.0, -3.0)),
+		Transform3D(Basis.IDENTITY, Vector3(-30, 1.0, 24.0)),
+		Transform3D(Basis.from_euler(Vector3(0, PI, 0)), Vector3(18, 1.0, 42.0)),
+	]
+	var count := mini(traffic_vehicle_count, mini(spawns.size(), TRAFFIC_CARS.size()))
+	for index in count:
+		var packed := load(TRAFFIC_CARS[index]) as PackedScene
+		if packed == null:
+			continue
+		var car := CharacterBody3D.new()
+		car.name = "AmbientTraffic_%02d" % (index + 1)
+		car.set_script(ARCADE_CAR_SCRIPT)
+		car.set("visual_path", NodePath("Visual"))
+		car.set("use_navigation", true)
+		car.set("autopilot_speed", 7.5 + index * 0.65)
+		car.set("max_speed", 13.0)
+		var visual := Node3D.new()
+		visual.name = "Visual"
+		visual.add_child(packed.instantiate())
+		car.add_child(visual)
+		car.transform = spawns[index]
+		add_child(car)
+	if OS.has_environment("CTT_CITY_FEATURES"):
+		print("[TRAFFIC] requested=%d spawned=%d" % [traffic_vehicle_count, count])
 
 ## Accept a route only when every waypoint hits live walkable physics at a
 ## consistent height. Demo mesh transforms/AABBs are not trusted for placement.

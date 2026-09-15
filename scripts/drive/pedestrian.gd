@@ -24,6 +24,7 @@ var _pause: float = 0.0
 var _state: String = ""
 var _activity_points: PackedInt32Array = PackedInt32Array()
 var _next_action: String = ""
+var _direction: int = 1
 
 ## character_path: a with-skin Mixamo FBX (Assets/Animations/Character/*.fbx).
 func setup(character_path: String, points: PackedVector3Array, walk_speed: float = 1.4,
@@ -86,7 +87,7 @@ func _physics_process(delta: float) -> void:
 	var dist := to_goal.length()
 	if dist < 0.25:
 		var previous_dir := to_goal.normalized()
-		_i = (_i + 1) % _points.size()
+		_i = posmod(_i + _direction, _points.size())
 		var next_dir := (_points[_i] - global_position).normalized()
 		var turn_sign := previous_dir.cross(next_dir).y
 		_next_action = "turn_left" if turn_sign > 0.05 else "turn_right"
@@ -101,11 +102,25 @@ func _physics_process(delta: float) -> void:
 	_play("walk")
 	_next_action = ""
 	var dir := to_goal / dist
+	if _path_blocked(dir):
+		_direction *= -1
+		_i = posmod(_i + _direction, _points.size())
+		_next_action = "turn_left" if randf() < 0.5 else "turn_right"
+		_pause = randf_range(0.45, 0.8)
+		return
 	global_position += dir * speed * delta
 	# Smoothly face travel direction.
 	var target_yaw := atan2(dir.x, dir.z)
 	rotation.y = lerp_angle(rotation.y, target_yaw, clampf(turn_speed * delta, 0.0, 1.0))
 	_ground()
+
+## Lamp/signal colliders stay solid. A waist-high probe makes walkers turn back
+## along their verified loop instead of ghosting through an unexpected fixture.
+func _path_blocked(direction: Vector3) -> bool:
+	var from := global_position + Vector3.UP * 0.8
+	var query := PhysicsRayQueryParameters3D.create(from, from + direction * 0.75)
+	query.collision_mask = 1
+	return not get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 ## Seat feet on whatever sidewalk/road is beneath, at any world height.
 func _ground() -> void:

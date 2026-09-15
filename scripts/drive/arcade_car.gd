@@ -252,6 +252,7 @@ func _physics_process(delta: float) -> void:
 	forward.y = 0.0
 	velocity = forward.normalized() * speed
 	move_and_slide()
+	_push_knockable_props()
 
 	_ground_car()
 	_constrain_to_road()
@@ -272,6 +273,20 @@ func _physics_process(delta: float) -> void:
 			_stuck_time = maxf(0.0, _stuck_time - delta)
 	_last_pos = global_position
 	_update_vehicle_lights()
+
+## CharacterBody motion does not automatically transfer satisfying momentum to
+## lightweight rigid props, so explicitly turn slide contacts into an arcade hit.
+func _push_knockable_props() -> void:
+	for index in get_slide_collision_count():
+		var hit := get_slide_collision(index)
+		var body := hit.get_collider() as RigidBody3D
+		if body == null or not body.is_in_group("knockable_city_prop"):
+			continue
+		var direction := Vector3(velocity.x, 0.0, velocity.z).normalized()
+		if direction == Vector3.ZERO:
+			direction = -global_transform.basis.z.normalized()
+		var strength := clampf(absf(speed) * body.mass * 0.75, 2.0, 22.0)
+		body.apply_central_impulse(direction * strength + Vector3.UP * strength * 0.22)
 
 ## Apply the Polygon City runtime-light shader to the car body so its real
 ## tail/brake/reverse lens meshes can emit, and add forward headlight spots.

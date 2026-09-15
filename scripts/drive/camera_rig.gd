@@ -8,8 +8,8 @@ class_name DriveCameraRig
 @export var target_path: NodePath
 
 @export_group("Top-down")
-@export var td_height: float = 7.6
-@export var td_back: float = 16.3
+@export var td_height: float = 5.5
+@export var td_back: float = 11.8
 @export var td_pitch_deg: float = -25.0
 @export var td_lerp: float = 6.0
 
@@ -17,7 +17,7 @@ class_name DriveCameraRig
 # from a low chase angle (small deg) up to straight overhead (90 deg) at a constant
 # distance from the car. Initialised in _ready from td_height/td_back; the authored
 # baseline is the owner's approved 25-degree close chase-map view.
-var td_distance: float = 18.0
+var td_distance: float = 13.0
 var view_angle_deg: float = 25.0
 
 @export_group("POV (first-person hood cam)")
