@@ -87,12 +87,17 @@ var _last_state_b: int = -1
 var _traffic_time: float = 0.0
 var _thief: ArcadeCar
 var _thief_damage: float = 0.0
+var _player_damage: float = 0.0
 var _capture_cooldown: float = 0.0
 var _chase_won: bool = false
 var _distance_label: Label
 var _damage_label: Label
 var _damage_bar: ProgressBar
+var _player_damage_label: Label
+var _player_damage_bar: ProgressBar
 var _win_overlay: Control
+var _vehicle_smoke: Dictionary = {}
+var _vehicle_contacting_world: Dictionary = {}
 
 func _ready() -> void:
 	randomize()
@@ -191,6 +196,8 @@ func _ready() -> void:
 		_update_traffic_state(true)
 	_spawn_pedestrians()
 	_spawn_thief_vehicle()
+	_setup_vehicle_smoke(_car, "PoliceDamageSmoke")
+	_setup_vehicle_smoke(_thief, "ThiefDamageSmoke")
 	if OS.has_environment("CTT_NPC_LIGHT_TEST"):
 		_tod_index = 2
 		_apply_time_preset()
@@ -203,6 +210,8 @@ func _ready() -> void:
 		call_deferred("_run_traffic_lane_test")
 	if OS.has_environment("CTT_CAPTURE_TEST"):
 		call_deferred("_run_capture_test")
+	if OS.has_environment("CTT_DAMAGE_TEST"):
+		call_deferred("_run_damage_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
 		call_deferred("_run_pedestrian_hit_test")
 
@@ -220,7 +229,7 @@ func _setup_chase_hud(hud: Node) -> void:
 	panel.name = "ChaseStatus"
 	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	panel.position = Vector2(-170.0, 14.0)
-	panel.size = Vector2(340.0, 92.0)
+	panel.size = Vector2(340.0, 133.0)
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.015, 0.035, 0.07, 0.88)
 	panel_style.border_color = Color("#268dca")
@@ -252,6 +261,21 @@ func _setup_chase_hud(hud: Node) -> void:
 	_damage_label.add_theme_font_size_override("font_size", 14)
 	_damage_label.add_theme_color_override("font_color", Color("#ffb5bd"))
 	box.add_child(_damage_label)
+	_player_damage_bar = ProgressBar.new()
+	_player_damage_bar.max_value = 100.0
+	_player_damage_bar.show_percentage = false
+	_player_damage_bar.custom_minimum_size = Vector2(310.0, 12.0)
+	var police_fill := StyleBoxFlat.new()
+	police_fill.bg_color = Color("#28a9ff")
+	police_fill.set_corner_radius_all(6)
+	_player_damage_bar.add_theme_stylebox_override("fill", police_fill)
+	box.add_child(_player_damage_bar)
+	_player_damage_label = Label.new()
+	_player_damage_label.text = "POLICE DAMAGE 0%"
+	_player_damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_player_damage_label.add_theme_font_size_override("font_size", 13)
+	_player_damage_label.add_theme_color_override("font_color", Color("#a8ddff"))
+	box.add_child(_player_damage_label)
 
 	_win_overlay = Control.new()
 	_win_overlay.name = "WinOverlay"
@@ -817,6 +841,55 @@ func _spawn_thief_vehicle() -> void:
 	if OS.has_environment("CTT_CITY_FEATURES"):
 		print("[CHASE] ambient_traffic=0 thief_spawned=true")
 
+## Stylized hood smoke communicates damage without requiring destructive mesh
+## variants. It begins at 25%, then becomes denser and darker toward 100%.
+func _setup_vehicle_smoke(vehicle: ArcadeCar, smoke_name: String) -> void:
+	if vehicle == null:
+		return
+	var smoke := GPUParticles3D.new()
+	smoke.name = smoke_name
+	smoke.position = Vector3(0.0, 1.05, -0.75)
+	smoke.amount = 36
+	smoke.lifetime = 1.65
+	smoke.randomness = 0.35
+	smoke.local_coords = false
+	smoke.emitting = false
+	smoke.amount_ratio = 0.0
+	var particles := ParticleProcessMaterial.new()
+	particles.direction = Vector3.UP
+	particles.spread = 24.0
+	particles.gravity = Vector3(0.0, 0.8, 0.0)
+	particles.initial_velocity_min = 0.65
+	particles.initial_velocity_max = 1.35
+	particles.scale_min = 0.22
+	particles.scale_max = 0.58
+	particles.color = Color(0.58, 0.62, 0.66, 0.62)
+	smoke.process_material = particles
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.72, 0.72)
+	var smoke_material := StandardMaterial3D.new()
+	smoke_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	smoke_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	smoke_material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	smoke_material.vertex_color_use_as_albedo = true
+	smoke_material.albedo_color = Color(0.7, 0.72, 0.74, 0.58)
+	quad.material = smoke_material
+	smoke.draw_pass_1 = quad
+	vehicle.add_child(smoke)
+	_vehicle_smoke[vehicle] = smoke
+	_vehicle_contacting_world[vehicle] = false
+
+func _update_vehicle_smoke(vehicle: ArcadeCar, damage: float) -> void:
+	var smoke := _vehicle_smoke.get(vehicle) as GPUParticles3D
+	if smoke == null:
+		return
+	var severity := clampf((damage - 20.0) / 80.0, 0.0, 1.0)
+	smoke.emitting = damage >= 25.0
+	smoke.amount_ratio = severity
+	var particles := smoke.process_material as ParticleProcessMaterial
+	if particles:
+		particles.color = Color(0.6, 0.63, 0.66, 0.58).lerp(Color(0.12, 0.13, 0.14, 0.82), severity)
+
 func _run_npc_light_test() -> void:
 	await get_tree().physics_frame
 	for node in get_tree().get_nodes_in_group("arcade_vehicle"):
@@ -885,6 +958,14 @@ func _update_chase(delta: float) -> void:
 		_damage_bar.value = _thief_damage
 	if _damage_label:
 		_damage_label.text = "THIEF DAMAGE %d%%" % int(round(_thief_damage))
+	if _player_damage_bar:
+		_player_damage_bar.value = _player_damage
+	if _player_damage_label:
+		_player_damage_label.text = "POLICE DAMAGE %d%%" % int(round(_player_damage))
+	_update_vehicle_smoke(_car, _player_damage)
+	_update_vehicle_smoke(_thief, _thief_damage)
+	_apply_world_impact_damage(_car, true)
+	_apply_world_impact_damage(_thief, false)
 	# The combined vehicle length is a little over five metres. Lateral gating
 	# prevents a parallel lane from counting as a ram.
 	var local_offset := _car.global_transform.basis.inverse() * separation
@@ -896,6 +977,9 @@ func _update_chase(delta: float) -> void:
 func _register_thief_hit(relative_speed: float) -> void:
 	var hit_damage := clampf(7.0 + relative_speed * 1.35, 9.0, 28.0)
 	_thief_damage = minf(100.0, _thief_damage + hit_damage)
+	# Ramming has a cost, but police damage is informational until a future repair
+	# or loss system is approved. The chase still ends only by catching the thief.
+	_player_damage = minf(100.0, _player_damage + clampf(hit_damage * 0.34, 3.0, 9.0))
 	_capture_cooldown = 0.9
 	_car.speed *= 0.72
 	_thief.speed = maxf(4.5, _thief.speed * 0.62)
@@ -903,10 +987,43 @@ func _register_thief_hit(relative_speed: float) -> void:
 		_damage_bar.value = _thief_damage
 	if _damage_label:
 		_damage_label.text = "THIEF DAMAGE %d%%  ·  HIT +%d" % [int(round(_thief_damage)), int(round(hit_damage))]
+	if _player_damage_bar:
+		_player_damage_bar.value = _player_damage
+	if _player_damage_label:
+		_player_damage_label.text = "POLICE DAMAGE %d%%" % int(round(_player_damage))
+	_update_vehicle_smoke(_car, _player_damage)
+	_update_vehicle_smoke(_thief, _thief_damage)
 	if OS.has_environment("CTT_CAPTURE_TEST"):
 		print("[CAPTURE TEST] hit=%.1f total=%.1f" % [hit_damage, _thief_damage])
 	if _thief_damage >= 100.0:
 		_win_chase()
+
+## Charge one speed-scaled impact per contact, rather than damage every frame
+## while a car is scraping a wall. Vehicle-to-vehicle rams are handled above.
+func _apply_world_impact_damage(vehicle: ArcadeCar, is_player: bool) -> void:
+	if vehicle == null:
+		return
+	var touching := false
+	for index in vehicle.get_slide_collision_count():
+		var collision := vehicle.get_slide_collision(index)
+		var collider := collision.get_collider()
+		if collider == _car or collider == _thief:
+			continue
+		touching = true
+		break
+	var was_touching := bool(_vehicle_contacting_world.get(vehicle, false))
+	_vehicle_contacting_world[vehicle] = touching
+	if not touching or was_touching or absf(vehicle.speed) < 5.0:
+		return
+	var impact_damage := clampf((absf(vehicle.speed) - 4.0) * (0.72 if is_player else 0.45), 2.0, 12.0)
+	if is_player:
+		_player_damage = minf(100.0, _player_damage + impact_damage)
+	else:
+		# Environmental mistakes can weaken the thief but cannot win the chase for
+		# the player; the final point of damage must still come from a police ram.
+		_thief_damage = minf(99.0, _thief_damage + impact_damage)
+	vehicle.speed *= 0.68
+	_update_vehicle_smoke(vehicle, _player_damage if is_player else _thief_damage)
 
 func _win_chase() -> void:
 	if _chase_won:
@@ -940,7 +1057,12 @@ func _on_reset() -> void:
 	if _thief:
 		_thief.reset_to_spawn()
 	_thief_damage = 0.0
+	_player_damage = 0.0
 	_capture_cooldown = 0.0
+	_vehicle_contacting_world[_car] = false
+	_vehicle_contacting_world[_thief] = false
+	_update_vehicle_smoke(_car, 0.0)
+	_update_vehicle_smoke(_thief, 0.0)
 	if _cam:
 		_cam.snap_to_target()
 
@@ -952,6 +1074,18 @@ func _run_capture_test() -> void:
 	var forward := -_car.global_transform.basis.z.normalized()
 	_thief.global_position = _car.global_position + forward * 4.8
 	_update_chase(0.016)
+
+func _run_damage_test() -> void:
+	await get_tree().create_timer(0.5).timeout
+	_player_damage = 55.0
+	_thief_damage = 78.0
+	_update_vehicle_smoke(_car, _player_damage)
+	_update_vehicle_smoke(_thief, _thief_damage)
+	var police_smoke := _vehicle_smoke.get(_car) as GPUParticles3D
+	var thief_smoke := _vehicle_smoke.get(_thief) as GPUParticles3D
+	print("[DAMAGE TEST] police=%.0f smoke=%s ratio=%.2f thief=%.0f smoke=%s ratio=%.2f" % [
+		_player_damage, police_smoke.emitting, police_smoke.amount_ratio,
+		_thief_damage, thief_smoke.emitting, thief_smoke.amount_ratio])
 
 func _run_reset_test() -> void:
 	await get_tree().create_timer(0.5).timeout
