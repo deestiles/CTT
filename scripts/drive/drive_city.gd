@@ -62,7 +62,7 @@ var ROUTE: PackedVector3Array = PackedVector3Array([
 @export var player_path: NodePath = ^"Player"
 @export var camera_path: NodePath = ^"Camera3D"
 @export var pedestrian_count: int = 5
-@export_range(0, 160) var max_knockable_props: int = 128
+@export_range(0, 180) var max_knockable_props: int = 180
 @export var camera_customization_unlocked: bool = false
 ## Ground height of the Synty city (road/sidewalk surface sits at ~43.08 m).
 @export var ground_y: float = 43.08
@@ -684,14 +684,14 @@ func _setup_window_lights(city: Node) -> void:
 func _setup_knockable_garbage(city: Node) -> void:
 	var candidates: Array[Node] = []
 	var seen := {}
-	for pattern in ["*Trash*", "*Cardboard*", "*Mailbox*", "*Cone*", "*Barrier*"]:
+	for pattern in ["*Trash*", "*Cardboard*", "*Mailbox*", "*Cone*", "*Barrier*", "*Skip*"]:
 		for node in city.find_children(pattern, "MeshInstance3D", true, false):
 			var id := node.get_instance_id()
 			if not seen.has(id):
 				seen[id] = true
 				candidates.append(node)
 	var converted := 0
-	var category_counts := {"trash": 0, "bin": 0, "cardboard": 0, "mailbox": 0, "cone": 0, "barrier": 0}
+	var category_counts := {"trash": 0, "bin": 0, "dumpster": 0, "cardboard": 0, "mailbox": 0, "cone": 0, "barrier": 0}
 	for node in candidates:
 		if converted >= max_knockable_props:
 			break
@@ -703,6 +703,8 @@ func _setup_knockable_garbage(city: Node) -> void:
 		var old_transform := mesh.transform
 		var body := RigidBody3D.new()
 		body.name = "%s_Knockable" % mesh.name
+		body.collision_layer = 1
+		body.collision_mask = 1
 		var prop_name := String(mesh.name)
 		var category := "trash"
 		body.mass = 2.2
@@ -713,6 +715,14 @@ func _setup_knockable_garbage(city: Node) -> void:
 			body.mass = 18.0
 			body.linear_damp = 2.2
 			body.angular_damp = 4.0
+			body.axis_lock_angular_x = true
+			body.axis_lock_angular_z = true
+			body.add_to_group("heavy_sliding_prop")
+		elif prop_name.contains("Skip"):
+			category = "dumpster"
+			body.mass = 45.0
+			body.linear_damp = 3.0
+			body.angular_damp = 5.0
 			body.axis_lock_angular_x = true
 			body.axis_lock_angular_z = true
 			body.add_to_group("heavy_sliding_prop")
@@ -728,7 +738,7 @@ func _setup_knockable_garbage(city: Node) -> void:
 		elif prop_name.contains("Barrier"):
 			category = "barrier"
 			body.mass = 3.0
-		if category != "bin":
+		if category != "bin" and category != "dumpster":
 			body.linear_damp = 0.7
 			body.angular_damp = 0.55
 		body.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
@@ -738,10 +748,26 @@ func _setup_knockable_garbage(city: Node) -> void:
 		body.transform = old_transform
 		mesh.reparent(body, false)
 		mesh.transform = Transform3D.IDENTITY
-		for child in static_body.get_children():
-			if child is CollisionShape3D:
-				var copy := (child as CollisionShape3D).duplicate() as CollisionShape3D
-				body.add_child(copy)
+		if category == "dumpster":
+			# Skip_01 uses a concave imported collider, which is unsuitable for a
+			# moving rigid body. A mesh-sized convex box is stable and cannot be
+			# phased through by the CharacterBody car.
+			var box_shape := BoxShape3D.new()
+			var bounds := mesh.get_aabb()
+			box_shape.size = Vector3(
+				maxf(bounds.size.x * 0.94, 0.5),
+				maxf(bounds.size.y * 0.94, 0.5),
+				maxf(bounds.size.z * 0.94, 0.5))
+			var solid_collision := CollisionShape3D.new()
+			solid_collision.name = "DumpsterCollision"
+			solid_collision.shape = box_shape
+			solid_collision.position = bounds.get_center()
+			body.add_child(solid_collision)
+		else:
+			for child in static_body.get_children():
+				if child is CollisionShape3D:
+					var copy := (child as CollisionShape3D).duplicate() as CollisionShape3D
+					body.add_child(copy)
 		static_body.queue_free()
 		category_counts[category] = int(category_counts[category]) + 1
 		converted += 1
@@ -1304,7 +1330,7 @@ func _run_knockable_test() -> void:
 			continue
 		var name_text := String(body.name)
 		var category := ""
-		for candidate in ["Cardboard", "Bag", "Mailbox", "Cone", "Trashbin", "TrashCan"]:
+		for candidate in ["Skip", "Cardboard", "Bag", "Mailbox", "Cone", "Trashbin", "TrashCan"]:
 			if name_text.contains(candidate):
 				category = candidate
 				break
@@ -1320,6 +1346,11 @@ func _run_knockable_test() -> void:
 		print("[KNOCKABLE TEST] %s displacement=%.2f vertical=%.2f heavy_slide=%s" % [
 			body.name, body.global_position.distance_to(start),
 			absf(body.global_position.y - start.y), body.is_in_group("heavy_sliding_prop")])
+		if category == "Skip":
+			var collision_shapes := body.find_children("*", "CollisionShape3D", true, false)
+			print("[DUMPSTER COLLISION TEST] shapes=%d layer=%d mask=%d shape_type=%s" % [
+				collision_shapes.size(), body.collision_layer, body.collision_mask,
+				collision_shapes[0].shape.get_class() if not collision_shapes.is_empty() else "none"])
 		tested[category] = true
-		if tested.size() >= 5:
+		if tested.has("Skip") and tested.size() >= 6:
 			break
