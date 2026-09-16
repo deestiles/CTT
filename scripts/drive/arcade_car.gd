@@ -55,6 +55,9 @@ var _agent: NavigationAgent3D
 var _nav_ready_frames: int = 0
 var _evasion_target: Node3D
 var _evasion_retarget_time: float = 0.0
+var _last_route_forward_dot: float = 1.0
+var _last_u_turn_reason: String = "none"
+var _u_turn_allowed: bool = false
 
 const VEHICLE_LIGHT_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Vehicle_Runtime_Lights.gdshader")
 const VEHICLE_TEXTURE := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
@@ -512,38 +515,145 @@ func _nav_command() -> Vector3:
 		return Vector3.ZERO
 	if _agent.is_navigation_finished():
 		_pick_new_target()
-	elif evasion_enabled and _evasion_retarget_time <= 0.0:
+	elif evasion_enabled and _evasion_retarget_time <= 0.0 and _police_blocks_forward_escape():
 		_pick_new_target()
+	if evasion_enabled and is_instance_valid(_evasion_target):
+		var dodge_command := _close_police_dodge_command()
+		if dodge_command.w > 0.5:
+			return Vector3(dodge_command.x, dodge_command.y, dodge_command.z)
 	return _steer_towards(_agent.get_next_path_position())
+
+## When police physically occupies the escape line, steer around it instead of
+## obediently following the path into a nose-to-nose blockage. W flags whether
+## the returned XYZ driving command is active.
+func _close_police_dodge_command() -> Vector4:
+	var to_police := _evasion_target.global_position - global_position
+	to_police.y = 0.0
+	var distance := to_police.length()
+	if distance < 0.01 or distance > 20.0:
+		return Vector4.ZERO
+	var forward := -global_transform.basis.z
+	forward.y = 0.0
+	forward = forward.normalized()
+	if forward.dot(to_police.normalized()) < 0.05:
+		return Vector4.ZERO
+	var right := global_transform.basis.x
+	right.y = 0.0
+	right = right.normalized()
+	var police_side := to_police.dot(right)
+	var dodge_side := -signf(police_side) if absf(police_side) > 0.5 else 1.0
+	var dodge_point := global_position + forward * 13.0 + right * dodge_side * 6.0
+	var command := _steer_towards(dodge_point)
+	command.x = maxf(command.x, 0.75)
+	return Vector4(command.x, command.y, command.z, 1.0)
 
 func _pick_new_target() -> void:
 	var map := get_world_3d().navigation_map
 	var chosen := NavigationServer3D.map_get_random_point(map, 1, false)
 	if evasion_enabled and is_instance_valid(_evasion_target):
+		chosen = Vector3.ZERO
 		var best_score := -INF
+		var best_reverse := Vector3.ZERO
+		var best_reverse_score := -INF
+		var best_forward_dot := -1.0
+		var best_reverse_dot := -1.0
 		var away_now := global_position - _evasion_target.global_position
 		away_now.y = 0.0
 		away_now = away_now.normalized()
-		# Sampling the entire baked road surface lets the thief use every connected
-		# street. Distance, forward escape direction, and useful trip length keep it
-		# fleeing rather than oscillating around the nearest intersection.
-		for _sample_index in 18:
-			var candidate := NavigationServer3D.map_get_random_point(map, 1, false)
+		var forward := -global_transform.basis.z
+		forward.y = 0.0
+		forward = forward.normalized()
+		var current_police_distance := global_position.distance_to(_evasion_target.global_position)
+		_u_turn_allowed = _police_blocks_forward_escape()
+		_last_u_turn_reason = "police_blocking" if _u_turn_allowed else "none"
+		var candidates: Array[Vector3] = []
+		# Seed purposeful forward and turn choices before adding map-wide random
+		# samples. This prevents a long, dense city NavMesh from statistically
+		# starving the few valid streets immediately ahead of the thief.
+		for distance in [35.0, 65.0, 100.0, 140.0]:
+			for angle in [-1.35, -0.75, 0.0, 0.75, 1.35]:
+				var probe_direction: Vector3 = Basis(Vector3.UP, float(angle)) * forward
+				var probe: Vector3 = global_position + probe_direction * float(distance)
+				var snapped_candidate := NavigationServer3D.map_get_closest_point(map, probe)
+				if snapped_candidate != Vector3.ZERO:
+					candidates.append(snapped_candidate)
+		for _sample_index in 32:
+			candidates.append(NavigationServer3D.map_get_random_point(map, 1, false))
+		# Inspect the first segment of each full NavMesh path. Normal escape routes
+		# must begin forward, even when their final destination lies behind after
+		# winding through other streets. Reverse-starting routes are retained only
+		# as a dead-end fallback or when police blocks forward escape.
+		for candidate in candidates:
 			if candidate == Vector3.ZERO:
+				continue
+			var path := NavigationServer3D.map_get_path(map, global_position, candidate, true)
+			if path.size() < 2:
+				continue
+			var first_direction := Vector3.ZERO
+			for path_index in range(1, path.size()):
+				first_direction = path[path_index] - global_position
+				first_direction.y = 0.0
+				if first_direction.length() > 2.0:
+					break
+			if first_direction.length_squared() < 0.01:
+				continue
+			first_direction = first_direction.normalized()
+			var forward_dot := forward.dot(first_direction)
+			var trip_length := global_position.distance_to(candidate)
+			if trip_length < 25.0:
 				continue
 			var trip := candidate - global_position
 			trip.y = 0.0
-			var trip_length := trip.length()
-			if trip_length < 22.0:
-				continue
 			var escape_alignment := trip.normalized().dot(away_now)
 			var police_distance := candidate.distance_to(_evasion_target.global_position)
-			var score := police_distance * 1.35 + trip_length * 0.22 + escape_alignment * 18.0
-			if score > best_score:
-				best_score = score
-				chosen = candidate
+			var escape_gain := police_distance - current_police_distance
+			var minimum_police_distance := INF
+			for path_point in path:
+				minimum_police_distance = minf(minimum_police_distance, path_point.distance_to(_evasion_target.global_position))
+			# A far endpoint is not useful if the shortest route doubles back past the
+			# police first. Preserve or increase separation along the whole route.
+			if not _u_turn_allowed and minimum_police_distance < current_police_distance - 3.0:
+				continue
+			var score := police_distance * 2.1 + minimum_police_distance * 1.5 + escape_gain * 1.4 + trip_length * 0.12 + escape_alignment * 24.0 + forward_dot * 18.0
+			if forward_dot >= -0.12 or _u_turn_allowed:
+				if score > best_score:
+					best_score = score
+					chosen = candidate
+					best_forward_dot = forward_dot
+			elif score > best_reverse_score:
+				best_reverse_score = score
+				best_reverse = candidate
+				best_reverse_dot = forward_dot
+		if chosen == Vector3.ZERO:
+			# No sampled route begins forward: treat this as a dead end and permit
+			# the best reverse path instead of wedging the thief against the boundary.
+			chosen = best_reverse if best_reverse != Vector3.ZERO else NavigationServer3D.map_get_random_point(map, 1, false)
+			best_forward_dot = best_reverse_dot
+			_u_turn_allowed = true
+			_last_u_turn_reason = "dead_end"
+		_last_route_forward_dot = best_forward_dot
 	_agent.target_position = chosen
 	_evasion_retarget_time = evasion_retarget_seconds * randf_range(0.8, 1.25)
+
+func _police_blocks_forward_escape() -> bool:
+	if not evasion_enabled or not is_instance_valid(_evasion_target):
+		return false
+	var to_police := _evasion_target.global_position - global_position
+	to_police.y = 0.0
+	if to_police.length() > 38.0 or to_police.length_squared() < 0.01:
+		return false
+	var forward := -global_transform.basis.z
+	forward.y = 0.0
+	forward = forward.normalized()
+	var police_ahead := forward.dot(to_police.normalized()) > 0.22
+	var next_path := _agent.get_next_path_position() - global_position if _agent else Vector3.ZERO
+	next_path.y = 0.0
+	var police_on_route := next_path.length_squared() > 0.01 and next_path.normalized().dot(to_police.normalized()) > 0.45
+	return police_ahead or police_on_route
+
+func refresh_evasion_route() -> void:
+	if _agent:
+		_pick_new_target()
 
 func get_navigation_debug() -> Dictionary:
 	if _agent == null:
@@ -555,6 +665,9 @@ func get_navigation_debug() -> Dictionary:
 		"target": _agent.target_position,
 		"off_navmesh": global_position.distance_to(closest),
 		"evading": evasion_enabled and is_instance_valid(_evasion_target),
+		"route_forward_dot": _last_route_forward_dot,
+		"u_turn_allowed": _u_turn_allowed,
+		"u_turn_reason": _last_u_turn_reason,
 	}
 
 ## Shared seek: accel/brake/steer to head toward a world point on the road.

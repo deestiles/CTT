@@ -990,12 +990,27 @@ func _run_escape_test() -> void:
 	await get_tree().create_timer(1.5).timeout
 	var start := _thief.global_position
 	var initial_distance := _thief.global_position.distance_to(_car.global_position)
-	await get_tree().create_timer(7.0).timeout
+	var initial_debug := _thief.get_navigation_debug()
+	print("[ESCAPE POLICY TEST] normal u_turn=%s reason=%s forward_dot=%.2f" % [
+		initial_debug.get("u_turn_allowed", false), initial_debug.get("u_turn_reason", "missing"),
+		float(initial_debug.get("route_forward_dot", -2.0))])
+	await get_tree().create_timer(14.0).timeout
 	var debug := _thief.get_navigation_debug()
-	print("[ESCAPE TEST] moved=%.2f police_distance=%.2f->%.2f nav_error=%.2f evading=%s target=%s" % [
+	print("[ESCAPE TEST] moved=%.2f police_distance=%.2f->%.2f nav_error=%.2f evading=%s forward_dot=%.2f u_turn=%s reason=%s target=%s" % [
 		_thief.global_position.distance_to(start), initial_distance,
 		_thief.global_position.distance_to(_car.global_position), float(debug.get("off_navmesh", -1.0)),
-		debug.get("evading", false), debug.get("target", Vector3.ZERO)])
+		debug.get("evading", false), float(debug.get("route_forward_dot", -2.0)),
+		debug.get("u_turn_allowed", false), debug.get("u_turn_reason", "missing"),
+		debug.get("target", Vector3.ZERO)])
+	var police_restore := _car.global_position
+	var thief_forward := -_thief.global_transform.basis.z.normalized()
+	_car.global_position = _thief.global_position + thief_forward * 12.0
+	_thief.refresh_evasion_route()
+	var blocked_debug := _thief.get_navigation_debug()
+	print("[ESCAPE POLICY TEST] police_ahead=true u_turn=%s reason=%s forward_dot=%.2f" % [
+		blocked_debug.get("u_turn_allowed", false), blocked_debug.get("u_turn_reason", "missing"),
+		float(blocked_debug.get("route_forward_dot", -2.0))])
+	_car.global_position = police_restore
 
 func _run_indicator_test() -> void:
 	await get_tree().create_timer(0.5).timeout
