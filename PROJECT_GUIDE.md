@@ -298,6 +298,10 @@ Commit `a497a70` adds a portrait-safe directional HUD cue for the map-wide chase
 
 Godot 4.7.2 mechanical diagnostics confirmed all three trigger cases without GDScript/runtime failures: an 80 m target displayed the arrow and `80 m`; a visible target 10 m ahead hid it; and an off-camera target 20 m behind displayed it again. A separate 1,200-frame scene soak completed cleanly, and the forced-capture regression still reached 100% damage with the win overlay visible. Interactive portrait play remains required to approve arrow scale/colour, edge padding around every control, rotation clarity in both top-down and POV camera modes, and whether 50 m is the right gameplay threshold.
 
+### 2026-09-15 — branch `codex/free-drive-city-features` (free-drive promoted to default game flow)
+
+The owner approved keeping the complete free-drive chase and designated it as the default game flow as of 2026-09-15. Commit `6990e29` preserves `scenes/interface/main_menu.tscn` as the application entry, but changes its primary `START PURSUIT` action from the old lane-graph `road_network_test.tscn` to `scenes/drive/drive_city.tscn`. The dispatch card now reads `FREE-DRIVE CITY` and `NO LIMIT`, matching the current no-timer chase rules. The older lane-graph system remains in the repository for map-editor development but is no longer the player-facing default. Changed file: `scripts/interface/main_menu.gd`. A Godot 4.7.2 headless launch through the configured main scene completed without GDScript/runtime failures; an interactive menu-button transition remains the final visual/input confirmation.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt
