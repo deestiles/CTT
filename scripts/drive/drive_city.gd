@@ -710,7 +710,7 @@ func _setup_knockable_garbage(city: Node) -> void:
 		body.mass = 2.2
 		if prop_name.contains("Bag"):
 			body.mass = 0.55
-		elif prop_name.contains("Trashbin") or prop_name.contains("TrashCan"):
+		elif prop_name.contains("Trashbin"):
 			category = "bin"
 			body.mass = 18.0
 			body.linear_damp = 2.2
@@ -1155,7 +1155,7 @@ func _apply_world_impact_damage(vehicle: ArcadeCar, is_player: bool) -> void:
 	for index in vehicle.get_slide_collision_count():
 		var collision := vehicle.get_slide_collision(index)
 		var collider := collision.get_collider()
-		if collider == _car or collider == _thief:
+		if not _collider_causes_vehicle_damage(collider):
 			continue
 		touching = true
 		impact_position = collision.get_position()
@@ -1179,6 +1179,16 @@ func _apply_world_impact_damage(vehicle: ArcadeCar, is_player: bool) -> void:
 	vehicle.speed *= 0.58
 	_spawn_impact_fx(impact_position + Vector3.UP * 0.2, rebound)
 	_update_vehicle_smoke(vehicle, _player_damage if is_player else _thief_damage)
+
+func _collider_causes_vehicle_damage(collider: Object) -> bool:
+	if collider == _car or collider == _thief:
+		return false
+	var node := collider as Node
+	# Reactive street props are gameplay spectacle, not hazards. They may receive
+	# momentum and collide physically, but never add vehicle damage.
+	if node and node.is_in_group("knockable_city_prop"):
+		return false
+	return collider != null
 
 func _spawn_impact_fx(world_position: Vector3, strength: float) -> void:
 	var fx := Node3D.new()
@@ -1346,6 +1356,8 @@ func _run_knockable_test() -> void:
 		print("[KNOCKABLE TEST] %s displacement=%.2f vertical=%.2f heavy_slide=%s" % [
 			body.name, body.global_position.distance_to(start),
 			absf(body.global_position.y - start.y), body.is_in_group("heavy_sliding_prop")])
+		print("[PROP DAMAGE TEST] %s causes_damage=%s" % [
+			body.name, _collider_causes_vehicle_damage(body)])
 		if category == "Skip":
 			var collision_shapes := body.find_children("*", "CollisionShape3D", true, false)
 			print("[DUMPSTER COLLISION TEST] shapes=%d layer=%d mask=%d shape_type=%s" % [
