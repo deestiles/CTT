@@ -40,6 +40,10 @@ class_name ArcadeCar
 @export var waypoint_reach: float = 7.0      # advance when this close (XZ)
 ## Drive by pathfinding on the baked road NavMesh instead of a fixed route.
 @export var use_navigation: bool = false
+## When assigned, navigation targets are chosen to increase distance from this
+## pursuer instead of wandering randomly. This remains road-NavMesh bounded.
+@export var evasion_enabled: bool = false
+@export var evasion_retarget_seconds: float = 5.0
 
 @export_group("Ambient traffic rules")
 @export var obey_traffic_rules: bool = false
@@ -49,6 +53,8 @@ class_name ArcadeCar
 
 var _agent: NavigationAgent3D
 var _nav_ready_frames: int = 0
+var _evasion_target: Node3D
+var _evasion_retarget_time: float = 0.0
 
 const VEHICLE_LIGHT_SHADER := preload("res://Assets/Synty/PolygonCity/Materials/Misc/Vehicle_Runtime_Lights.gdshader")
 const VEHICLE_TEXTURE := preload("res://Assets/Synty/PolygonCity/Textures/PolygonCity_01_A.png")
@@ -220,7 +226,13 @@ func begin_autopilot() -> void:
 			best = i
 	_wp = best
 
+func set_evasion_target(target: Node3D) -> void:
+	_evasion_target = target
+	evasion_enabled = target != null
+	_evasion_retarget_time = 0.0
+
 func _physics_process(delta: float) -> void:
+	_evasion_retarget_time = maxf(0.0, _evasion_retarget_time - delta)
 	# Stuck-recovery: if the autopilot is wedged against something, back straight
 	# out for a moment and skip ahead, so it never freezes on stray geometry.
 	if autopilot and _reverse_time > 0.0:
@@ -491,11 +503,50 @@ func _nav_command() -> Vector3:
 		return Vector3.ZERO
 	if _agent.is_navigation_finished():
 		_pick_new_target()
+	elif evasion_enabled and _evasion_retarget_time <= 0.0:
+		_pick_new_target()
 	return _steer_towards(_agent.get_next_path_position())
 
 func _pick_new_target() -> void:
 	var map := get_world_3d().navigation_map
-	_agent.target_position = NavigationServer3D.map_get_random_point(map, 1, false)
+	var chosen := NavigationServer3D.map_get_random_point(map, 1, false)
+	if evasion_enabled and is_instance_valid(_evasion_target):
+		var best_score := -INF
+		var away_now := global_position - _evasion_target.global_position
+		away_now.y = 0.0
+		away_now = away_now.normalized()
+		# Sampling the entire baked road surface lets the thief use every connected
+		# street. Distance, forward escape direction, and useful trip length keep it
+		# fleeing rather than oscillating around the nearest intersection.
+		for _sample_index in 18:
+			var candidate := NavigationServer3D.map_get_random_point(map, 1, false)
+			if candidate == Vector3.ZERO:
+				continue
+			var trip := candidate - global_position
+			trip.y = 0.0
+			var trip_length := trip.length()
+			if trip_length < 22.0:
+				continue
+			var escape_alignment := trip.normalized().dot(away_now)
+			var police_distance := candidate.distance_to(_evasion_target.global_position)
+			var score := police_distance * 1.35 + trip_length * 0.22 + escape_alignment * 18.0
+			if score > best_score:
+				best_score = score
+				chosen = candidate
+	_agent.target_position = chosen
+	_evasion_retarget_time = evasion_retarget_seconds * randf_range(0.8, 1.25)
+
+func get_navigation_debug() -> Dictionary:
+	if _agent == null:
+		return {"ready": false}
+	var map := get_world_3d().navigation_map
+	var closest := NavigationServer3D.map_get_closest_point(map, global_position)
+	return {
+		"ready": _nav_ready_frames >= 5,
+		"target": _agent.target_position,
+		"off_navmesh": global_position.distance_to(closest),
+		"evading": evasion_enabled and is_instance_valid(_evasion_target),
+	}
 
 ## Shared seek: accel/brake/steer to head toward a world point on the road.
 func _steer_towards(target: Vector3) -> Vector3:
@@ -567,6 +618,7 @@ func reset_to_spawn() -> void:
 	_grounded_once = false
 	_ground_car()
 	_last_pos = global_position
+	_evasion_retarget_time = 0.0
 	if autopilot:
 		begin_autopilot()
 

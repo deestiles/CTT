@@ -212,6 +212,8 @@ func _ready() -> void:
 		call_deferred("_run_capture_test")
 	if OS.has_environment("CTT_DAMAGE_TEST"):
 		call_deferred("_run_damage_test")
+	if OS.has_environment("CTT_ESCAPE_TEST"):
+		call_deferred("_run_escape_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
 		call_deferred("_run_pedestrian_hit_test")
 
@@ -805,20 +807,20 @@ func _run_pedestrian_hit_test() -> void:
 	print("[PED HIT TEST] displacement=%.2f" % ped.global_position.distance_to(start))
 
 ## The arcade chase has one target and no ambient vehicle traffic. The thief
-## starts ahead in the same legal US lane and continuously runs the verified
-## circuit; pedestrians remain active city life.
+## starts ahead on the road, then uses the complete baked road NavMesh to flee
+## police. It ignores lanes and signals, but cannot navigate beyond the city.
 func _spawn_thief_vehicle() -> void:
 	var car := CharacterBody3D.new()
 	car.name = "ThiefCar"
 	car.set_script(ARCADE_CAR_SCRIPT)
 	car.set("visual_path", NodePath("Visual"))
-	car.set("use_navigation", false)
+	car.set("use_navigation", true)
 	car.set("autopilot", true)
-	car.set("route", _densify(ROUTE, 8.0))
-	car.set("waypoint_reach", 3.2)
 	car.set("obey_traffic_rules", false)
-	car.set("autopilot_speed", 11.5)
-	car.set("max_speed", 16.0)
+	car.set("evasion_enabled", true)
+	car.set("evasion_retarget_seconds", 5.0)
+	car.set("autopilot_speed", 14.0)
+	car.set("max_speed", 19.0)
 	var visual := Node3D.new()
 	visual.name = "Visual"
 	visual.rotation.y = PI
@@ -827,6 +829,7 @@ func _spawn_thief_vehicle() -> void:
 	car.transform = Transform3D(Basis.from_euler(Vector3(0, PI * 0.5, 0)), Vector3(-65.0, 1.0, -8.0))
 	add_child(car)
 	_thief = car as ArcadeCar
+	_thief.set_evasion_target(_car)
 	_thief.set_night_lights(_tod_index != 0)
 	_thief.begin_autopilot()
 	var marker := Label3D.new()
@@ -911,6 +914,17 @@ func _run_traffic_lane_test() -> void:
 		var forward := -node.global_transform.basis.z.normalized()
 		print("[TRAFFIC TEST] %s pos=%s forward=%s speed=%.2f" % [node.name, node.global_position, forward, float(car.speed)])
 	print("[TRAFFIC TEST] max_lane_error=%.2f" % max_lane_error)
+
+func _run_escape_test() -> void:
+	await get_tree().create_timer(1.5).timeout
+	var start := _thief.global_position
+	var initial_distance := _thief.global_position.distance_to(_car.global_position)
+	await get_tree().create_timer(7.0).timeout
+	var debug := _thief.get_navigation_debug()
+	print("[ESCAPE TEST] moved=%.2f police_distance=%.2f->%.2f nav_error=%.2f evading=%s target=%s" % [
+		_thief.global_position.distance_to(start), initial_distance,
+		_thief.global_position.distance_to(_car.global_position), float(debug.get("off_navmesh", -1.0)),
+		debug.get("evading", false), debug.get("target", Vector3.ZERO)])
 
 ## Accept a route only when every waypoint hits live walkable physics at a
 ## consistent height. Demo mesh transforms/AABBs are not trusted for placement.
