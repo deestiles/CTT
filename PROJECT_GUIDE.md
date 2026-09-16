@@ -292,6 +292,12 @@ Commit `d229fee` replaces the thief's law-abiding two-lane loop with pursuer-awa
 
 Godot 4.7.2 ran the escape diagnostic and a separate 1,800-frame scene soak without GDScript/runtime failures. The diagnostic selected a remote target around `(-111, 0.30, 143)`, moved 29.31 m during the observation window, increased separation from stationary police from 38.05 m to 66.95 m, and remained within 0.30 m of the navigation surface. The forced-capture regression still dealt 28 damage, reached 100%, and displayed the win overlay. Interactive editor play remains required to judge pursuit difficulty, cornering quality, target-change smoothness, obstacle recovery, whether every remote road island is truly connected, and whether the police can still catch the faster, less predictable thief.
 
+### 2026-09-15 — branch `codex/free-drive-city-features` (lost-thief direction indicator)
+
+Commit `a497a70` adds a portrait-safe directional HUD cue for the map-wide chase. A high-contrast red arrow appears whenever the thief is more than 50 m away or outside the active camera's visible rectangle, rotates toward its projected screen direction, shows live distance, and sits on the edge of a safe area clear of the top chase panel and bottom driving controls. It hides when the thief is both within 50 m and visible, and also hides beneath the capture overlay. This pass deliberately uses a lightweight pursuit arrow instead of adding a second map-rendering camera. Changed file: `scripts/drive/drive_city.gd`.
+
+Godot 4.7.2 mechanical diagnostics confirmed all three trigger cases without GDScript/runtime failures: an 80 m target displayed the arrow and `80 m`; a visible target 10 m ahead hid it; and an off-camera target 20 m behind displayed it again. A separate 1,200-frame scene soak completed cleanly, and the forced-capture regression still reached 100% damage with the win overlay visible. Interactive portrait play remains required to approve arrow scale/colour, edge padding around every control, rotation clarity in both top-down and POV camera modes, and whether 50 m is the right gameplay threshold.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt
