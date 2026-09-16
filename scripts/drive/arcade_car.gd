@@ -79,6 +79,7 @@ var _grounded_once: bool = false
 var _last_pos: Vector3 = Vector3.ZERO
 var _stuck_time: float = 0.0
 var _reverse_time: float = 0.0       # >0 => backing out of an obstacle
+var _impact_velocity: Vector3 = Vector3.ZERO # short-lived arcade collision shove
 
 # Mesh-audited lamp positions and rear-lens bounds. Values are body-local and
 # intentionally keyed per model: these vehicles do not share lamp geometry.
@@ -240,8 +241,9 @@ func _physics_process(delta: float) -> void:
 		speed = -6.0
 		var back := -global_transform.basis.z
 		back.y = 0.0
-		velocity = back.normalized() * speed
+		velocity = back.normalized() * speed + _impact_velocity
 		move_and_slide()
+		_impact_velocity = _impact_velocity.move_toward(Vector3.ZERO, 13.0 * delta)
 		_ground_car()
 		_constrain_to_road()
 		_last_pos = global_position
@@ -314,8 +316,9 @@ func _physics_process(delta: float) -> void:
 	# Move only in the horizontal plane; walls (buildings) block via move_and_slide.
 	var forward := -global_transform.basis.z
 	forward.y = 0.0
-	velocity = forward.normalized() * speed
+	velocity = forward.normalized() * speed + _impact_velocity
 	move_and_slide()
+	_impact_velocity = _impact_velocity.move_toward(Vector3.ZERO, 13.0 * delta)
 	_push_knockable_props()
 
 	_ground_car()
@@ -379,8 +382,14 @@ func _push_knockable_props() -> void:
 		var direction := Vector3(velocity.x, 0.0, velocity.z).normalized()
 		if direction == Vector3.ZERO:
 			direction = -global_transform.basis.z.normalized()
-		var strength := clampf(absf(speed) * body.mass * 0.75, 2.0, 22.0)
-		body.apply_central_impulse(direction * strength + Vector3.UP * strength * 0.22)
+		if body.is_in_group("heavy_sliding_prop"):
+			# Dumpsters/big bins should scrape aside under sustained vehicle force,
+			# not launch like lightweight litter.
+			var slide_strength := clampf(absf(speed) * body.mass * 0.28, 5.0, 30.0)
+			body.apply_central_impulse(direction * slide_strength)
+		else:
+			var strength := clampf(absf(speed) * body.mass * 0.75, 2.0, 22.0)
+			body.apply_central_impulse(direction * strength + Vector3.UP * strength * 0.22)
 
 ## Apply the Polygon City runtime-light shader to the car body so its real
 ## tail/brake/reverse lens meshes can emit, and add forward headlight spots.
@@ -612,6 +621,7 @@ func reset_to_spawn() -> void:
 	_steer_smooth = 0.0
 	_stuck_time = 0.0
 	_reverse_time = 0.0
+	_impact_velocity = Vector3.ZERO
 	touch_input = Vector2.ZERO
 	global_transform = _spawn
 	_grounded_y = _spawn.origin.y
@@ -627,3 +637,11 @@ func get_speed_kmh() -> float:
 
 func get_impact_velocity() -> Vector3:
 	return velocity
+
+func apply_impact_impulse(impulse: Vector3) -> void:
+	impulse.y = 0.0
+	_impact_velocity += impulse
+	_impact_velocity = _impact_velocity.limit_length(13.0)
+
+func get_collision_shove_debug() -> Vector3:
+	return _impact_velocity

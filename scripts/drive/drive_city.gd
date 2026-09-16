@@ -691,7 +691,7 @@ func _setup_knockable_garbage(city: Node) -> void:
 				seen[id] = true
 				candidates.append(node)
 	var converted := 0
-	var category_counts := {"trash": 0, "cardboard": 0, "mailbox": 0, "cone": 0, "barrier": 0}
+	var category_counts := {"trash": 0, "bin": 0, "cardboard": 0, "mailbox": 0, "cone": 0, "barrier": 0}
 	for node in candidates:
 		if converted >= max_knockable_props:
 			break
@@ -708,6 +708,14 @@ func _setup_knockable_garbage(city: Node) -> void:
 		body.mass = 2.2
 		if prop_name.contains("Bag"):
 			body.mass = 0.55
+		elif prop_name.contains("Trashbin") or prop_name.contains("TrashCan"):
+			category = "bin"
+			body.mass = 18.0
+			body.linear_damp = 2.2
+			body.angular_damp = 4.0
+			body.axis_lock_angular_x = true
+			body.axis_lock_angular_z = true
+			body.add_to_group("heavy_sliding_prop")
 		elif prop_name.contains("Cardboard"):
 			category = "cardboard"
 			body.mass = 0.8
@@ -720,8 +728,9 @@ func _setup_knockable_garbage(city: Node) -> void:
 		elif prop_name.contains("Barrier"):
 			category = "barrier"
 			body.mass = 3.0
-		body.linear_damp = 0.7
-		body.angular_damp = 0.55
+		if category != "bin":
+			body.linear_damp = 0.7
+			body.angular_damp = 0.55
 		body.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
 		body.freeze = true
 		body.add_to_group("knockable_city_prop")
@@ -1079,12 +1088,18 @@ func _update_thief_indicator(distance: float) -> void:
 func _register_thief_hit(relative_speed: float) -> void:
 	var hit_damage := clampf(7.0 + relative_speed * 1.35, 9.0, 28.0)
 	_thief_damage = minf(100.0, _thief_damage + hit_damage)
-	# Ramming has a cost, but police damage is informational until a future repair
-	# or loss system is approved. The chase still ends only by catching the thief.
-	_player_damage = minf(100.0, _player_damage + clampf(hit_damage * 0.34, 3.0, 9.0))
 	_capture_cooldown = 0.9
-	_car.speed *= 0.72
-	_thief.speed = maxf(4.5, _thief.speed * 0.62)
+	var impact_direction := _thief.global_position - _car.global_position
+	impact_direction.y = 0.0
+	if impact_direction.length_squared() < 0.01:
+		impact_direction = -_car.global_transform.basis.z
+	impact_direction = impact_direction.normalized()
+	var shove_strength := clampf(2.5 + relative_speed * 0.48, 3.5, 11.0)
+	_thief.apply_impact_impulse(impact_direction * shove_strength)
+	_car.apply_impact_impulse(-impact_direction * shove_strength * 0.32)
+	_car.speed *= 0.68
+	_thief.speed = maxf(3.5, _thief.speed * 0.52)
+	_spawn_impact_fx((_car.global_position + _thief.global_position) * 0.5 + Vector3.UP * 0.75, shove_strength)
 	if _damage_bar:
 		_damage_bar.value = _thief_damage
 	if _damage_label:
@@ -1096,7 +1111,10 @@ func _register_thief_hit(relative_speed: float) -> void:
 	_update_vehicle_smoke(_car, _player_damage)
 	_update_vehicle_smoke(_thief, _thief_damage)
 	if OS.has_environment("CTT_CAPTURE_TEST"):
-		print("[CAPTURE TEST] hit=%.1f total=%.1f" % [hit_damage, _thief_damage])
+		print("[CAPTURE TEST] hit=%.1f total=%.1f police_damage=%.1f police_shove=%.2f thief_shove=%.2f fx=%d" % [
+			hit_damage, _thief_damage, _player_damage,
+			_car.get_collision_shove_debug().length(), _thief.get_collision_shove_debug().length(),
+			get_tree().get_nodes_in_group("vehicle_impact_fx").size()])
 	if _thief_damage >= 100.0:
 		_win_chase()
 
@@ -1106,12 +1124,16 @@ func _apply_world_impact_damage(vehicle: ArcadeCar, is_player: bool) -> void:
 	if vehicle == null:
 		return
 	var touching := false
+	var impact_position := vehicle.global_position + Vector3.UP * 0.7
+	var impact_normal := Vector3.ZERO
 	for index in vehicle.get_slide_collision_count():
 		var collision := vehicle.get_slide_collision(index)
 		var collider := collision.get_collider()
 		if collider == _car or collider == _thief:
 			continue
 		touching = true
+		impact_position = collision.get_position()
+		impact_normal = collision.get_normal()
 		break
 	var was_touching := bool(_vehicle_contacting_world.get(vehicle, false))
 	_vehicle_contacting_world[vehicle] = touching
@@ -1124,8 +1146,79 @@ func _apply_world_impact_damage(vehicle: ArcadeCar, is_player: bool) -> void:
 		# Environmental mistakes can weaken the thief but cannot win the chase for
 		# the player; the final point of damage must still come from a police ram.
 		_thief_damage = minf(99.0, _thief_damage + impact_damage)
-	vehicle.speed *= 0.68
+	var rebound := clampf(absf(vehicle.speed) * 0.28, 1.5, 6.5)
+	impact_normal.y = 0.0
+	if impact_normal.length_squared() > 0.01:
+		vehicle.apply_impact_impulse(impact_normal.normalized() * rebound)
+	vehicle.speed *= 0.58
+	_spawn_impact_fx(impact_position + Vector3.UP * 0.2, rebound)
 	_update_vehicle_smoke(vehicle, _player_damage if is_player else _thief_damage)
+
+func _spawn_impact_fx(world_position: Vector3, strength: float) -> void:
+	var fx := Node3D.new()
+	fx.name = "VehicleImpactFX"
+	fx.add_to_group("vehicle_impact_fx")
+	add_child(fx)
+	fx.global_position = world_position
+	var sparks := GPUParticles3D.new()
+	sparks.name = "Sparks"
+	sparks.one_shot = true
+	sparks.explosiveness = 1.0
+	sparks.amount = int(clampf(strength * 2.2, 8.0, 24.0))
+	sparks.lifetime = 0.55
+	var spark_process := ParticleProcessMaterial.new()
+	spark_process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	spark_process.emission_sphere_radius = 0.32
+	spark_process.direction = Vector3.UP
+	spark_process.spread = 78.0
+	spark_process.gravity = Vector3(0.0, -13.0, 0.0)
+	spark_process.initial_velocity_min = 4.0
+	spark_process.initial_velocity_max = 7.0 + strength * 0.35
+	spark_process.scale_min = 0.7
+	spark_process.scale_max = 1.25
+	spark_process.color = Color("#ffb52e")
+	sparks.process_material = spark_process
+	var spark_quad := QuadMesh.new()
+	spark_quad.size = Vector2(0.055, 0.30)
+	var spark_material := StandardMaterial3D.new()
+	spark_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	spark_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	spark_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	spark_material.albedo_color = Color("#ffd66b")
+	spark_material.emission_enabled = true
+	spark_material.emission = Color("#ff8a16")
+	spark_material.emission_energy_multiplier = 4.0
+	spark_quad.material = spark_material
+	sparks.draw_pass_1 = spark_quad
+	fx.add_child(sparks)
+	var debris := GPUParticles3D.new()
+	debris.name = "Debris"
+	debris.one_shot = true
+	debris.explosiveness = 1.0
+	debris.amount = int(clampf(strength * 0.65, 3.0, 8.0))
+	debris.lifetime = 0.9
+	var debris_process := ParticleProcessMaterial.new()
+	debris_process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	debris_process.emission_sphere_radius = 0.28
+	debris_process.direction = Vector3.UP
+	debris_process.spread = 62.0
+	debris_process.gravity = Vector3(0.0, -10.0, 0.0)
+	debris_process.initial_velocity_min = 2.4
+	debris_process.initial_velocity_max = 4.5 + strength * 0.2
+	debris_process.scale_min = 0.65
+	debris_process.scale_max = 1.2
+	debris_process.color = Color(0.12, 0.14, 0.17, 1.0)
+	debris.process_material = debris_process
+	var fragment := BoxMesh.new()
+	fragment.size = Vector3(0.10, 0.045, 0.16)
+	var fragment_material := StandardMaterial3D.new()
+	fragment_material.albedo_color = Color(0.08, 0.10, 0.13, 1.0)
+	fragment.material = fragment_material
+	debris.draw_pass_1 = fragment
+	fx.add_child(debris)
+	sparks.restart()
+	debris.restart()
+	get_tree().create_timer(1.4).timeout.connect(fx.queue_free)
 
 func _win_chase() -> void:
 	if _chase_won:
@@ -1211,7 +1304,7 @@ func _run_knockable_test() -> void:
 			continue
 		var name_text := String(body.name)
 		var category := ""
-		for candidate in ["Cardboard", "Bag", "Mailbox", "Cone"]:
+		for candidate in ["Cardboard", "Bag", "Mailbox", "Cone", "Trashbin", "TrashCan"]:
 			if name_text.contains(candidate):
 				category = candidate
 				break
@@ -1219,9 +1312,14 @@ func _run_knockable_test() -> void:
 			continue
 		var start := body.global_position
 		body.freeze = false
-		body.apply_central_impulse(Vector3(2.0, 4.0, 0.5) * body.mass)
+		if body.is_in_group("heavy_sliding_prop"):
+			body.apply_central_impulse(Vector3(24.0, 0.0, 3.0))
+		else:
+			body.apply_central_impulse(Vector3(2.0, 4.0, 0.5) * body.mass)
 		await get_tree().create_timer(0.25).timeout
-		print("[KNOCKABLE TEST] %s displacement=%.2f" % [body.name, body.global_position.distance_to(start)])
+		print("[KNOCKABLE TEST] %s displacement=%.2f vertical=%.2f heavy_slide=%s" % [
+			body.name, body.global_position.distance_to(start),
+			absf(body.global_position.y - start.y), body.is_in_group("heavy_sliding_prop")])
 		tested[category] = true
-		if tested.size() >= 4:
+		if tested.size() >= 5:
 			break
