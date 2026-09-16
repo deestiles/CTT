@@ -103,9 +103,9 @@ func build_briefing() -> void:
 	details.add_theme_constant_override("separation", 13)
 	card.add_child(details)
 	details.add_child(make_detail("CRIME", "VEHICLE THEFT"))
-	details.add_child(make_detail("DISTRICT", "DOWNTOWN GRID"))
+	details.add_child(make_detail("DISTRICT", "FREE-DRIVE CITY"))
 	details.add_child(make_detail("SUSPECT", "RED GETAWAY COUPE"))
-	details.add_child(make_detail("TIME LIMIT", "60 SECONDS"))
+	details.add_child(make_detail("TIME LIMIT", "NO LIMIT"))
 	details.add_child(make_detail("DIFFICULTY", "CADET"))
 	details.add_child(make_detail("LOADOUT", "1 BACKUP · 2 SPIKE STRIPS"))
 	start_button = make_button("START PURSUIT", start_chase)
@@ -134,7 +134,7 @@ func start_chase() -> void:
 	GameState.refresh_lives()
 	if GameState.lives <= 0:
 		return
-	get_tree().change_scene_to_file("res://scenes/chase/road_network_test.tscn")
+	get_tree().change_scene_to_file("res://scenes/drive/drive_city.tscn")
 
 
 func start_legacy_chase_test() -> void:
