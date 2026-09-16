@@ -280,6 +280,12 @@ The lane-graph chase's damage system was not coupled to this self-contained arca
 
 Verification: Godot 4.7.2 ran a forced capture test without GDScript/runtime errors: a 16 m/s relative contact dealt the capped 28 damage, advanced the prepared 92% state to 100%, stopped play, and reported the win overlay visible. A separate 900-frame circulation/night-light run showed exactly one non-player vehicle (`ThiefCar`), no ambient civilian fleet, lane error `0.00 m`, westbound heading `(-1,0,0)`, steady `11.50 m/s`, and the muscle car's two calibrated headlights/rear emission active. Interactive editor play is still required to tune hit distance/damage/cooldown, confirm the chase is fun and winnable through full U-turns, and visually approve the portrait HUD/win overlay.
 
+### 2026-09-15 — branch `codex/free-drive-city-features` (arcade car damage and smoke)
+
+Commit `38c21fc` adds persistent damage feedback to both chase vehicles without coupling the sandbox to the lane-graph damage system. Police/thief rams now damage both cars, while solid-world impacts apply one speed-scaled hit per new contact instead of repeatedly draining damage while a car scrapes a wall. Environmental impacts can weaken the thief to 99%, but the final capture still requires a police ram. Police damage is informational and capped at 100%; there remains no player-loss condition, preserving the owner's instruction that the game ends only when the thief is captured. The chase panel now displays separate red thief and blue police damage bars.
+
+Each vehicle receives a stylized hood-mounted particle emitter. Smoke begins at 25% damage and becomes denser and darker as severity increases; Reset clears both damage states and emitters. Changed file: `scripts/drive/drive_city.gd`. Mechanical Godot 4.7.2 tests completed without GDScript/runtime errors: `CTT_DAMAGE_TEST` reported police `55%` with smoke ratio `0.44` and thief `78%` with smoke ratio `0.73`; the existing forced-capture regression still dealt the capped 28 damage, reached 100%, and displayed the win overlay. The pre-existing restricted-environment log/certificate warnings remain unrelated. Interactive editor driving is still required to approve the exact smoke origin on both differently shaped hoods, particle size/density/colour, damage pacing from rams and scenery, and the taller chase HUD on the target portrait viewport.
+
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
 ## Claude onboarding prompt
