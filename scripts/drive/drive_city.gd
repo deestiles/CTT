@@ -96,6 +96,9 @@ var _damage_bar: ProgressBar
 var _player_damage_label: Label
 var _player_damage_bar: ProgressBar
 var _win_overlay: Control
+var _thief_indicator: Control
+var _thief_arrow: Node2D
+var _thief_indicator_label: Label
 var _vehicle_smoke: Dictionary = {}
 var _vehicle_contacting_world: Dictionary = {}
 
@@ -214,6 +217,8 @@ func _ready() -> void:
 		call_deferred("_run_damage_test")
 	if OS.has_environment("CTT_ESCAPE_TEST"):
 		call_deferred("_run_escape_test")
+	if OS.has_environment("CTT_INDICATOR_TEST"):
+		call_deferred("_run_indicator_test")
 	if OS.has_environment("CTT_PED_HIT_TEST"):
 		call_deferred("_run_pedestrian_hit_test")
 
@@ -278,6 +283,7 @@ func _setup_chase_hud(hud: Node) -> void:
 	_player_damage_label.add_theme_font_size_override("font_size", 13)
 	_player_damage_label.add_theme_color_override("font_color", Color("#a8ddff"))
 	box.add_child(_player_damage_label)
+	_setup_thief_indicator(hud)
 
 	_win_overlay = Control.new()
 	_win_overlay.name = "WinOverlay"
@@ -294,6 +300,7 @@ func _setup_chase_hud(hud: Node) -> void:
 	_win_overlay.add_child(center)
 	var win_box := VBoxContainer.new()
 	win_box.alignment = BoxContainer.ALIGNMENT_CENTER
+
 	win_box.add_theme_constant_override("separation", 22)
 	center.add_child(win_box)
 	var title := Label.new()
@@ -316,6 +323,35 @@ func _setup_chase_hud(hud: Node) -> void:
 	restart.add_theme_font_size_override("font_size", 22)
 	restart.pressed.connect(func() -> void: get_tree().reload_current_scene())
 	win_box.add_child(restart)
+
+func _setup_thief_indicator(hud: Node) -> void:
+	_thief_indicator = Control.new()
+	_thief_indicator.name = "ThiefDirectionIndicator"
+	_thief_indicator.size = Vector2(94.0, 76.0)
+	_thief_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_thief_indicator.visible = false
+	_thief_indicator.z_index = 20
+	hud.add_child(_thief_indicator)
+	_thief_arrow = Node2D.new()
+	_thief_arrow.position = Vector2(47.0, 27.0)
+	_thief_indicator.add_child(_thief_arrow)
+	var outline := Polygon2D.new()
+	outline.polygon = PackedVector2Array([Vector2(0, -27), Vector2(23, 21), Vector2(0, 14), Vector2(-23, 21)])
+	outline.color = Color(0.02, 0.035, 0.07, 0.96)
+	_thief_arrow.add_child(outline)
+	var arrow := Polygon2D.new()
+	arrow.polygon = PackedVector2Array([Vector2(0, -21), Vector2(17, 15), Vector2(0, 10), Vector2(-17, 15)])
+	arrow.color = Color("#ff344d")
+	_thief_arrow.add_child(arrow)
+	_thief_indicator_label = Label.new()
+	_thief_indicator_label.position = Vector2(0.0, 49.0)
+	_thief_indicator_label.size = Vector2(94.0, 25.0)
+	_thief_indicator_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_thief_indicator_label.add_theme_font_size_override("font_size", 17)
+	_thief_indicator_label.add_theme_color_override("font_color", Color.WHITE)
+	_thief_indicator_label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.95))
+	_thief_indicator_label.add_theme_constant_override("outline_size", 5)
+	_thief_indicator.add_child(_thief_indicator_label)
 
 ## Screenshot the live game (map) camera at CTT_ANGLE degrees, to preview the angle
 ## slider's effect. Uses the real DriveCameraRig, not a throwaway camera.
@@ -926,6 +962,23 @@ func _run_escape_test() -> void:
 		_thief.global_position.distance_to(_car.global_position), float(debug.get("off_navmesh", -1.0)),
 		debug.get("evading", false), debug.get("target", Vector3.ZERO)])
 
+func _run_indicator_test() -> void:
+	await get_tree().create_timer(0.5).timeout
+	_thief.set_physics_process(false)
+	_thief.global_position = _car.global_position + Vector3(80.0, 0.0, 0.0)
+	_update_chase(0.016)
+	print("[INDICATOR TEST] far_visible=%s distance_text=%s position=%s rotation=%.2f" % [
+		_thief_indicator.visible, _thief_indicator_label.text,
+		_thief_indicator.position, _thief_arrow.rotation])
+	var forward := -_car.global_transform.basis.z.normalized()
+	_thief.global_position = _car.global_position + forward * 10.0
+	_update_chase(0.016)
+	print("[INDICATOR TEST] near_ahead_visible=%s" % _thief_indicator.visible)
+	_thief.global_position = _car.global_position - forward * 20.0
+	_update_chase(0.016)
+	print("[INDICATOR TEST] near_behind_visible=%s distance_text=%s" % [
+		_thief_indicator.visible, _thief_indicator_label.text])
+
 ## Accept a route only when every waypoint hits live walkable physics at a
 ## consistent height. Demo mesh transforms/AABBs are not trusted for placement.
 func _raycast_verify_loop(points: PackedVector3Array) -> PackedVector3Array:
@@ -968,6 +1021,7 @@ func _update_chase(delta: float) -> void:
 	var distance := separation.length()
 	if _distance_label:
 		_distance_label.text = "%d m TO THIEF" % int(round(distance))
+	_update_thief_indicator(distance)
 	if _damage_bar:
 		_damage_bar.value = _thief_damage
 	if _damage_label:
@@ -987,6 +1041,40 @@ func _update_chase(delta: float) -> void:
 		var relative_speed := absf(_car.speed - _thief.speed)
 		if relative_speed > 1.5 or absf(_car.speed) > 8.0:
 			_register_thief_hit(relative_speed)
+
+func _update_thief_indicator(distance: float) -> void:
+	if _thief_indicator == null or _cam == null or _thief == null:
+		return
+	if _chase_won:
+		_thief_indicator.visible = false
+		return
+	var viewport_size := get_viewport().get_visible_rect().size
+	var target_position := _thief.global_position + Vector3.UP * 1.2
+	var behind := _cam.is_position_behind(target_position)
+	var projected := _cam.unproject_position(target_position)
+	var viewport_rect := Rect2(Vector2.ZERO, viewport_size).grow(-34.0)
+	var on_screen := not behind and viewport_rect.has_point(projected)
+	_thief_indicator.visible = distance > 50.0 or not on_screen
+	if not _thief_indicator.visible:
+		return
+	var viewport_center := viewport_size * 0.5
+	var direction := (projected - viewport_center).normalized()
+	if behind:
+		direction = -direction
+	if direction.length_squared() < 0.01:
+		direction = Vector2.UP
+	# Keep the cue clear of the chase panel at the top and driving controls at
+	# the bottom, then intersect the direction ray with that safe HUD rectangle.
+	var safe_rect := Rect2(Vector2(54.0, 174.0), viewport_size - Vector2(108.0, 314.0))
+	var safe_center := safe_rect.get_center()
+	var half := safe_rect.size * 0.5
+	var edge_scale := minf(
+		half.x / maxf(absf(direction.x), 0.001),
+		half.y / maxf(absf(direction.y), 0.001))
+	var indicator_center := safe_center + direction * edge_scale
+	_thief_indicator.position = indicator_center - _thief_indicator.size * 0.5
+	_thief_arrow.rotation = direction.angle() + PI * 0.5
+	_thief_indicator_label.text = "%d m" % int(round(distance))
 
 func _register_thief_hit(relative_speed: float) -> void:
 	var hit_damage := clampf(7.0 + relative_speed * 1.35, 9.0, 28.0)
@@ -1052,6 +1140,8 @@ func _win_chase() -> void:
 	_thief.set_physics_process(false)
 	if _win_overlay:
 		_win_overlay.visible = true
+	if _thief_indicator:
+		_thief_indicator.visible = false
 	if OS.has_environment("CTT_CAPTURE_TEST"):
 		print("[CAPTURE TEST] won=true overlay=%s" % (_win_overlay != null and _win_overlay.visible))
 
