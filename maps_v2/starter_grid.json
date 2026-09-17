@@ -1,0 +1,295 @@
+{
+	"boundary": [
+		[
+			-5,
+			-5
+		],
+		[
+			5,
+			-5
+		],
+		[
+			5,
+			5
+		],
+		[
+			-5,
+			5
+		]
+	],
+	"camera": {
+		"size": 120.0,
+		"x": 0.0,
+		"z": 0.0
+	},
+	"format": "ctt_city_v2",
+	"grid_size": 5.0,
+	"ground_y": 0.0,
+	"items": [
+		{
+			"cell": [
+				-4,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-3,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-2,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-1,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				0,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				1,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				2,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				3,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				4,
+				0
+			],
+			"id": "road_lines",
+			"turns": 0
+		},
+		{
+			"cell": [
+				0,
+				-4
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				-3
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				-2
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				-1
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				1
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				2
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				3
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				4
+			],
+			"id": "road_lines",
+			"turns": 1
+		},
+		{
+			"cell": [
+				0,
+				0
+			],
+			"id": "road_crossing",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-3,
+				1
+			],
+			"id": "sidewalk_straight",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-2,
+				1
+			],
+			"id": "sidewalk_straight",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-1,
+				1
+			],
+			"id": "sidewalk_straight",
+			"turns": 0
+		},
+		{
+			"cell": [
+				0,
+				1
+			],
+			"id": "sidewalk_straight",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-4,
+				2
+			],
+			"id": "bld_shop",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-3,
+				1
+			],
+			"id": "street_lamp",
+			"turns": 0
+		},
+		{
+			"cell": [
+				1,
+				1
+			],
+			"id": "traffic_signal",
+			"turns": 0
+		},
+		{
+			"cell": [
+				-1,
+				-1
+			],
+			"id": "traffic_signal",
+			"turns": 1
+		},
+		{
+			"cell": [
+				-2,
+				1
+			],
+			"id": "prop_trashcan",
+			"turns": 0
+		}
+	],
+	"name": "starter_grid",
+	"recovery_points": [
+		{
+			"cell": [
+				0,
+				0
+			],
+			"turns": 0
+		}
+	],
+	"schema_version": 1,
+	"sidewalk_routes": [
+		[
+			[
+				-3,
+				1
+			],
+			[
+				-2,
+				1
+			],
+			[
+				-1,
+				1
+			],
+			[
+				0,
+				1
+			]
+		]
+	],
+	"spawns": {
+		"police": {
+			"cell": [
+				-4,
+				0
+			],
+			"turns": 1
+		},
+		"thief": {
+			"cell": [
+				4,
+				0
+			],
+			"turns": 3
+		}
+	},
+	"time_of_day": "DUSK",
+	"validation": {}
+}
