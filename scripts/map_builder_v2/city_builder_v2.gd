@@ -38,11 +38,13 @@ var _sel_label: Label
 var _name_edit: LineEdit
 
 var _cam_center := Vector3(0, 0, 0)
-var _cam_size := 90.0
+var _cam_size := 160.0
 var _panning := false
+var _ui: CanvasLayer
 
 
 func _ready() -> void:
+	_maximize_window()
 	_map = Schema.new_empty("my_city")
 	_build_camera()
 	_build_grid()
@@ -63,7 +65,17 @@ func _ready() -> void:
 		call_deferred("_run_builder_test")
 
 
-# --- Camera / grid --------------------------------------------------------
+# --- Window / camera / grid ----------------------------------------------
+
+## The game project is a small portrait window; a map editor needs room. Open the
+## builder maximized and resizable so the (expand-stretch) viewport shows far more
+## of the city. No-op headless. Only affects the running builder, not the game.
+func _maximize_window() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, false)
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+
 
 func _build_camera() -> void:
 	_cam = Camera3D.new()
@@ -103,12 +115,14 @@ func _build_grid() -> void:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.vertex_color_use_as_albedo = true
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	var half := 60
+	var half := 400
 	im.surface_begin(Mesh.PRIMITIVE_LINES, mat)
 	for i in range(-half, half + 1):
-		var c := Color(0.4, 0.45, 0.5, 0.35)
+		var c := Color(0.4, 0.45, 0.5, 0.28)
 		if i == 0:
-			c = Color(0.7, 0.75, 0.8, 0.6)
+			c = Color(0.75, 0.8, 0.85, 0.7)
+		elif i % 10 == 0:
+			c = Color(0.55, 0.6, 0.66, 0.5)      # major line every 10 cells (50 m)
 		im.surface_set_color(c)
 		im.surface_add_vertex(Vector3(i * GRID, 0.02, -half * GRID))
 		im.surface_set_color(c)
@@ -290,10 +304,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
-			_cam_size = clampf(_cam_size * 0.9, 15.0, 400.0)
+			_cam_size = clampf(_cam_size * 0.9, 10.0, 3000.0)
 			_update_camera()
 		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN and mb.pressed:
-			_cam_size = clampf(_cam_size * 1.1, 15.0, 400.0)
+			_cam_size = clampf(_cam_size * 1.1, 10.0, 3000.0)
 			_update_camera()
 		elif mb.button_index == MOUSE_BUTTON_MIDDLE:
 			_panning = mb.pressed
@@ -331,6 +345,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_S:
 				if k.ctrl_pressed:
 					_save()
+			KEY_H:
+				_toggle_panels()
+			KEY_F:
+				_focus_on_content()
 
 
 # --- Editing operations ---------------------------------------------------
@@ -591,6 +609,7 @@ func _build_ui() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "UI"
 	add_child(layer)
+	_ui = layer
 
 	# Top toolbar.
 	var top := PanelContainer.new()
@@ -615,6 +634,8 @@ func _build_ui() -> void:
 	_add_button(bar, "Redo", _do_redo)
 	_add_button(bar, "Finish Route", _finish_route)
 	_add_button(bar, "Clear", _clear_map)
+	_add_button(bar, "Fit View (F)", _focus_on_content)
+	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
 	# Left palette.
 	var palette := ScrollContainer.new()
@@ -658,8 +679,42 @@ func _build_ui() -> void:
 	_sel_label.text = "Selected: —"
 	bbox.add_child(_sel_label)
 	_status = Label.new()
-	_status.text = "Left-click place · Right-click delete · R rotate · wheel zoom · MMB/WASD pan"
+	_status.text = "L-click/drag place · R-click delete · R rotate · wheel zoom (far out) · MMB/WASD pan · F fit · H hide panels"
 	bbox.add_child(_status)
+
+
+func _toggle_panels() -> void:
+	if _ui:
+		_ui.visible = not _ui.visible
+
+
+## Frame the whole map: center the camera on all placed items/markers and zoom to
+## fit, so a big city is viewable at a glance. F key or on demand.
+func _focus_on_content() -> void:
+	var cells: Array = []
+	for raw in _map.get("items", []):
+		if raw is Dictionary:
+			cells.append(_cell(raw.get("cell", [0, 0])))
+	var spawns: Dictionary = _map.get("spawns", {})
+	for key in ["police", "thief"]:
+		if spawns.has(key):
+			cells.append(_cell(spawns[key]["cell"]))
+	if cells.is_empty():
+		_cam_center = Vector3.ZERO
+		_cam_size = 160.0
+		_update_camera()
+		return
+	var min_c := cells[0] as Vector2i
+	var max_c := cells[0] as Vector2i
+	for c in cells:
+		min_c = Vector2i(mini(min_c.x, c.x), mini(min_c.y, c.y))
+		max_c = Vector2i(maxi(max_c.x, c.x), maxi(max_c.y, c.y))
+	var center_cell := Vector3((min_c.x + max_c.x + 1) * 0.5 * GRID, 0, (min_c.y + max_c.y + 1) * 0.5 * GRID)
+	_cam_center = center_cell
+	var span := maxf((max_c.x - min_c.x + 2) * GRID, (max_c.y - min_c.y + 2) * GRID)
+	_cam_size = clampf(span * 1.15, 20.0, 3000.0)
+	_update_camera()
+	_set_status("Framed map (%d cells)" % cells.size())
 
 
 func _add_button(parent: Node, text: String, handler: Callable) -> void:
