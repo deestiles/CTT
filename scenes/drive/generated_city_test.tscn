@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgencitytest01"]
+
+[ext_resource type="Script" path="res://scripts/drive/generated_city.gd" id="1_gen"]
+
+[node name="GeneratedCity" type="Node3D"]
+script = ExtResource("1_gen")
+map_path = "res://maps_v2/starter_grid.json"
