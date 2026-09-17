@@ -43,6 +43,10 @@ const TRAFFIC_AMBER := 1.4
 @export var pedestrian_count: int = 5
 @export_range(0, 200) var max_knockable_props: int = 180
 
+## Set by the builder's Test Map action before changing to the runtime scene, so
+## a just-authored map plays without an autoload. Cleared once consumed.
+static var override_map_path: String = ""
+
 var _map: Dictionary = {}
 var _built: Dictionary = {}
 var _ground_y: float = 0.0
@@ -86,6 +90,9 @@ var _vehicle_contacting_world: Dictionary = {}
 
 func _ready() -> void:
 	randomize()
+	if override_map_path != "":
+		map_path = override_map_path
+		override_map_path = ""
 	_map = Schema.load_from(map_path)
 	var hud := _build_hud()
 	if _map.is_empty():
