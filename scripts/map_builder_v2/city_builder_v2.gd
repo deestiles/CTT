@@ -41,6 +41,7 @@ var _cam_center := Vector3(0, 0, 0)
 var _cam_size := 160.0
 var _panning := false
 var _ui: CanvasLayer
+var _dialog: AcceptDialog
 
 
 func _ready() -> void:
@@ -572,9 +573,13 @@ func _save() -> void:
 	var path := Schema.repo_path(_current_name())
 	var err: int = Schema.save(path, _map)
 	if err == OK:
+		var full := ProjectSettings.globalize_path(path)
+		var count: int = (_map.get("items", []) as Array).size()
 		_set_status("Saved %s" % path, Color("#42f5a7"))
+		_popup("Map Saved", "Saved \"%s\" (%d items)\n\n%s" % [_current_name(), count, full])
 	else:
 		_set_status("SAVE FAILED err=%d" % err, Color("#ff5a4d"))
+		_popup("Save Failed", "Could not save (error %d).\nTried: %s" % [err, ProjectSettings.globalize_path(path)])
 
 
 func _load() -> void:
@@ -582,35 +587,56 @@ func _load() -> void:
 	var loaded: Dictionary = Schema.load_from(path)
 	if loaded.is_empty():
 		_set_status("LOAD FAILED — no %s" % path, Color("#ffb52e"))
+		_popup("Load Failed", "No saved map named \"%s\".\nLooked in: %s" % [
+			_current_name(), ProjectSettings.globalize_path(path)])
 		return
 	_begin_edit()
 	_map = loaded
 	_current_route.clear()
 	_rebuild()
-	_set_status("Loaded %s (%d items)" % [path, (_map.get("items", []) as Array).size()], Color("#42f5a7"))
+	var loaded_count: int = (_map.get("items", []) as Array).size()
+	_set_status("Loaded %s (%d items)" % [path, loaded_count], Color("#42f5a7"))
+	_popup("Map Loaded", "Loaded \"%s\" (%d items)." % [_current_name(), loaded_count])
+	_focus_on_content()
 
 
 func _validate() -> void:
 	var r: Dictionary = Validator.validate_static(_map)
 	var errors: Array = r["errors"]
 	var warnings: Array = r["warnings"]
+	var lines: Array = []
 	if r["valid"] and warnings.is_empty():
-		_set_status("VALID ✓  %s" % r["stats"], Color("#42f5a7"))
+		lines.append("VALID — ready to Test Map.")
+		_set_status("VALID ✓", Color("#42f5a7"))
 	elif r["valid"]:
-		_set_status("VALID, %d warning(s): %s" % [warnings.size(), warnings[0]["message"]], Color("#ffce54"))
+		lines.append("VALID (with %d warning(s)):" % warnings.size())
+		_set_status("VALID, %d warning(s)" % warnings.size(), Color("#ffce54"))
 	else:
-		_set_status("INVALID — %s" % errors[0]["message"], Color("#ff5a4d"))
+		lines.append("INVALID — fix these before Test Map:")
+		_set_status("INVALID — %d error(s)" % errors.size(), Color("#ff5a4d"))
+	for e in errors:
+		lines.append("  ✗ %s" % e["message"])
+	for w in warnings:
+		lines.append("  ⚠ %s" % w["message"])
+	lines.append("")
+	lines.append("Stats: %s" % r["stats"])
+	_popup("Validation", "\n".join(lines))
 
 
 func _test_map() -> void:
 	var r: Dictionary = Validator.validate_static(_map)
 	if not r["valid"]:
-		_set_status("TEST BLOCKED — %s" % r["errors"][0]["message"], Color("#ff5a4d"))
+		var lines: Array = ["Can't test yet — fix these first:"]
+		for e in r["errors"]:
+			lines.append("  ✗ %s" % e["message"])
+		_set_status("TEST BLOCKED — %d error(s)" % (r["errors"] as Array).size(), Color("#ff5a4d"))
+		_popup("Test Map Blocked", "\n".join(lines))
 		return
 	_map["name"] = _current_name()
 	var path := Schema.repo_path(_current_name())
 	if Schema.save(path, _map) != OK:
 		_set_status("TEST BLOCKED — save failed", Color("#ff5a4d"))
+		_popup("Test Map Blocked", "Could not save the map before testing.")
 		return
 	GeneratedCity.override_map_path = path
 	get_tree().change_scene_to_file(TEST_SCENE)
@@ -623,6 +649,10 @@ func _build_ui() -> void:
 	layer.name = "UI"
 	add_child(layer)
 	_ui = layer
+	_dialog = AcceptDialog.new()
+	_dialog.title = "City Builder"
+	_dialog.dialog_hide_on_ok = true
+	layer.add_child(_dialog)
 
 	# Top toolbar.
 	var top := PanelContainer.new()
@@ -748,6 +778,16 @@ func _set_status(text: String, color := Color.WHITE) -> void:
 	if _status:
 		_status.text = text
 		_status.add_theme_color_override("font_color", color)
+
+
+## Visible confirmation dialog (the bottom status line is easy to miss, and can be
+## off-screen in a small window). Used by save/load/validate/test.
+func _popup(title: String, body: String) -> void:
+	if _dialog:
+		_dialog.title = title
+		_dialog.dialog_text = body
+		_dialog.reset_size()
+		_dialog.popup_centered()
 
 
 func _cell(raw: Variant) -> Vector2i:
