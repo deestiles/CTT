@@ -107,11 +107,14 @@ func _ready() -> void:
 	_build_camera()
 	_setup_vehicle_smoke(_car, "PoliceDamageSmoke")
 	_setup_vehicle_smoke(_thief, "ThiefDamageSmoke")
-	_spawn_pedestrians()
 
 	# Time of day from the map.
 	_tod_index = _tod_index_for(String(_built.get("time_of_day", "DAY")))
 	_apply_time_preset()
+
+	# Pedestrians raycast-verify their routes, which needs the freshly added city
+	# colliders to be live in the physics world (next physics frame).
+	_deferred_setup()
 
 	if OS.has_environment("CTT_GEN_CAPTURE_TEST"):
 		call_deferred("_run_capture_test")
@@ -124,10 +127,11 @@ func _ready() -> void:
 func _decorate_city(city: Node) -> void:
 	_declutter_colliders(city)
 	_setup_navigation(city)
-	# Stage-2 decoration (lamps, signals, windows, knockables, sky) is layered in
-	# by generated_city_stage2.gd via _decorate_stage2 when present.
-	if has_method("_decorate_stage2"):
-		call("_decorate_stage2", city)
+	_setup_street_lamps(city)
+	_setup_traffic_lights(city)
+	_setup_window_lights(city)
+	_setup_knockable_garbage(city)
+	_setup_sky(city)
 
 
 func _setup_navigation(city: Node) -> void:
@@ -159,6 +163,203 @@ func _disable_colliders(node: Node) -> void:
 		(node as CollisionObject3D).collision_mask = 0
 	for c in node.get_children():
 		_disable_colliders(c)
+
+
+## Sky3D atmospheric day/night. Time frozen; the TIME button sets it explicitly.
+func _setup_sky(city: Node) -> void:
+	for we in city.find_children("*", "WorldEnvironment", true, false):
+		(we as WorldEnvironment).environment = null
+	for dl in city.find_children("*", "DirectionalLight3D", true, false):
+		(dl as Node3D).visible = false
+	_sky = Sky3D.new()
+	_sky.name = "Sky3D"
+	add_child(_sky)
+	_sky.game_time_enabled = false
+	_sky.editor_time_enabled = false
+
+
+## Downward SpotLight + glow at each street lamp luminaire; hidden by day.
+func _setup_street_lamps(city: Node) -> void:
+	for pole in city.find_children("*LightPole_Base*", "MeshInstance3D", true, false):
+		var p := pole as MeshInstance3D
+		if p.mesh == null:
+			continue
+		var ab: AABB = p.get_aabb()
+		if ab.size == Vector3.ZERO or ab.size.y < 3.0:
+			continue
+		var luminaire := Vector3(
+			ab.position.x + ab.size.x * 0.5,
+			ab.position.y + ab.size.y - 0.35,
+			ab.position.z + ab.size.z * 0.82)
+		var sl := SpotLight3D.new()
+		sl.light_color = Color("#ffce88")
+		sl.light_energy = 16.0
+		sl.spot_range = 30.0
+		sl.spot_angle = 58.0
+		sl.spot_attenuation = 0.8
+		sl.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+		sl.visible = false
+		p.add_child(sl)
+		sl.position = luminaire
+		_lamp_lights.append(sl)
+		var glow := OmniLight3D.new()
+		glow.light_color = Color("#ffd89a")
+		glow.light_energy = 4.0
+		glow.omni_range = 6.0
+		glow.visible = false
+		p.add_child(glow)
+		glow.position = luminaire
+		_lamp_lights.append(glow)
+
+
+## Emit on baked signal lens colours; perpendicular heads run opposite phases.
+func _setup_traffic_lights(city: Node) -> void:
+	for is_arm in [false, true]:
+		var pattern := "*LightPole_Arm*" if is_arm else "*LightPole_Lights*"
+		for node in city.find_children(pattern, "MeshInstance3D", true, false):
+			var mi := node as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			var mat := _make_signal_material()
+			if is_arm:
+				var ab: AABB = mi.get_aabb()
+				mat.set_shader_parameter("emit_zmask", 1.0)
+				mat.set_shader_parameter("zmask_low", ab.position.z + ab.size.z * 0.28)
+				mat.set_shader_parameter("zmask_high", ab.position.z + ab.size.z * 0.72)
+			mi.set_surface_override_material(0, mat)
+			_signals.append({"group": _signal_axis_group(mi), "mat": mat})
+	_update_traffic_state(true)
+
+
+func _signal_axis_group(mi: MeshInstance3D) -> bool:
+	var facing := mi.global_transform.basis.z.normalized()
+	return absf(facing.x) >= absf(facing.z)
+
+
+func _make_signal_material() -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = SIGNAL_SHADER
+	m.set_shader_parameter("source_texture", ATLAS_TEX)
+	m.set_shader_parameter("signal_state", 2)
+	m.set_shader_parameter("boost", 6.0)
+	m.set_shader_parameter("emit_zmask", 0.0)
+	return m
+
+
+## Illuminate a deterministic 30% of standalone window meshes (real surface).
+func _setup_window_lights(city: Node) -> void:
+	var windows: Array[Node] = city.find_children("*Window*", "MeshInstance3D", true, false)
+	var eligible: Array[MeshInstance3D] = []
+	for node in windows:
+		if String(node.name).contains("Prop_Window_"):
+			eligible.append(node as MeshInstance3D)
+	eligible.sort_custom(func(a: MeshInstance3D, b: MeshInstance3D) -> bool:
+		return String(a.get_path()) < String(b.get_path()))
+	var target := int(round(eligible.size() * 0.30))
+	for index in target:
+		var mi := eligible[index]
+		var mat := ShaderMaterial.new()
+		mat.shader = WINDOW_SHADER
+		mat.set_shader_parameter("source_texture", ATLAS_TEX)
+		mat.set_shader_parameter("warm_light", Color("#ff9b45"))
+		mat.set_shader_parameter("emission_energy", 0.0)
+		mi.set_surface_override_material(0, mat)
+		_window_lights.append(mat)
+
+
+## Replace static collision on reactive props with a frozen rigid wrapper that
+## wakes on first car contact. Mirrors drive_city categories/masses exactly.
+func _setup_knockable_garbage(city: Node) -> void:
+	var candidates: Array[Node] = []
+	var seen := {}
+	for pattern in ["*Trash*", "*Cardboard*", "*Mailbox*", "*Cone*", "*Barrier*", "*Skip*"]:
+		for node in city.find_children(pattern, "MeshInstance3D", true, false):
+			var id := node.get_instance_id()
+			if not seen.has(id):
+				seen[id] = true
+				candidates.append(node)
+	var converted := 0
+	for node in candidates:
+		if converted >= max_knockable_props:
+			break
+		var mesh := node as MeshInstance3D
+		var static_body := _first_static_body(mesh)
+		if static_body == null:
+			continue
+		var parent := mesh.get_parent()
+		var old_transform := mesh.transform
+		var body := RigidBody3D.new()
+		body.name = "%s_Knockable" % mesh.name
+		body.collision_layer = 1
+		body.collision_mask = 1
+		var prop_name := String(mesh.name)
+		var category := "trash"
+		body.mass = 2.2
+		if prop_name.contains("Bag"):
+			body.mass = 0.55
+		elif prop_name.contains("Trashbin"):
+			category = "bin"
+			body.mass = 18.0
+			body.linear_damp = 2.2
+			body.angular_damp = 4.0
+			body.axis_lock_angular_x = true
+			body.axis_lock_angular_z = true
+			body.add_to_group("heavy_sliding_prop")
+		elif prop_name.contains("Skip"):
+			category = "dumpster"
+			body.mass = 45.0
+			body.linear_damp = 3.0
+			body.angular_damp = 5.0
+			body.axis_lock_angular_x = true
+			body.axis_lock_angular_z = true
+			body.add_to_group("heavy_sliding_prop")
+		elif prop_name.contains("Cardboard"):
+			body.mass = 0.8
+		elif prop_name.contains("Mailbox"):
+			body.mass = 5.0
+		elif prop_name.contains("Cone"):
+			body.mass = 0.7
+		elif prop_name.contains("Barrier"):
+			body.mass = 3.0
+		if category != "bin" and category != "dumpster":
+			body.linear_damp = 0.7
+			body.angular_damp = 0.55
+		body.freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+		body.freeze = true
+		body.add_to_group("knockable_city_prop")
+		parent.add_child(body)
+		body.transform = old_transform
+		mesh.reparent(body, false)
+		mesh.transform = Transform3D.IDENTITY
+		if category == "dumpster":
+			var box_shape := BoxShape3D.new()
+			var bounds := mesh.get_aabb()
+			box_shape.size = Vector3(
+				maxf(bounds.size.x * 0.94, 0.5),
+				maxf(bounds.size.y * 0.94, 0.5),
+				maxf(bounds.size.z * 0.94, 0.5))
+			var solid_collision := CollisionShape3D.new()
+			solid_collision.name = "DumpsterCollision"
+			solid_collision.shape = box_shape
+			solid_collision.position = bounds.get_center()
+			body.add_child(solid_collision)
+		else:
+			for child in static_body.get_children():
+				if child is CollisionShape3D:
+					var copy := (child as CollisionShape3D).duplicate() as CollisionShape3D
+					body.add_child(copy)
+		static_body.queue_free()
+		converted += 1
+
+
+func _first_static_body(node: Node) -> StaticBody3D:
+	if node is StaticBody3D:
+		return node as StaticBody3D
+	for child in node.get_children():
+		var found := _first_static_body(child)
+		if found:
+			return found
+	return null
 
 
 # --- Vehicles + camera ----------------------------------------------------
@@ -239,6 +440,12 @@ func _build_camera() -> void:
 
 
 # --- Pedestrians ----------------------------------------------------------
+
+func _deferred_setup() -> void:
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	_spawn_pedestrians()
+
 
 func _spawn_pedestrians() -> void:
 	_pedestrians = Node3D.new()

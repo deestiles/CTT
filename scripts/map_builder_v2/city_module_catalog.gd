@@ -109,9 +109,10 @@ static func _sidewalk(id: String, label: String, prefab: String) -> Dictionary:
 
 
 static func _building(id: String, label: String, prefab: String) -> Dictionary:
-	var entry := _entry(id, label, "Buildings", prefab, Vector2i(2, 2), Layer.STRUCTURE, true)
-	entry["scale"] = Vector3(2, 2, 2)
-	return entry
+	# SM_Bld_Shop_01 / Apartment_01 colliders are ~5 x 5.5 m at native scale, i.e.
+	# a single 5 m cell. Do NOT scale them up: a x2 scale overflows the declared
+	# footprint and spills the collider onto adjacent road/sidewalk cells.
+	return _entry(id, label, "Buildings", prefab, Vector2i.ONE, Layer.STRUCTURE, true)
 
 
 static func _signal(id: String, label: String, prefab: String) -> Dictionary:

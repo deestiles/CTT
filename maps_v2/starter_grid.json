@@ -204,6 +204,14 @@
 		},
 		{
 			"cell": [
+				1,
+				1
+			],
+			"id": "sidewalk_straight",
+			"turns": 0
+		},
+		{
+			"cell": [
 				-4,
 				2
 			],
@@ -212,7 +220,7 @@
 		},
 		{
 			"cell": [
-				-3,
+				1,
 				1
 			],
 			"id": "street_lamp",
@@ -221,7 +229,7 @@
 		{
 			"cell": [
 				1,
-				1
+				-1
 			],
 			"id": "traffic_signal",
 			"turns": 0
@@ -236,8 +244,8 @@
 		},
 		{
 			"cell": [
-				-2,
-				1
+				2,
+				-1
 			],
 			"id": "prop_trashcan",
 			"turns": 0
