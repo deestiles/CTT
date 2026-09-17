@@ -25,6 +25,8 @@ var _undo: Array = []
 var _redo: Array = []
 var _current_route: Array = []
 var _hover_cell := Vector2i.ZERO
+var _painting := false
+var _paint_seen := {}
 
 var _cam: Camera3D
 var _geometry: Node3D
@@ -247,9 +249,17 @@ func _process(_delta: float) -> void:
 		_update_camera()
 
 
+func _current_cell() -> Vector2i:
+	return Schema.world_to_cell(_mouse_to_ground())
+
+
+func _is_surface_selected() -> bool:
+	return not _selected.is_empty() and not bool(_selected.get("is_marker", false)) \
+		and int(_selected.get("layer", -1)) == Catalog.Layer.SURFACE
+
+
 func _update_hover() -> void:
-	var world := _mouse_to_ground()
-	_hover_cell = Schema.world_to_cell(world)
+	_hover_cell = _current_cell()
 	var footprint := Vector2i.ONE
 	if not _selected.is_empty():
 		footprint = _selected.get("footprint", Vector2i.ONE)
@@ -287,14 +297,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			_update_camera()
 		elif mb.button_index == MOUSE_BUTTON_MIDDLE:
 			_panning = mb.pressed
-		elif mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			_place_at_hover()
+		elif mb.button_index == MOUSE_BUTTON_LEFT:
+			if mb.pressed:
+				if _is_surface_selected():
+					_begin_paint()
+				else:
+					_place_at_hover()
+			else:
+				_painting = false
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
 			_delete_at_hover()
-	elif event is InputEventMouseMotion and _panning:
+	elif event is InputEventMouseMotion:
 		var mm := event as InputEventMouseMotion
-		_cam_center -= Vector3(mm.relative.x, 0, mm.relative.y) * (_cam_size * 0.0016)
-		_update_camera()
+		if _panning:
+			_cam_center -= Vector3(mm.relative.x, 0, mm.relative.y) * (_cam_size * 0.0016)
+			_update_camera()
+		elif _painting:
+			_paint_step()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		var k := event as InputEventKey
 		if _name_edit and _name_edit.has_focus():
@@ -325,6 +344,51 @@ func _begin_edit() -> void:
 
 func _snapshot() -> Dictionary:
 	return _map.duplicate(true)
+
+
+## Click-drag painting of surface tiles (roads/sidewalks) to draw long runs.
+## One undo entry per stroke; fills only empty cells, and instances each tile
+## incrementally (no full rebuild) so dragging stays responsive.
+func _begin_paint() -> void:
+	_painting = true
+	_paint_seen = {}
+	_begin_edit()
+	_paint_step()
+
+
+func _paint_step() -> void:
+	if _selected.is_empty():
+		return
+	var cell := _current_cell()
+	if _paint_seen.has(cell):
+		return
+	_paint_seen[cell] = true
+	if _cell_has_layer(cell, [Catalog.Layer.SURFACE, Catalog.Layer.STRUCTURE]):
+		return
+	_map["items"].append({"id": _selected["id"], "cell": [cell.x, cell.y], "turns": _turns})
+	_add_item_visual(_selected, cell, _turns)
+	_set_status("Painted %d tile(s)" % _paint_seen.size())
+
+
+func _cell_has_layer(cell: Vector2i, layers: Array) -> bool:
+	for raw in _map.get("items", []):
+		if not (raw is Dictionary):
+			continue
+		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+		if module.is_empty() or not (int(module.get("layer", -1)) in layers):
+			continue
+		var occ := Schema.covered_cells(_cell(raw.get("cell", [0, 0])), module.get("footprint", Vector2i.ONE), int(raw.get("turns", 0)))
+		if cell in occ:
+			return true
+	return false
+
+
+func _add_item_visual(module: Dictionary, cell: Vector2i, turns: int) -> void:
+	if _geometry == null or String(module.get("prefab", "")) == "":
+		return
+	var node := Loader.instance_item(module, cell, turns, 0.0)
+	if node:
+		_geometry.add_child(node)
 
 
 func _place_at_hover() -> void:
@@ -629,14 +693,14 @@ func _cell(raw: Variant) -> Vector2i:
 # --- Headless self-test ---------------------------------------------------
 
 func _run_builder_test() -> void:
-	var road: Dictionary = Catalog.by_id("road_lines")
+	var road: Dictionary = Catalog.by_id("SM_Env_Road_Lines_01")
 	for x in range(0, 5):
 		_selected = road
 		_hover_cell = Vector2i(x, 0)
 		_turns = 0
 		_place_at_hover()
 	# Overlap replace: dropping a sidewalk on a road cell replaces the road.
-	_selected = Catalog.by_id("sidewalk_straight")
+	_selected = Catalog.by_id("SM_Env_Sidewalk_Straight_01")
 	_hover_cell = Vector2i(2, 0)
 	_place_at_hover()
 	_selected = Catalog.by_id("spawn_police")

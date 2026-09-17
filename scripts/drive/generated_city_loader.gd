@@ -45,7 +45,7 @@ static func build_city(map_data: Variant) -> Dictionary:
 			continue
 		var cell := _to_cell(raw.get("cell", [0, 0]))
 		var turns := int(raw.get("turns", 0))
-		var instance := _instance_module(module, cell, turns, ground_y)
+		var instance := instance_item(module, cell, turns, ground_y)
 		if instance:
 			city.add_child(instance)
 			item_count += 1
@@ -62,7 +62,10 @@ static func build_city(map_data: Variant) -> Dictionary:
 	}
 
 
-static func _instance_module(module: Dictionary, cell: Vector2i, turns: int, ground_y: float) -> Node3D:
+## Instance one placed module at its grid transform (shared by build_city and the
+## editor's incremental placement). Public so the builder can add single tiles
+## without a full rebuild.
+static func instance_item(module: Dictionary, cell: Vector2i, turns: int, ground_y: float) -> Node3D:
 	var scene: PackedScene = load(String(module["prefab"]))
 	if scene == null:
 		return null

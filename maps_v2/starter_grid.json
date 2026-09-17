@@ -31,7 +31,7 @@
 				-4,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -39,7 +39,7 @@
 				-3,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -47,7 +47,7 @@
 				-2,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -55,7 +55,7 @@
 				-1,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -63,7 +63,7 @@
 				0,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -71,7 +71,7 @@
 				1,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -79,7 +79,7 @@
 				2,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -87,7 +87,7 @@
 				3,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -95,7 +95,7 @@
 				4,
 				0
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 0
 		},
 		{
@@ -103,7 +103,7 @@
 				0,
 				-4
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -111,7 +111,7 @@
 				0,
 				-3
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -119,7 +119,7 @@
 				0,
 				-2
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -127,7 +127,7 @@
 				0,
 				-1
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -135,7 +135,7 @@
 				0,
 				1
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -143,7 +143,7 @@
 				0,
 				2
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -151,7 +151,7 @@
 				0,
 				3
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -159,7 +159,7 @@
 				0,
 				4
 			],
-			"id": "road_lines",
+			"id": "SM_Env_Road_Lines_01",
 			"turns": 1
 		},
 		{
@@ -167,7 +167,7 @@
 				0,
 				0
 			],
-			"id": "road_crossing",
+			"id": "SM_Env_Road_Crossing_01",
 			"turns": 0
 		},
 		{
@@ -175,7 +175,7 @@
 				-3,
 				1
 			],
-			"id": "sidewalk_straight",
+			"id": "SM_Env_Sidewalk_Straight_01",
 			"turns": 0
 		},
 		{
@@ -183,7 +183,7 @@
 				-2,
 				1
 			],
-			"id": "sidewalk_straight",
+			"id": "SM_Env_Sidewalk_Straight_01",
 			"turns": 0
 		},
 		{
@@ -191,7 +191,7 @@
 				-1,
 				1
 			],
-			"id": "sidewalk_straight",
+			"id": "SM_Env_Sidewalk_Straight_01",
 			"turns": 0
 		},
 		{
@@ -199,7 +199,7 @@
 				0,
 				1
 			],
-			"id": "sidewalk_straight",
+			"id": "SM_Env_Sidewalk_Straight_01",
 			"turns": 0
 		},
 		{
@@ -207,7 +207,7 @@
 				1,
 				1
 			],
-			"id": "sidewalk_straight",
+			"id": "SM_Env_Sidewalk_Straight_01",
 			"turns": 0
 		},
 		{
@@ -215,7 +215,7 @@
 				-4,
 				2
 			],
-			"id": "bld_shop",
+			"id": "SM_Bld_Shop_01",
 			"turns": 0
 		},
 		{
@@ -223,7 +223,7 @@
 				1,
 				1
 			],
-			"id": "street_lamp",
+			"id": "SM_Prop_LightPole_Base_01",
 			"turns": 0
 		},
 		{
@@ -231,7 +231,7 @@
 				1,
 				-1
 			],
-			"id": "traffic_signal",
+			"id": "SM_Prop_LightPole_Lights_01",
 			"turns": 0
 		},
 		{
@@ -239,7 +239,7 @@
 				-1,
 				-1
 			],
-			"id": "traffic_signal",
+			"id": "SM_Prop_LightPole_Lights_01",
 			"turns": 1
 		},
 		{
@@ -247,7 +247,7 @@
 				2,
 				-1
 			],
-			"id": "prop_trashcan",
+			"id": "SM_Prop_TrashCan_01",
 			"turns": 0
 		}
 	],

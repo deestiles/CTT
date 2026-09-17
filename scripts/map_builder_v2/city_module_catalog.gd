@@ -2,82 +2,37 @@ class_name CityModuleCatalog
 extends RefCounted
 ## Palette of real Synty Polygon City prefabs for map-builder v2.
 ##
-## This catalog is deliberately SEPARATE from the old lane-graph builder's
-## `scripts/map_builder/map_builder_catalog.gd`. It exists to assemble a city
-## whose runtime `City` node tree keeps the Synty node-naming conventions that
-## `scripts/drive/drive_city.gd` decorates by (roads=*Road*, sidewalks=*Sidewalk*,
-## lamps=*LightPole_Base*, signals=*LightPole_Arm*/*LightPole_Lights*,
-## windows=*Prop_Window_*, knockables=*Trash*/*Cardboard*/*Mailbox*/*Cone*/
-## *Barrier*/*Skip*). Because the approved runtime is name-driven and
-## layout-agnostic, a generated city built from these prefabs runs on the same
-## navigation/lighting/knockable passes with no runtime edits.
+## The palette is built by SCANNING res://Assets/Synty/PolygonCity/Prefabs so
+## every road/sidewalk/building/prop in the pack is available, not a curated
+## handful. Entries keep the prefab's Synty node names, which is what the
+## approved name-driven runtime (scripts/drive/drive_city.gd) decorates by, so a
+## generated city works with no runtime edits. Gameplay markers (spawns, routes,
+## boundary, recovery) are appended after the scanned prefabs.
 ##
-## Calibration (verified 2026-09-17 against the prefab colliders):
-##   SM_Env_Road_01 BoxShape3D size = (5, 0.16, 5), collider origin (+2.5,0,-2.5)
-##   => environment tiles are 5 m x 5 m, near-corner pivot spanning +X / -Z.
-## The 5 m grid and corner-pivot placement math match the old builder's proven
-## `_placement_position` convention.
+## Calibration: environment tiles are 5 m x 5 m, near-corner pivot spanning
+## +X / -Z (verified from SM_Env_Road_01's 5x5 collider). Prefabs default to a
+## 1x1 footprint at native scale; buildings are NOT scaled up (a x2 scale
+## overflows the footprint onto neighbouring cells).
 
 const GRID_SIZE := 5.0
+const PREFAB_ROOT := "res://Assets/Synty/PolygonCity/Prefabs"
 
-## Placement layers. "marker" modules carry authored gameplay metadata and are
-## NOT instanced as gameplay geometry at runtime (they drive spawns / routes /
-## boundaries); the editor draws a primitive gizmo for them.
 enum Layer { SURFACE, STRUCTURE, PROP, VEHICLE, MARKER }
 
-const _ROOT := "res://Assets/Synty/PolygonCity/Prefabs/"
+# Reactive-prop name fragments (matched by the runtime knockable pass).
+const _KNOCKABLE := ["trash", "cardboard", "mailbox", "cone", "barrier", "skip", "trashbin"]
+# Environment names that are not useful on a city grid.
+const _ENV_SKIP := ["cloud", "ocean", "water", "flower"]
+const _CATEGORY_ORDER := ["Roads", "Sidewalks", "Buildings", "Street Fixtures", "Reactive Props", "Nature", "Ground & Decor", "Props", "Markers"]
+
+static var _cache: Array = []
 
 
-## Returns an Array[Dictionary]; each entry is one placeable module. Kept as
-## plain dictionaries (not .tres Resources) so the catalog is code-only and
-## diff-friendly, and never collides with the old builder's Resource palette.
+## Cached; scanning the pack is done once per process.
 static func modules() -> Array:
-	return [
-		# --- Roads (name contains "Road" -> baked into the road-only NavMesh) ---
-		_road("road_plain", "Road — Plain", "SM_Env_Road_01"),
-		_road("road_lines", "Road — Lane Lines", "SM_Env_Road_Lines_01"),
-		_road("road_yellow", "Road — Center Line", "SM_Env_Road_YellowLines_01"),
-		_road("road_crossing", "Road — Crosswalk", "SM_Env_Road_Crossing_01"),
-		_road("road_median", "Road — Median", "SM_Env_Road_Median_01"),
-		_road("road_bare", "Road — Bare", "SM_Env_Road_Bare_01"),
-
-		# --- Sidewalks (name contains "Sidewalk"; raycast-verified ped surface) ---
-		_sidewalk("sidewalk_straight", "Sidewalk — Straight", "SM_Env_Sidewalk_Straight_01"),
-		_sidewalk("sidewalk_plain", "Sidewalk — Panel", "SM_Env_Sidewalk_01"),
-		_sidewalk("sidewalk_corner_01", "Sidewalk — Corner A", "SM_Env_Sidewalk_Corner_01"),
-		_sidewalk("sidewalk_corner_02", "Sidewalk — Corner B", "SM_Env_Sidewalk_Corner_02"),
-
-		# --- Buildings (structure; scaled x2 like the old catalog, 2x2 cells) ---
-		_building("bld_shop", "Building — Shop", "Buildings/SM_Bld_Shop_01"),
-		_building("bld_apartment", "Building — Apartment", "Buildings/SM_Bld_Apartment_01"),
-
-		# --- Trees (solid; fed into the road NavMesh so cars route around them) ---
-		_prop("tree_01", "Tree", "Environments/SM_Env_Tree_01", Layer.STRUCTURE),
-
-		# --- Street fixtures ---
-		# Lamp: runtime adds a downward SpotLight to any *LightPole_Base* mesh.
-		_prop("street_lamp", "Street Lamp", "Props/SM_Prop_LightPole_Base_01", Layer.PROP),
-		# Signal: MUST instance a *LightPole_Lights* / *LightPole_Arm* prefab so the
-		# runtime signal-phase pass finds and emits on it. SM_Prop_TrafficLight_*
-		# does NOT match those patterns and would stay dark.
-		_signal("traffic_signal", "Traffic Signal (head)", "Props/SM_Prop_LightPole_Lights_01"),
-		_signal("traffic_signal_arm", "Traffic Signal (gantry arm)", "Props/SM_Prop_LightPole_Arm_01"),
-
-		# --- Reactive props (name-matched by the knockable pass) ---
-		_prop("prop_trashcan", "Trash Can (light)", "Props/SM_Prop_TrashCan_01", Layer.PROP),
-		_prop("prop_trashbin", "Trash Bin (heavy slide)", "Props/SM_Prop_Trashbin_01", Layer.PROP),
-		_prop("prop_dumpster", "Commercial Dumpster (solid slide)", "Props/SM_Prop_Skip_01", Layer.PROP),
-		_prop("prop_cone", "Traffic Cone (light)", "Props/SM_Prop_Cone_01", Layer.PROP),
-		_prop("prop_mailbox", "Mailbox (light)", "Props/SM_Prop_Mailbox_01", Layer.PROP),
-		_prop("prop_barrier", "Barrier (light)", "Props/SM_Prop_Barrier_01", Layer.PROP),
-
-		# --- Gameplay markers (authored metadata, not gameplay geometry) ---
-		_marker("spawn_police", "Police Spawn", "police_spawn", Color("#28a9ff")),
-		_marker("spawn_thief", "Thief Spawn", "thief_spawn", Color("#ff344d")),
-		_marker("recovery_point", "Recovery Point", "recovery", Color("#42f5a7")),
-		_marker("route_node", "Sidewalk Route Node", "sidewalk_route", Color("#ffce54")),
-		_marker("boundary_post", "Map Boundary Post", "boundary", Color("#b061ff")),
-	]
+	if _cache.is_empty():
+		_cache = _scan()
+	return _cache
 
 
 static func by_id(module_id: String) -> Dictionary:
@@ -98,62 +53,122 @@ static func categories() -> Array:
 	return ordered
 
 
-# --- Builders --------------------------------------------------------------
+# --- Scan -----------------------------------------------------------------
 
-static func _road(id: String, label: String, prefab: String) -> Dictionary:
-	return _entry(id, label, "Roads", "Environments/%s" % prefab, Vector2i.ONE, Layer.SURFACE, true)
-
-
-static func _sidewalk(id: String, label: String, prefab: String) -> Dictionary:
-	return _entry(id, label, "Sidewalks", "Environments/%s" % prefab, Vector2i.ONE, Layer.SURFACE, true)
-
-
-static func _building(id: String, label: String, prefab: String) -> Dictionary:
-	# SM_Bld_Shop_01 / Apartment_01 colliders are ~5 x 5.5 m at native scale, i.e.
-	# a single 5 m cell. Do NOT scale them up: a x2 scale overflows the declared
-	# footprint and spills the collider onto adjacent road/sidewalk cells.
-	return _entry(id, label, "Buildings", prefab, Vector2i.ONE, Layer.STRUCTURE, true)
+static func _scan() -> Array:
+	var out: Array = []
+	_scan_dir(PREFAB_ROOT, out)
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var ca := _CATEGORY_ORDER.find(String(a["category"]))
+		var cb := _CATEGORY_ORDER.find(String(b["category"]))
+		if ca != cb:
+			return ca < cb
+		return String(a["display_name"]) < String(b["display_name"]))
+	out.append_array(_markers())
+	return out
 
 
-static func _signal(id: String, label: String, prefab: String) -> Dictionary:
-	var entry := _entry(id, label, "Street Fixtures", prefab, Vector2i.ONE, Layer.PROP, false)
-	entry["is_signal"] = true
-	entry["base_categories"] = PackedStringArray(["Sidewalks", "Roads"])
-	return entry
+static func _scan_dir(path: String, out: Array) -> void:
+	var dir := DirAccess.open(path)
+	if dir == null:
+		return
+	# Vehicles and Characters are handled by spawns / pedestrian routes, not
+	# placed as static geometry.
+	if path.ends_with("/Vehicles") or path.ends_with("/Characters"):
+		return
+	dir.list_dir_begin()
+	var entry := dir.get_next()
+	while entry != "":
+		if dir.current_is_dir():
+			if not entry.begins_with("."):
+				_scan_dir("%s/%s" % [path, entry], out)
+		elif entry.ends_with(".tscn"):
+			var module := _classify("%s/%s" % [path, entry], entry.trim_suffix(".tscn"))
+			if not module.is_empty():
+				out.append(module)
+		entry = dir.get_next()
+	dir.list_dir_end()
 
 
-static func _prop(id: String, label: String, prefab: String, layer: int) -> Dictionary:
-	var category := "Props"
-	if layer == Layer.STRUCTURE:
-		category = "Trees" if id.begins_with("tree") else "Structures"
-	var base := PackedStringArray(["Sidewalks"]) if layer == Layer.PROP else PackedStringArray()
-	var entry := _entry(id, label, category, prefab, Vector2i.ONE, layer, layer == Layer.STRUCTURE)
-	entry["base_categories"] = base
-	return entry
+static func _classify(full_path: String, base_name: String) -> Dictionary:
+	var lower := base_name.to_lower()
+	if "/Environments/" in full_path or "/Environments" in full_path.get_base_dir():
+		for skip in _ENV_SKIP:
+			if skip in lower:
+				return {}
+		if "road" in lower:
+			return _mk(base_name, full_path, "Roads", Layer.SURFACE, true, false)
+		if "sidewalk" in lower or "gutter" in lower or "curb" in lower:
+			return _mk(base_name, full_path, "Sidewalks", Layer.SURFACE, true, false)
+		if "tree" in lower:
+			return _mk(base_name, full_path, "Nature", Layer.STRUCTURE, false, false)
+		return _mk(base_name, full_path, "Ground & Decor", Layer.PROP, false, false)
+	if "/Buildings/" in full_path or "/Buildings" in full_path.get_base_dir():
+		return _mk(base_name, full_path, "Buildings", Layer.STRUCTURE, true, false)
+	if "/Props/" in full_path or "/Props" in full_path.get_base_dir():
+		if "lightpole_lights" in lower or "lightpole_arm" in lower or "trafficlight" in lower and ("lights" in lower or "arm" in lower):
+			return _mk(base_name, full_path, "Street Fixtures", Layer.PROP, false, true)
+		if "lightpole" in lower:
+			return _mk(base_name, full_path, "Street Fixtures", Layer.PROP, false, false)
+		for frag in _KNOCKABLE:
+			if frag in lower:
+				return _mk(base_name, full_path, "Reactive Props", Layer.PROP, false, false)
+		return _mk(base_name, full_path, "Props", Layer.PROP, false, false)
+	return {}
 
 
-static func _marker(id: String, label: String, kind: String, color: Color) -> Dictionary:
-	var entry := _entry(id, label, "Markers", "", Vector2i.ONE, Layer.MARKER, false)
-	entry["marker_kind"] = kind
-	entry["gizmo_color"] = color
-	return entry
+# --- Entry builders -------------------------------------------------------
 
-
-static func _entry(id: String, label: String, category: String, prefab: String,
-		footprint: Vector2i, layer: int, corner_pivot: bool) -> Dictionary:
+static func _mk(base_name: String, prefab: String, category: String, layer: int, corner_pivot: bool, is_signal: bool) -> Dictionary:
 	return {
-		"id": id,
-		"display_name": label,
+		"id": base_name,                       # stable, unique (SM_ prefab name)
+		"display_name": _pretty(base_name),
 		"category": category,
-		"prefab": ("%s%s.tscn" % [_ROOT, prefab]) if prefab != "" else "",
-		"footprint": footprint,
+		"prefab": prefab,
+		"footprint": Vector2i.ONE,
 		"layer": layer,
 		"corner_pivot": corner_pivot,
 		"scale": Vector3.ONE,
 		"offset": Vector3.ZERO,
-		"is_signal": false,
-		"is_marker": layer == Layer.MARKER,
+		"is_signal": is_signal,
+		"is_marker": false,
 		"marker_kind": "",
-		"base_categories": PackedStringArray(),
 		"gizmo_color": Color("#cfd8e3"),
+	}
+
+
+static func _pretty(base_name: String) -> String:
+	var text := base_name
+	for prefix in ["SM_Env_", "SM_Bld_", "SM_Prop_", "SM_Veh_", "SM_"]:
+		if text.begins_with(prefix):
+			text = text.substr(prefix.length())
+			break
+	return text.replace("_", " ")
+
+
+static func _markers() -> Array:
+	return [
+		_marker("spawn_police", "Police Spawn", "police_spawn", Color("#28a9ff")),
+		_marker("spawn_thief", "Thief Spawn", "thief_spawn", Color("#ff344d")),
+		_marker("recovery_point", "Recovery Point", "recovery", Color("#42f5a7")),
+		_marker("route_node", "Sidewalk Route Node", "sidewalk_route", Color("#ffce54")),
+		_marker("boundary_post", "Map Boundary Post", "boundary", Color("#b061ff")),
+	]
+
+
+static func _marker(id: String, label: String, kind: String, color: Color) -> Dictionary:
+	return {
+		"id": id,
+		"display_name": label,
+		"category": "Markers",
+		"prefab": "",
+		"footprint": Vector2i.ONE,
+		"layer": Layer.MARKER,
+		"corner_pivot": false,
+		"scale": Vector3.ONE,
+		"offset": Vector3.ZERO,
+		"is_signal": false,
+		"is_marker": true,
+		"marker_kind": kind,
+		"gizmo_color": color,
 	}
