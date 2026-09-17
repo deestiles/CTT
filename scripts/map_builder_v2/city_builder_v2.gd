@@ -73,6 +73,19 @@ func _ready() -> void:
 func _maximize_window() -> void:
 	if DisplayServer.get_name() == "headless":
 		return
+	var win := get_window()
+	if win:
+		win.unresizable = false
+		win.min_size = Vector2i(900, 600)
+		# Resize the game window itself (works for a floating window and resizes an
+		# embedded one within the editor's Game panel). Match the primary screen so
+		# a maximise fills it.
+		var screen := DisplayServer.screen_get_size(DisplayServer.window_get_current_screen())
+		if screen.x > 0 and screen.y > 0:
+			win.size = Vector2i(int(screen.x * 0.9), int(screen.y * 0.9))
+		else:
+			win.size = Vector2i(1600, 900)
+		win.move_to_center()
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, false)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 
