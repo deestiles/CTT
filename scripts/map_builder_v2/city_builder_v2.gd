@@ -64,10 +64,6 @@ var _thumb_holder: Node3D
 var _cam_pitch := -90.0
 var _cam_yaw := 0.0
 
-# Real per-asset footprint (in cells), measured from the prefab so the hover
-# cursor and occupancy match the asset's true size.
-var _footprint_cache := {}
-var _measure_holder: Node3D
 
 
 func _ready() -> void:
@@ -81,12 +77,6 @@ func _ready() -> void:
 	_markers = Node3D.new()
 	_markers.name = "Markers"
 	add_child(_markers)
-	# Off-screen holder used to measure a prefab's footprint (size is position-
-	# independent, so parking it far below keeps the brief instance out of view).
-	_measure_holder = Node3D.new()
-	_measure_holder.name = "MeasureHolder"
-	_measure_holder.position = Vector3(0.0, -10000.0, 0.0)
-	add_child(_measure_holder)
 	_build_hover()
 	_build_ui()
 	var mods: Array = Catalog.modules()
@@ -338,24 +328,10 @@ func _is_surface_selected() -> bool:
 ## building shows a big cursor. Cached; also written back onto the module so
 ## placement occupancy matches the cursor. Markers/empty prefabs stay 1x1.
 func _real_footprint(module: Dictionary) -> Vector2i:
-	var id := String(module.get("id", ""))
-	if _footprint_cache.has(id):
-		return _footprint_cache[id]
-	var fp := Vector2i.ONE
-	if String(module.get("prefab", "")) != "" and _measure_holder != null:
-		var node := Loader.instance_item(module, Vector2i.ZERO, 0, 0.0)
-		if node != null:
-			node.transform = Transform3D.IDENTITY
-			_measure_holder.add_child(node)
-			var aabb := _combined_aabb(node)
-			# Nearest whole cell: a small overhang (e.g. a 5.5 m shop) reads as 1,
-			# while genuinely large buildings (10-15 m) read as 2-3 cells.
-			fp = Vector2i(
-				maxi(1, int(round(aabb.size.x / GRID))),
-				maxi(1, int(round(aabb.size.z / GRID))))
-			node.queue_free()
-		module["footprint"] = fp   # keep occupancy consistent with the cursor
-	_footprint_cache[id] = fp
+	# Delegate to the loader so the cursor uses the exact footprint the loader
+	# places by; also write it back so occupancy (overlap/replace) matches.
+	var fp := Loader.asset_footprint(module)
+	module["footprint"] = fp
 	return fp
 
 

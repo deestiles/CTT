@@ -65,29 +65,92 @@ static func build_city(map_data: Variant) -> Dictionary:
 ## Instance one placed module at its grid transform (shared by build_city and the
 ## editor's incremental placement). Public so the builder can add single tiles
 ## without a full rebuild.
+##
+## Placement is AABB-based, not pivot-based: the asset's real mesh extent is
+## centred on its footprint cells, so it lands exactly where the editor's cursor
+## highlights regardless of where the prefab's origin happens to be. (A pivot
+## assumption held for the road tiles but not for buildings, which was landing
+## them offset from the highlight.)
 static func instance_item(module: Dictionary, cell: Vector2i, turns: int, ground_y: float) -> Node3D:
+	var node := _build_raw(module)
+	if node == null:
+		return null
+	var basis := Schema.basis_for(turns)
+	var aabb := _local_aabb(node)
+	var fp := footprint_from_aabb(aabb)
+	if posmod(turns, 4) % 2 == 1:
+		fp = Vector2i(fp.y, fp.x)   # rotated footprint dims
+	var gs := Schema.GRID_SIZE
+	var region_center := Vector3((cell.x + fp.x * 0.5) * gs, ground_y, (cell.y + fp.y * 0.5) * gs)
+	var local_center := Vector3(aabb.position.x + aabb.size.x * 0.5, 0.0, aabb.position.z + aabb.size.z * 0.5)
+	var origin := region_center - basis * local_center
+	node.transform = Transform3D(basis, origin)
+	# Keep the Synty root name (drive_city keys on it); add a unique suffix so the
+	# scene tree stays valid without altering the name pattern the runtime matches.
+	node.name = "%s_%d_%d" % [node.name, cell.x, cell.y]
+	return node
+
+
+## Instantiate a module's prefab plus any composite stack, at identity (no
+## placement). Composite multi-level buildings stack extra floor/roof modules on
+## top of the base prefab -- this is how the Demo builds tall apartments.
+static func _build_raw(module: Dictionary) -> Node3D:
 	var scene: PackedScene = load(String(module["prefab"]))
 	if scene == null:
 		return null
 	var node := scene.instantiate() as Node3D
 	if node == null:
 		return null
-	var corner_pivot := bool(module.get("corner_pivot", true))
-	var offset: Vector3 = module.get("offset", Vector3.ZERO)
-	var scale: Vector3 = module.get("scale", Vector3.ONE)
-	var origin := Schema.cell_to_world(cell, turns, corner_pivot, ground_y, offset)
-	var basis := Schema.basis_for(turns).scaled(scale)
-	node.transform = Transform3D(basis, origin)
-	# Keep the Synty root name (drive_city keys on it); add a unique suffix so the
-	# scene tree stays valid without altering the name pattern the runtime matches.
-	node.name = "%s_%d_%d" % [node.name, cell.x, cell.y]
-	# Composite multi-level buildings: stack extra floor/roof modules on top of the
-	# base prefab (children, so they inherit the cell transform). This is how the
-	# Synty Demo builds tall apartments -- a single-floor module looks one storey.
 	var stack: Dictionary = module.get("stack", {})
 	if not stack.is_empty():
 		_add_stack(node, stack)
 	return node
+
+
+## Cached real footprint (in cells) of a module, from its prefab mesh extent.
+## Shared by the runtime and the editor so both agree on size and placement.
+static var _fp_cache := {}
+
+static func asset_footprint(module: Dictionary) -> Vector2i:
+	var id := String(module.get("id", ""))
+	if _fp_cache.has(id):
+		return _fp_cache[id]
+	var fp := Vector2i.ONE
+	if String(module.get("prefab", "")) != "":
+		var node := _build_raw(module)
+		if node != null:
+			fp = footprint_from_aabb(_local_aabb(node))
+			node.free()
+	_fp_cache[id] = fp
+	return fp
+
+
+static func footprint_from_aabb(aabb: AABB) -> Vector2i:
+	return Vector2i(
+		maxi(1, int(round(aabb.size.x / Schema.GRID_SIZE))),
+		maxi(1, int(round(aabb.size.z / Schema.GRID_SIZE))))
+
+
+## Combined mesh AABB in the node's own local space (no SceneTree required).
+static func _local_aabb(root: Node3D) -> AABB:
+	var out := AABB()
+	var first := true
+	var stack: Array = [[root, Transform3D.IDENTITY]]
+	while not stack.is_empty():
+		var entry: Array = stack.pop_back()
+		var n: Node = entry[0]
+		var xf: Transform3D = entry[1]
+		if n is VisualInstance3D:
+			var a := xf * (n as VisualInstance3D).get_aabb()
+			if first:
+				out = a
+				first = false
+			else:
+				out = out.merge(a)
+		for c in n.get_children():
+			if c is Node3D:
+				stack.append([c, xf * (c as Node3D).transform])
+	return out
 
 
 static func _add_stack(base: Node3D, stack: Dictionary) -> void:
