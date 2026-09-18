@@ -58,6 +58,7 @@ static func categories() -> Array:
 static func _scan() -> Array:
 	var out: Array = []
 	_scan_dir(PREFAB_ROOT, out)
+	out.append_array(_composite_buildings())
 	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		var ca := _CATEGORY_ORDER.find(String(a["category"]))
 		var cb := _CATEGORY_ORDER.find(String(b["category"]))
@@ -65,6 +66,33 @@ static func _scan() -> Array:
 			return ca < cb
 		return String(a["display_name"]) < String(b["display_name"]))
 	out.append_array(_markers())
+	return out
+
+
+## Multi-level buildings assembled on the fly from Synty apartment kit pieces
+## (ground Door + N Stack floors + Roof), the way the Demo builds tall apartments.
+## Single-floor prefabs like SM_Bld_Apartment_01 look one-storey on their own.
+static func _composite_buildings() -> Array:
+	var bld := "%s/Buildings/" % PREFAB_ROOT
+	var base := {
+		"category": "Buildings", "footprint": Vector2i.ONE, "layer": Layer.STRUCTURE,
+		"corner_pivot": true, "scale": Vector3.ONE, "offset": Vector3.ZERO,
+		"is_signal": false, "is_marker": false, "marker_kind": "", "gizmo_color": Color("#cfd8e3"),
+	}
+	var out: Array = []
+	for spec in [["CTT_Apartment_Tower_Low", "Apartment Tower (low)", 1], ["CTT_Apartment_Tower_High", "Apartment Tower (high)", 2]]:
+		var m := base.duplicate()
+		m["id"] = spec[0]
+		m["display_name"] = spec[1]
+		m["prefab"] = "%sSM_Bld_Apartment_Door_01.tscn" % bld
+		m["stack"] = {
+			"base_height": 3.0,
+			"mid": "%sSM_Bld_Apartment_Stack_01.tscn" % bld,
+			"mid_height": 9.0,
+			"floors": int(spec[2]),
+			"roof": "%sSM_Bld_Apartment_Roof_01.tscn" % bld,
+		}
+		out.append(m)
 	return out
 
 

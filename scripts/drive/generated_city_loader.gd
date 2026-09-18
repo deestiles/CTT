@@ -81,7 +81,33 @@ static func instance_item(module: Dictionary, cell: Vector2i, turns: int, ground
 	# Keep the Synty root name (drive_city keys on it); add a unique suffix so the
 	# scene tree stays valid without altering the name pattern the runtime matches.
 	node.name = "%s_%d_%d" % [node.name, cell.x, cell.y]
+	# Composite multi-level buildings: stack extra floor/roof modules on top of the
+	# base prefab (children, so they inherit the cell transform). This is how the
+	# Synty Demo builds tall apartments -- a single-floor module looks one storey.
+	var stack: Dictionary = module.get("stack", {})
+	if not stack.is_empty():
+		_add_stack(node, stack)
 	return node
+
+
+static func _add_stack(base: Node3D, stack: Dictionary) -> void:
+	var y := float(stack.get("base_height", 3.0))
+	var mid_scene: PackedScene = load(String(stack.get("mid", "")))
+	var mid_height := float(stack.get("mid_height", 9.0))
+	var floors := int(stack.get("floors", 1))
+	for _i in floors:
+		if mid_scene:
+			var mid := mid_scene.instantiate() as Node3D
+			if mid:
+				mid.position = Vector3(0.0, y, 0.0)
+				base.add_child(mid)
+		y += mid_height
+	var roof_scene: PackedScene = load(String(stack.get("roof", "")))
+	if roof_scene:
+		var roof := roof_scene.instantiate() as Node3D
+		if roof:
+			roof.position = Vector3(0.0, y, 0.0)
+			base.add_child(roof)
 
 
 static func _parse_spawns(data: Dictionary, ground_y: float) -> Dictionary:

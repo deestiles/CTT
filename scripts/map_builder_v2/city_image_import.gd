@@ -15,7 +15,9 @@ enum Kind { OTHER, ROAD, WATER, PARK }
 # Prefab ids used for auto-placed geometry (must exist in the catalog scan).
 const ROAD_ID := "SM_Env_Road_Lines_01"
 const SIDEWALK_ID := "SM_Env_Sidewalk_Straight_01"
-const BUILDING_IDS := ["SM_Bld_Shop_01", "SM_Bld_Apartment_01", "SM_Bld_Apartment_02", "SM_Bld_Apartment_03"]
+# Multi-level apartment towers (composite; see catalog _composite_buildings) mixed
+# with a couple of low-rise shops, so an imported city has real building height.
+const BUILDING_IDS := ["CTT_Apartment_Tower_High", "CTT_Apartment_Tower_Low", "CTT_Apartment_Tower_Low", "SM_Bld_Shop_02"]
 
 
 static func default_options() -> Dictionary:

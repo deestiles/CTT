@@ -24,3 +24,4 @@ Thumbs.db
 maps_v2/reference/*.png
 maps_v2/reference/*.jpg
 maps_v2/reference/*.jpeg
+maps_v2/reference/*.import
