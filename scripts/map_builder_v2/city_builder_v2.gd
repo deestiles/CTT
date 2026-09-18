@@ -20,6 +20,11 @@ const TEST_SCENE := "res://scenes/drive/generated_city_test.tscn"
 const GRID := 5.0
 const PALETTE_W := 236
 const THUMB_PX := 128
+# The full Synty Demo city, loadable as a read-only reference backdrop so the
+# owner can study how the professionally-placed assets are arranged. Its ground
+# sits ~43 m up (nested Demo coords), so drop it to the builder grid plane.
+const DEMO_SCENE := "res://Assets/Synty/PolygonCity/Scenes/Demo.tscn"
+const DEMO_GROUND_Y := 43.08
 
 var _map: Dictionary = {}
 var _selected: Dictionary = {}
@@ -46,6 +51,7 @@ var _panning := false
 var _ui: CanvasLayer
 var _dialog: AcceptDialog
 var _underlay: MeshInstance3D
+var _reference: Node3D
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
@@ -736,6 +742,7 @@ func _build_ui() -> void:
 	_add_button(bar, "Clear", _clear_map)
 	_add_button(bar, "Fit View (F)", _focus_on_content)
 	_add_button(bar, "Tilt (V)", _cycle_tilt)
+	_add_button(bar, "Reference City", _toggle_reference)
 	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
 	# Import toolbar (second row): trace/generate a city from a map image.
@@ -936,6 +943,37 @@ func _show_underlay(img: Image, cols: int, rows: int) -> void:
 	# Sit just below the grid/tiles so placed geometry renders on top.
 	_underlay.position = Vector3(cols * GRID * 0.5, -0.12, rows * GRID * 0.5)
 	add_child(_underlay)
+
+
+## Load the full Synty Demo city as a read-only reference backdrop (dropped to the
+## grid plane), or toggle it if already loaded. Great for studying how assets are
+## placed, then rebuilding on the grid. It is purely visual -- placement still
+## raycasts the math ground plane, not this scene.
+func _toggle_reference() -> void:
+	if _reference != null:
+		_reference.visible = not _reference.visible
+		_set_status("Reference city %s" % ("shown" if _reference.visible else "hidden"))
+		return
+	var scene: PackedScene = load(DEMO_SCENE)
+	if scene == null:
+		_popup("Reference City", "Could not load the Demo city:\n%s" % DEMO_SCENE)
+		return
+	_set_status("Loading reference city…")
+	_reference = Node3D.new()
+	_reference.name = "ReferenceCity"
+	_reference.position = Vector3(0.0, -DEMO_GROUND_Y, 0.0)
+	add_child(_reference)
+	_reference.add_child(scene.instantiate())
+	_deactivate_cameras(_reference)
+	_set_status("Reference city loaded — tilt (V) / orbit (, .) to study it; button again to hide", Color("#42f5a7"))
+	_popup("Reference City", "Loaded the full Synty city as a read-only backdrop, dropped to the grid.\n\nTilt (V) and orbit (, / .) to see how assets are placed, then build your grid over it. Click 'Reference City' again to hide it.")
+
+
+func _deactivate_cameras(node: Node) -> void:
+	if node is Camera3D:
+		(node as Camera3D).current = false
+	for c in node.get_children():
+		_deactivate_cameras(c)
 
 
 func _toggle_underlay() -> void:
