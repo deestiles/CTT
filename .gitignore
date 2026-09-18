@@ -19,3 +19,8 @@ Thumbs.db
 *.blend2
 *.blend@
 *.blend~
+
+# Reference map screenshots (third-party imagery; keep local)
+maps_v2/reference/*.png
+maps_v2/reference/*.jpg
+maps_v2/reference/*.jpeg

@@ -82,16 +82,33 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 					sidewalk_cells[n] = true
 
 	# 4) Buildings: land cells that are neither road nor sidewalk (capped).
+	# Prefer street-facing lots (adjacent to a sidewalk or road) so buildings line
+	# the streets instead of filling one corner; then backfill interiors.
 	var building_cells := {}
 	if bool(opts["place_buildings"]):
 		var cap := int(opts["building_cap"])
+		var facing: Array = []
+		var interior: Array = []
 		for cell in kind:
+			if road_cells.has(cell) or sidewalk_cells.has(cell) or kind[cell] != Kind.OTHER:
+				continue
+			var street := false
+			for step in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				if sidewalk_cells.has(cell + step) or road_cells.has(cell + step):
+					street = true
+					break
+			if street:
+				facing.append(cell)
+			else:
+				interior.append(cell)
+		for cell in facing:
 			if building_cells.size() >= cap:
 				break
-			if road_cells.has(cell) or sidewalk_cells.has(cell):
-				continue
-			if kind[cell] == Kind.OTHER:   # land only, skip water/park
-				building_cells[cell] = true
+			building_cells[cell] = true
+		for cell in interior:
+			if building_cells.size() >= cap:
+				break
+			building_cells[cell] = true
 
 	# 5) Emit items.
 	var items: Array = []
