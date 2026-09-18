@@ -52,6 +52,7 @@ var _ui: CanvasLayer
 var _dialog: AcceptDialog
 var _underlay: MeshInstance3D
 var _reference: Node3D
+var _ref_label: Label
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
@@ -306,6 +307,7 @@ func _route_gizmo(route: Array, color: Color, _index: int) -> void:
 
 func _process(_delta: float) -> void:
 	_update_hover()
+	_update_ref_hover()
 	# WASD / arrow panning.
 	var pan := Vector2.ZERO
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
@@ -323,6 +325,50 @@ func _process(_delta: float) -> void:
 
 func _current_cell() -> Vector2i:
 	return Schema.world_to_cell(_mouse_to_ground())
+
+
+## While the reference city is shown, name the asset under the cursor (physics
+## raycast) in a small floating label. Purely informative.
+func _update_ref_hover() -> void:
+	if _ref_label == null:
+		return
+	if _reference == null or not _reference.visible or _cam == null:
+		_ref_label.visible = false
+		return
+	var mouse := get_viewport().get_mouse_position()
+	var from := _cam.project_ray_origin(mouse)
+	var to := from + _cam.project_ray_normal(mouse) * 6000.0
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		_ref_label.visible = false
+		return
+	_ref_label.text = _asset_name_from(hit.get("collider"))
+	_ref_label.reset_size()
+	var vp := get_viewport().get_visible_rect().size
+	var pos := mouse + Vector2(18.0, 14.0)
+	pos.x = min(pos.x, vp.x - _ref_label.size.x - 8.0)
+	pos.y = min(pos.y, vp.y - _ref_label.size.y - 8.0)
+	_ref_label.position = pos
+	_ref_label.visible = true
+
+
+## Nearest ancestor Synty asset name (SM_*) of a hit collider; else the collider's
+## own name. Trailing "_x_y" cell suffixes added to placed items are stripped.
+func _asset_name_from(collider: Variant) -> String:
+	var n := collider as Node
+	while n != null:
+		var nm := String(n.name)
+		if nm.begins_with("SM_"):
+			var parts := nm.split("_")
+			# Drop a trailing "_<cell>_<cell>" suffix from placed items.
+			if parts.size() >= 3 and parts[parts.size() - 1].is_valid_int() and parts[parts.size() - 2].lstrip("-").is_valid_int():
+				parts.remove_at(parts.size() - 1)
+				parts.remove_at(parts.size() - 1)
+				return "_".join(parts)
+			return nm
+		n = n.get_parent()
+	return String((collider as Node).name) if collider is Node else "?"
 
 
 func _is_surface_selected() -> bool:
@@ -716,6 +762,16 @@ func _build_ui() -> void:
 	_dialog.title = "City Builder"
 	_dialog.dialog_hide_on_ok = true
 	layer.add_child(_dialog)
+	# Floating label naming the asset under the cursor in the reference city.
+	_ref_label = Label.new()
+	_ref_label.visible = false
+	_ref_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ref_label.z_index = 30
+	_ref_label.add_theme_color_override("font_color", Color.WHITE)
+	_ref_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.95))
+	_ref_label.add_theme_constant_override("outline_size", 6)
+	_ref_label.add_theme_font_size_override("font_size", 15)
+	layer.add_child(_ref_label)
 
 	# Top toolbar.
 	var top := PanelContainer.new()
