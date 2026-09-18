@@ -706,9 +706,10 @@ func _build_ui() -> void:
 	_cells_edit.text = "80"
 	_cells_edit.custom_minimum_size = Vector2(52, 0)
 	ibar.add_child(_cells_edit)
-	ibar.add_child(_mini_label("road≥"))
+	ibar.add_child(_mini_label("road grey<"))
 	_bright_edit = LineEdit.new()
-	_bright_edit.text = "0.965"
+	_bright_edit.text = "0.86"
+	_bright_edit.tooltip_text = "Roads are grey lines darker than this; whiter background is land and lighter-grey blobs are buildings. Raise if streets are missed; lower if building footprints get taken as road."
 	_bright_edit.custom_minimum_size = Vector2(56, 0)
 	ibar.add_child(_bright_edit)
 	_add_button(ibar, "Import Image", _import_image)
@@ -815,10 +816,10 @@ func _import_image() -> void:
 	var cells := 80
 	if _cells_edit and _cells_edit.text.is_valid_int():
 		cells = clampi(_cells_edit.text.to_int(), 8, 400)
-	var bright := 0.965
+	var ceiling := 0.90
 	if _bright_edit and _bright_edit.text.is_valid_float():
-		bright = clampf(_bright_edit.text.to_float(), 0.5, 1.0)
-	var result: Dictionary = ImageImport.build_map_from_image(img, {"cells_across": cells, "road_brightness": bright})
+		ceiling = clampf(_bright_edit.text.to_float(), 0.3, 1.0)
+	var result: Dictionary = ImageImport.build_map_from_image(img, {"cells_across": cells, "road_ceiling": ceiling})
 	_begin_edit()
 	_map = result["data"]
 	_current_route.clear()

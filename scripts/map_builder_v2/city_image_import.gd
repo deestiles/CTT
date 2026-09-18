@@ -21,12 +21,16 @@ const BUILDING_IDS := ["SM_Bld_Shop_01", "SM_Bld_Apartment_01", "SM_Bld_Apartmen
 static func default_options() -> Dictionary:
 	return {
 		"cells_across": 80,
-		# A pixel counts as road when its darkest channel is at least this bright
-		# (roads are near-white ~1.0; light map land is ~0.95, so keep this high).
-		"road_brightness": 0.965,
+		# Google-style maps draw ROADS as neutral GREY lines on a near-WHITE land
+		# background. A pixel is a road pixel when it is neutral (low saturation)
+		# and its brightness falls in [road_floor, road_ceiling]: darker than the
+		# white land (road_ceiling) but not as dark as black label text (road_floor).
+		"road_ceiling": 0.86,
+		"road_floor": 0.45,
+		"road_neutral": 0.14,   # max(rgb)-min(rgb) below which a pixel is neutral grey
 		# A cell becomes road when at least this fraction of its pixels are road
 		# pixels. Low, because streets are thin lines inside a mostly-land cell.
-		"road_fill": 0.06,
+		"road_fill": 0.05,
 		"place_sidewalks": true,
 		"place_buildings": true,
 		"building_cap": 500,
@@ -54,9 +58,12 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 	# 1) Classify every cell from its pixels (fraction-based, so thin streets on
 	# near-white land are still caught).
 	var kind := {}   # Vector2i -> Kind
+	var tally := {Kind.OTHER: 0, Kind.ROAD: 0, Kind.WATER: 0, Kind.PARK: 0}
 	for cz in cells_down:
 		for cx in cells_across:
-			kind[Vector2i(cx, cz)] = _classify_cell(image, cx, cz, cells_across, cells_down, opts)
+			var k := _classify_cell(image, cx, cz, cells_across, cells_down, opts)
+			kind[Vector2i(cx, cz)] = k
+			tally[k] += 1
 
 	# 2) Road cells, reduced to the largest connected component (drivable + valid).
 	var road_cells := {}
@@ -108,6 +115,10 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 		"roads": road_cells.size(),
 		"sidewalks": sidewalk_cells.size(),
 		"buildings": building_cells.size(),
+		"road_cells_raw": tally[Kind.ROAD],
+		"water_cells": tally[Kind.WATER],
+		"park_cells": tally[Kind.PARK],
+		"land_cells": tally[Kind.OTHER],
 	}
 
 
@@ -124,7 +135,9 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 	# Cap samples per axis so large cells stay cheap.
 	var step_x := maxi(1, (x1 - x0) / 24)
 	var step_y := maxi(1, (y1 - y0) / 24)
-	var white_cut := float(opts["road_brightness"])
+	var road_ceiling := float(opts["road_ceiling"])
+	var road_floor := float(opts["road_floor"])
+	var road_neutral := float(opts["road_neutral"])
 	var total := 0
 	var road := 0
 	var water := 0
@@ -135,12 +148,16 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 		while px < x1:
 			var c := image.get_pixel(mini(px, w - 1), mini(py, h - 1))
 			total += 1
-			if c.b > c.r + 0.06 and c.b > c.g + 0.02 and c.b > 0.45:
+			var bright := (c.r + c.g + c.b) / 3.0
+			var spread: float = max(c.r, max(c.g, c.b)) - min(c.r, min(c.g, c.b))
+			# Water must be clearly, saturatedly blue -- a faint blue-grey road line
+			# (b only slightly above r) must NOT be mistaken for water.
+			if c.b - c.r > 0.12 and c.b - c.g > 0.05 and c.b > 0.55:
 				water += 1
 			elif c.g > c.r + 0.04 and c.g > c.b + 0.04 and c.g > 0.5:
 				park += 1
-			elif min(c.r, min(c.g, c.b)) >= white_cut:
-				road += 1
+			elif bright <= road_ceiling and bright >= road_floor and spread <= road_neutral:
+				road += 1                                  # neutral grey road line
 			elif c.r > 0.80 and c.g > 0.60 and c.b < 0.60:
 				road += 1                                  # yellow/orange arterial
 			px += step_x

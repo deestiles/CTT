@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://csyntybuilderv2"]
+[gd_scene format=3 uid="uid://dkysst3m0buhd"]
 
 [ext_resource type="Script" path="res://scripts/map_builder_v2/city_builder_v2.gd" id="1_builder"]
 
