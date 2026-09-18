@@ -127,6 +127,8 @@ func _ready() -> void:
 		call_deferred("_run_capture_test")
 	if OS.has_environment("CTT_GEN_REPORT"):
 		call_deferred("_run_report")
+	if OS.has_environment("CTT_GEN_RAM_TEST"):
+		call_deferred("_run_ram_test")
 
 
 # --- City build + decoration ---------------------------------------------
@@ -751,10 +753,15 @@ func _update_chase(delta: float) -> void:
 	_update_vehicle_smoke(_thief, _thief_damage)
 	_apply_world_impact_damage(_car, true)
 	_apply_world_impact_damage(_thief, false)
+	# Register a ram when the cars physically touch (definitive, any angle) OR are
+	# closely aligned front-to-back. The physical-contact path matters because the
+	# proximity window alone is easy to miss on angled hits or at speed.
 	var local_offset := _car.global_transform.basis.inverse() * separation
-	if _capture_cooldown <= 0.0 and distance < 5.6 and absf(local_offset.x) < 2.25:
+	var touching := _car_slide_hits(_car, _thief) or _car_slide_hits(_thief, _car)
+	var aligned := distance < 6.5 and absf(local_offset.x) < 3.0
+	if _capture_cooldown <= 0.0 and (touching or aligned):
 		var relative_speed := absf(_car.speed - _thief.speed)
-		if relative_speed > 1.5 or absf(_car.speed) > 8.0:
+		if relative_speed > 1.0 or absf(_car.speed) > 6.0:
 			_register_thief_hit(relative_speed)
 
 
@@ -1059,6 +1066,48 @@ func _run_capture_test() -> void:
 	print("[GEN CAPTURE TEST] thief_damage=%.1f won=%s overlay=%s" % [
 		_thief_damage, _chase_won, (_win_overlay != null and _win_overlay.visible)])
 	get_tree().quit()
+
+
+func _run_ram_test() -> void:
+	await get_tree().create_timer(1.0).timeout
+	_thief.set_physics_process(false)
+	var thief_pos := _thief.global_position
+	var thief_basis := _thief.global_transform.basis
+	var fwd := -thief_basis.z.normalized()
+	var right := thief_basis.x.normalized()
+	# scenario: [name, start offset from thief, facing basis]
+	await _ram_scenario("rear head-on", thief_pos - fwd * 9.0)
+	await _ram_scenario("side T-bone", thief_pos - right * 9.0)
+	print("[RAM] DONE")
+	get_tree().quit()
+
+
+func _ram_scenario(label: String, start: Vector3) -> void:
+	_thief_damage = 0.0
+	_capture_cooldown = 0.0
+	# Orient the police to face the thief (forward = -z points at it).
+	var facing := Transform3D(Basis(), start).looking_at(_thief.global_position, Vector3.UP).basis
+	_car.global_transform = Transform3D(facing, start)
+	_car.speed = 0.0
+	await get_tree().physics_frame
+	var fired := false
+	var min_dist := 999.0
+	for i in 120:
+		_car.touch_input = Vector2(0.0, -1.0)
+		await get_tree().physics_frame
+		min_dist = minf(min_dist, _car.global_position.distance_to(_thief.global_position))
+		if _thief_damage > 0.0:
+			fired = true
+			break
+	print("[RAM] %s -> fired=%s thief_dmg=%.1f min_dist=%.2f fx=%d" % [
+		label, fired, _thief_damage, min_dist, get_tree().get_nodes_in_group("vehicle_impact_fx").size()])
+
+
+func _car_slide_hits(a: ArcadeCar, b: ArcadeCar) -> bool:
+	for i in a.get_slide_collision_count():
+		if a.get_slide_collision(i).get_collider() == b:
+			return true
+	return false
 
 
 func _run_report() -> void:
