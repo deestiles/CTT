@@ -41,6 +41,8 @@ var _cam: Camera3D
 var _geometry: Node3D
 var _markers: Node3D
 var _hover: MeshInstance3D
+var _sel_box: MeshInstance3D
+var _selected_placed := -1     # index into _map.items of the clicked placed item
 var _grid: MeshInstance3D
 var _status: Label
 var _sel_label: Label
@@ -208,6 +210,19 @@ func _build_hover() -> void:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_hover.material_override = mat
 	add_child(_hover)
+	# Selection highlight (a placed item that was clicked) -- a warmer colour.
+	_sel_box = MeshInstance3D.new()
+	_sel_box.name = "Selection"
+	var sbox := BoxMesh.new()
+	sbox.size = Vector3(GRID, 0.6, GRID)
+	_sel_box.mesh = sbox
+	var smat := StandardMaterial3D.new()
+	smat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	smat.albedo_color = Color(1.0, 0.78, 0.2, 0.35)
+	smat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_sel_box.material_override = smat
+	_sel_box.visible = false
+	add_child(_sel_box)
 
 
 # --- Rebuild preview ------------------------------------------------------
@@ -429,9 +444,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			_panning = mb.pressed
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
-				if _is_surface_selected():
+				# Click a placed item -> select it (for rotate); empty cell -> place.
+				var idx := _item_index_at(_current_cell())
+				if idx >= 0:
+					_select_placed(idx)
+				elif _is_surface_selected():
+					_deselect_placed()
 					_begin_paint()
 				else:
+					_deselect_placed()
 					_place_at_hover()
 			else:
 				_painting = false
@@ -450,8 +471,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		match k.keycode:
 			KEY_R:
-				_turns = posmod(_turns + 1, 4)
-				_set_status("Rotation: %d°" % (_turns * 90))
+				if _selected_placed >= 0:
+					_rotate_selected_placed()
+				else:
+					_turns = posmod(_turns + 1, 4)
+					_set_status("Rotation: %d°" % (_turns * 90))
 			KEY_Z:
 				if k.ctrl_pressed:
 					_do_undo()
@@ -569,6 +593,76 @@ func _place_marker(kind: String) -> void:
 	_set_status("Marker %s @ (%d,%d)" % [kind, _hover_cell.x, _hover_cell.y])
 
 
+# --- Select / rotate a placed item ---------------------------------------
+
+## Index of the topmost placed geometry item covering `cell`, or -1.
+func _item_index_at(cell: Vector2i) -> int:
+	var items: Array = _map.get("items", [])
+	for i in range(items.size() - 1, -1, -1):
+		var raw = items[i]
+		if not (raw is Dictionary):
+			continue
+		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+		if module.is_empty():
+			continue
+		var fp := Loader.asset_footprint(module)
+		if cell in Schema.covered_cells(_cell(raw.get("cell", [0, 0])), fp, int(raw.get("turns", 0))):
+			return i
+	return -1
+
+
+func _select_placed(idx: int) -> void:
+	_selected_placed = idx
+	_update_sel_box()
+	var raw = _map["items"][idx]
+	var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+	_set_status("Selected: %s  ·  R rotate · right-click remove" % module.get("display_name", "item"), Color("#ffce54"))
+
+
+func _deselect_placed() -> void:
+	_selected_placed = -1
+	if _sel_box:
+		_sel_box.visible = false
+
+
+func _rotate_selected_placed() -> void:
+	var items: Array = _map.get("items", [])
+	if _selected_placed < 0 or _selected_placed >= items.size():
+		_deselect_placed()
+		return
+	_begin_edit()
+	var raw = items[_selected_placed]
+	raw["turns"] = posmod(int(raw.get("turns", 0)) + 1, 4)
+	_rebuild()                       # item order preserved, so the index stays valid
+	_update_sel_box()
+	_set_status("Rotated to %d°  (R again to keep turning)" % (int(raw["turns"]) * 90), Color("#ffce54"))
+
+
+func _update_sel_box() -> void:
+	if _sel_box == null:
+		return
+	var items: Array = _map.get("items", [])
+	if _selected_placed < 0 or _selected_placed >= items.size():
+		_sel_box.visible = false
+		return
+	var raw = items[_selected_placed]
+	var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+	if module.is_empty():
+		_sel_box.visible = false
+		return
+	var anchor := _cell(raw.get("cell", [0, 0]))
+	var cells := Schema.covered_cells(anchor, Loader.asset_footprint(module), int(raw.get("turns", 0)))
+	var min_c := cells[0] as Vector2i
+	var max_c := cells[0] as Vector2i
+	for c in cells:
+		min_c = Vector2i(mini(min_c.x, c.x), mini(min_c.y, c.y))
+		max_c = Vector2i(maxi(max_c.x, c.x), maxi(max_c.y, c.y))
+	var span := Vector2i(max_c.x - min_c.x + 1, max_c.y - min_c.y + 1)
+	(_sel_box.mesh as BoxMesh).size = Vector3(span.x * GRID, 0.6, span.y * GRID)
+	_sel_box.position = Vector3((min_c.x + span.x * 0.5) * GRID, 0.35, (min_c.y + span.y * 0.5) * GRID)
+	_sel_box.visible = true
+
+
 func _delete_at_hover() -> void:
 	# Remove the last item covering the hovered cell, else a marker on it.
 	var items: Array = _map.get("items", [])
@@ -583,6 +677,7 @@ func _delete_at_hover() -> void:
 		if _hover_cell in cells:
 			_begin_edit()
 			items.remove_at(i)
+			_deselect_placed()
 			_rebuild()
 			_set_status("Deleted %s" % module.get("display_name", "item"))
 			return
@@ -638,6 +733,7 @@ func _do_undo() -> void:
 		return
 	_redo.append(_snapshot())
 	_map = _undo.pop_back()
+	_deselect_placed()
 	_rebuild()
 	_set_status("Undo")
 
@@ -648,6 +744,7 @@ func _do_redo() -> void:
 		return
 	_undo.append(_snapshot())
 	_map = _redo.pop_back()
+	_deselect_placed()
 	_rebuild()
 	_set_status("Redo")
 
@@ -667,6 +764,7 @@ func _clear_map() -> void:
 	_begin_edit()
 	_map = Schema.new_empty(_current_name())
 	_current_route.clear()
+	_deselect_placed()
 	_rebuild()
 	_set_status("Cleared")
 
@@ -703,6 +801,7 @@ func _load() -> void:
 	_begin_edit()
 	_map = loaded
 	_current_route.clear()
+	_deselect_placed()
 	_rebuild()
 	var loaded_count: int = (_map.get("items", []) as Array).size()
 	_set_status("Loaded %s (%d items)" % [path, loaded_count], Color("#42f5a7"))
@@ -896,7 +995,7 @@ func _build_ui() -> void:
 	_sel_label.text = "Selected: —"
 	bbox.add_child(_sel_label)
 	_status = Label.new()
-	_status.text = "L-click/drag place · R-click delete · R rotate · wheel zoom (far out) · MMB/WASD pan · F fit · H hide panels"
+	_status.text = "L-click place (empty) or select (placed) · R rotate (selected item or brush) · R-click delete · drag paint roads · wheel zoom · MMB/WASD pan · F fit · V tilt · H panels"
 	bbox.add_child(_status)
 
 
@@ -965,6 +1064,7 @@ func _import_image() -> void:
 	_begin_edit()
 	_map = result["data"]
 	_current_route.clear()
+	_deselect_placed()
 	_rebuild()
 	_show_underlay(img, int(result["cells_across"]), int(result["cells_down"]))
 	_focus_on_content()
@@ -1041,6 +1141,7 @@ func _generate_city() -> void:
 	_begin_edit()
 	_map = result["data"]
 	_current_route.clear()
+	_deselect_placed()
 	if _underlay:
 		_underlay.visible = false
 	_rebuild()
@@ -1281,5 +1382,12 @@ func _run_builder_test() -> void:
 	var err: int = Schema.save(save_path, _map)
 	print("[BUILDER TEST] save_err=%d geometry_children=%d markers_children=%d" % [
 		err, _geometry.get_child_count(), _markers.get_child_count()])
+	# Select + rotate a placed item.
+	if (_map["items"] as Array).size() > 0:
+		_select_placed(0)
+		var t0: int = int(_map["items"][0]["turns"])
+		_rotate_selected_placed()
+		print("[SELECT TEST] sel_idx=%d turns %d->%d sel_visible=%s" % [
+			_selected_placed, t0, int(_map["items"][0]["turns"]), _sel_box.visible])
 	print("[BUILDER TEST] DONE")
 	get_tree().quit()
