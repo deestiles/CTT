@@ -18,6 +18,8 @@ const ImageImport := preload("res://scripts/map_builder_v2/city_image_import.gd"
 
 const TEST_SCENE := "res://scenes/drive/generated_city_test.tscn"
 const GRID := 5.0
+const PALETTE_W := 236
+const THUMB_PX := 128
 
 var _map: Dictionary = {}
 var _selected: Dictionary = {}
@@ -49,6 +51,19 @@ var _cells_edit: LineEdit
 var _bright_edit: LineEdit
 var _rotate_edit: LineEdit
 
+# Accordion palette + lazy 3D thumbnails.
+var _sections: Array = []
+var _open_section := -1
+var _thumb_cache := {}          # module id -> ImageTexture
+var _thumb_queue: Array = []    # [{module, button}]
+var _thumb_vp: SubViewport
+var _thumb_cam: Camera3D
+var _thumb_holder: Node3D
+
+# Editor camera orbit (tilt to inspect building height).
+var _cam_pitch := -90.0
+var _cam_yaw := 0.0
+
 
 func _ready() -> void:
 	_maximize_window()
@@ -68,6 +83,7 @@ func _ready() -> void:
 		_select_module(mods[0])
 	_rebuild()
 	_update_camera()
+	call_deferred("_thumb_worker")   # lazily render palette thumbnails
 	if OS.has_environment("CTT_BUILDER_TEST"):
 		call_deferred("_run_builder_test")
 
@@ -124,7 +140,22 @@ func _update_camera() -> void:
 	if _cam == null:
 		return
 	_cam.size = _cam_size
-	_cam.global_position = Vector3(_cam_center.x, 300.0, _cam_center.z)
+	if _cam_pitch <= -88.0:
+		# True top-down: look_at is degenerate straight down, so set rotation.
+		_cam.global_position = Vector3(_cam_center.x, 400.0, _cam_center.z)
+		_cam.rotation_degrees = Vector3(-90.0, _cam_yaw, 0.0)
+		return
+	var pitch := deg_to_rad(clampf(_cam_pitch, -88.0, -15.0))
+	var yaw := deg_to_rad(_cam_yaw)
+	var offset := Vector3(sin(yaw) * cos(pitch), -sin(pitch), cos(yaw) * cos(pitch)) * 400.0
+	_cam.global_position = _cam_center + offset
+	_cam.look_at(_cam_center, Vector3.UP)
+
+
+func _cycle_tilt() -> void:
+	_cam_pitch = -55.0 if _cam_pitch <= -88.0 else (-32.0 if _cam_pitch <= -50.0 else -90.0)
+	_update_camera()
+	_set_status("View tilt %.0f°  (V tilt · , . orbit)" % _cam_pitch)
 
 
 func _build_grid() -> void:
@@ -369,6 +400,14 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_panels()
 			KEY_F:
 				_focus_on_content()
+			KEY_V:
+				_cycle_tilt()
+			KEY_COMMA:
+				_cam_yaw -= 15.0
+				_update_camera()
+			KEY_PERIOD:
+				_cam_yaw += 15.0
+				_update_camera()
 
 
 # --- Editing operations ---------------------------------------------------
@@ -684,6 +723,7 @@ func _build_ui() -> void:
 	_add_button(bar, "Finish Route", _finish_route)
 	_add_button(bar, "Clear", _clear_map)
 	_add_button(bar, "Fit View (F)", _focus_on_content)
+	_add_button(bar, "Tilt (V)", _cycle_tilt)
 	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
 	# Import toolbar (second row): trace/generate a city from a map image.
@@ -722,36 +762,51 @@ func _build_ui() -> void:
 	_add_button(ibar, "Import Image", _import_image)
 	_add_button(ibar, "Toggle Underlay", _toggle_underlay)
 
-	# Left palette.
-	var palette := ScrollContainer.new()
-	palette.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-	palette.offset_top = 88
-	palette.offset_bottom = -70
-	palette.custom_minimum_size = Vector2(210, 0)
+	# Left palette: collapsible (accordion) category sections with 3D thumbnails.
 	var pstyle := PanelContainer.new()
 	pstyle.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
 	pstyle.offset_top = 88
 	pstyle.offset_bottom = -70
-	pstyle.custom_minimum_size = Vector2(210, 0)
+	pstyle.custom_minimum_size = Vector2(PALETTE_W, 0)
 	layer.add_child(pstyle)
+	var palette := ScrollContainer.new()
+	palette.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
+	palette.offset_top = 88
+	palette.offset_bottom = -70
+	palette.custom_minimum_size = Vector2(PALETTE_W, 0)
+	palette.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	layer.add_child(palette)
 	var plist := VBoxContainer.new()
 	plist.add_theme_constant_override("separation", 2)
+	plist.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	palette.add_child(plist)
-	var last_category := ""
+	# Group modules by category, preserving catalog order.
+	var by_cat := {}
+	var cat_order: Array = []
 	for module in Catalog.modules():
 		var category := String(module["category"])
-		if category != last_category:
-			last_category = category
-			var header := Label.new()
-			header.text = "— %s —" % category
-			header.add_theme_color_override("font_color", Color("#9fd0ff"))
-			plist.add_child(header)
-		var btn := Button.new()
-		btn.text = String(module["display_name"])
-		btn.tooltip_text = String(module.get("prefab", ""))
-		btn.pressed.connect(_select_module.bind(module))
-		plist.add_child(btn)
+		if not by_cat.has(category):
+			by_cat[category] = []
+			cat_order.append(category)
+		by_cat[category].append(module)
+	_sections.clear()
+	for ci in cat_order.size():
+		var category: String = cat_order[ci]
+		var header := Button.new()
+		header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		header.add_theme_font_size_override("font_size", 15)
+		header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		plist.add_child(header)
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.visible = false
+		plist.add_child(grid)
+		var section := {"header": header, "grid": grid, "category": category, "modules": by_cat[category], "built": false}
+		_sections.append(section)
+		header.text = "▶ %s (%d)" % [category, (by_cat[category] as Array).size()]
+		header.pressed.connect(_toggle_section.bind(ci))
+	if not _sections.is_empty():
+		_toggle_section(0)   # open the first section by default
 
 	# Bottom status + selection.
 	var bottom := PanelContainer.new()
@@ -891,6 +946,160 @@ func _select_module(module: Dictionary) -> void:
 	if _sel_label:
 		var suffix := "  (marker)" if bool(module.get("is_marker", false)) else ""
 		_sel_label.text = "Selected: %s%s" % [module["display_name"], suffix]
+
+
+# --- Accordion palette ----------------------------------------------------
+
+func _toggle_section(idx: int) -> void:
+	if idx < 0 or idx >= _sections.size():
+		return
+	if _open_section == idx:
+		_set_section_open(idx, false)
+		_open_section = -1
+		return
+	if _open_section >= 0:
+		_set_section_open(_open_section, false)
+	if not bool(_sections[idx]["built"]):
+		_build_section_items(_sections[idx])
+		_sections[idx]["built"] = true
+	_set_section_open(idx, true)
+	_open_section = idx
+
+
+func _set_section_open(idx: int, open: bool) -> void:
+	var sec: Dictionary = _sections[idx]
+	(sec["grid"] as Control).visible = open
+	var arrow := "▼" if open else "▶"
+	(sec["header"] as Button).text = "%s %s (%d)" % [arrow, sec["category"], (sec["modules"] as Array).size()]
+
+
+func _build_section_items(sec: Dictionary) -> void:
+	var grid: GridContainer = sec["grid"]
+	for module in sec["modules"]:
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(104, 112)
+		b.text = String(module["display_name"])
+		b.clip_text = true
+		b.tooltip_text = String(module["display_name"])
+		b.expand_icon = true
+		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		b.add_theme_font_size_override("font_size", 10)
+		b.pressed.connect(_select_module.bind(module))
+		grid.add_child(b)
+		_queue_thumb(module, b)
+
+
+# --- Lazy 3D thumbnails ---------------------------------------------------
+
+func _queue_thumb(module: Dictionary, button: Button) -> void:
+	if bool(module.get("is_marker", false)) or String(module.get("prefab", "")) == "":
+		button.icon = _marker_icon(module.get("gizmo_color", Color(0.8, 0.8, 0.85)))
+		return
+	if _thumb_cache.has(module["id"]):
+		button.icon = _thumb_cache[module["id"]]
+		return
+	_thumb_queue.append({"module": module, "button": button})
+
+
+func _marker_icon(color: Color) -> ImageTexture:
+	var img := Image.create(THUMB_PX, THUMB_PX, false, Image.FORMAT_RGBA8)
+	img.fill(Color(color.r, color.g, color.b, 0.0))
+	var m := 24
+	for y in range(m, THUMB_PX - m):
+		for x in range(m, THUMB_PX - m):
+			img.set_pixel(x, y, Color(color.r, color.g, color.b, 0.95))
+	return ImageTexture.create_from_image(img)
+
+
+func _ensure_thumb_vp() -> void:
+	if _thumb_vp != null:
+		return
+	_thumb_vp = SubViewport.new()
+	_thumb_vp.size = Vector2i(THUMB_PX, THUMB_PX)
+	_thumb_vp.own_world_3d = true
+	_thumb_vp.transparent_bg = true
+	_thumb_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	add_child(_thumb_vp)
+	_thumb_holder = Node3D.new()
+	_thumb_vp.add_child(_thumb_holder)
+	_thumb_cam = Camera3D.new()
+	_thumb_cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+	_thumb_cam.far = 5000.0
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.13, 0.15, 0.19, 0.0)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.62, 0.64, 0.68)
+	env.ambient_light_energy = 1.3
+	_thumb_cam.environment = env
+	_thumb_vp.add_child(_thumb_cam)
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-50.0, -40.0, 0.0)
+	_thumb_vp.add_child(sun)
+
+
+func _thumb_worker() -> void:
+	_ensure_thumb_vp()
+	while is_inside_tree():
+		if _thumb_queue.is_empty():
+			await get_tree().process_frame
+			continue
+		await _render_thumb(_thumb_queue.pop_front())
+
+
+func _render_thumb(job: Dictionary) -> void:
+	var module: Dictionary = job["module"]
+	var button: Button = job["button"]
+	if not is_instance_valid(button):
+		return
+	if _thumb_cache.has(module["id"]):
+		button.icon = _thumb_cache[module["id"]]
+		return
+	for c in _thumb_holder.get_children():
+		c.queue_free()
+	var node := Loader.instance_item(module, Vector2i.ZERO, 0, 0.0)
+	if node == null:
+		return
+	node.transform = Transform3D.IDENTITY
+	_thumb_holder.add_child(node)
+	await get_tree().process_frame
+	var aabb := _combined_aabb(node)
+	if aabb.size == Vector3.ZERO:
+		aabb = AABB(Vector3(-2.5, 0.0, -2.5), Vector3(5.0, 3.0, 5.0))
+	var target := aabb.get_center()
+	var radius: float = max(aabb.size.x, max(aabb.size.y, aabb.size.z))
+	_thumb_cam.size = radius * 1.35
+	var dir := Vector3(0.75, 0.8, 0.75).normalized()
+	_thumb_cam.global_position = target + dir * (radius * 2.0 + 6.0)
+	_thumb_cam.look_at(target, Vector3.UP)
+	await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var img := _thumb_vp.get_texture().get_image()
+	if img != null and not img.is_empty():
+		var tex := ImageTexture.create_from_image(img)
+		_thumb_cache[module["id"]] = tex
+		if is_instance_valid(button):
+			button.icon = tex
+
+
+func _combined_aabb(node: Node) -> AABB:
+	var out := AABB()
+	var first := true
+	var stack: Array = [node]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is VisualInstance3D:
+			var vi := n as VisualInstance3D
+			var g := vi.global_transform * vi.get_aabb()
+			if first:
+				out = g
+				first = false
+			else:
+				out = out.merge(g)
+		for c in n.get_children():
+			stack.append(c)
+	return out
 
 
 func _set_status(text: String, color := Color.WHITE) -> void:
