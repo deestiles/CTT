@@ -14,6 +14,7 @@ const Schema := preload("res://scripts/map_builder_v2/city_map_schema.gd")
 const Validator := preload("res://scripts/map_builder_v2/city_map_validator.gd")
 const Loader := preload("res://scripts/drive/generated_city_loader.gd")
 const GeneratedCity := preload("res://scripts/drive/generated_city.gd")
+const ImageImport := preload("res://scripts/map_builder_v2/city_image_import.gd")
 
 const TEST_SCENE := "res://scenes/drive/generated_city_test.tscn"
 const GRID := 5.0
@@ -42,6 +43,10 @@ var _cam_size := 160.0
 var _panning := false
 var _ui: CanvasLayer
 var _dialog: AcceptDialog
+var _underlay: MeshInstance3D
+var _image_edit: LineEdit
+var _cells_edit: LineEdit
+var _bright_edit: LineEdit
 
 
 func _ready() -> void:
@@ -680,15 +685,44 @@ func _build_ui() -> void:
 	_add_button(bar, "Fit View (F)", _focus_on_content)
 	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
+	# Import toolbar (second row): trace/generate a city from a map image.
+	var imp := PanelContainer.new()
+	imp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	imp.offset_top = 46
+	imp.offset_bottom = 86
+	layer.add_child(imp)
+	var ibar := HBoxContainer.new()
+	ibar.add_theme_constant_override("separation", 6)
+	imp.add_child(ibar)
+	var ilabel := Label.new()
+	ilabel.text = "Map image:"
+	ibar.add_child(ilabel)
+	_image_edit = LineEdit.new()
+	_image_edit.placeholder_text = "C:\\path\\to\\map.png  (or res://…)"
+	_image_edit.custom_minimum_size = Vector2(320, 0)
+	ibar.add_child(_image_edit)
+	ibar.add_child(_mini_label("cells across"))
+	_cells_edit = LineEdit.new()
+	_cells_edit.text = "80"
+	_cells_edit.custom_minimum_size = Vector2(52, 0)
+	ibar.add_child(_cells_edit)
+	ibar.add_child(_mini_label("road≥"))
+	_bright_edit = LineEdit.new()
+	_bright_edit.text = "0.965"
+	_bright_edit.custom_minimum_size = Vector2(56, 0)
+	ibar.add_child(_bright_edit)
+	_add_button(ibar, "Import Image", _import_image)
+	_add_button(ibar, "Toggle Underlay", _toggle_underlay)
+
 	# Left palette.
 	var palette := ScrollContainer.new()
 	palette.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-	palette.offset_top = 46
+	palette.offset_top = 88
 	palette.offset_bottom = -70
 	palette.custom_minimum_size = Vector2(210, 0)
 	var pstyle := PanelContainer.new()
 	pstyle.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-	pstyle.offset_top = 46
+	pstyle.offset_top = 88
 	pstyle.offset_bottom = -70
 	pstyle.custom_minimum_size = Vector2(210, 0)
 	layer.add_child(pstyle)
@@ -758,6 +792,80 @@ func _focus_on_content() -> void:
 	_cam_size = clampf(span * 1.15, 20.0, 3000.0)
 	_update_camera()
 	_set_status("Framed map (%d cells)" % cells.size())
+
+
+func _mini_label(text: String) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", 12)
+	return l
+
+
+# --- Map-image import -----------------------------------------------------
+
+func _import_image() -> void:
+	var path := _image_edit.text.strip_edges() if _image_edit else ""
+	if path.is_empty():
+		_popup("Import Image", "Enter the path to a top-down map image (PNG/JPG) first.")
+		return
+	var img := _load_image(path)
+	if img == null:
+		_popup("Import Failed", "Could not load an image at:\n%s\n\nUse a full path (e.g. C:\\Users\\you\\map.png) or a res:// path." % path)
+		return
+	var cells := 80
+	if _cells_edit and _cells_edit.text.is_valid_int():
+		cells = clampi(_cells_edit.text.to_int(), 8, 400)
+	var bright := 0.965
+	if _bright_edit and _bright_edit.text.is_valid_float():
+		bright = clampf(_bright_edit.text.to_float(), 0.5, 1.0)
+	var result: Dictionary = ImageImport.build_map_from_image(img, {"cells_across": cells, "road_brightness": bright})
+	_begin_edit()
+	_map = result["data"]
+	_current_route.clear()
+	_rebuild()
+	_show_underlay(img, int(result["cells_across"]), int(result["cells_down"]))
+	_focus_on_content()
+	_set_status("Imported %d roads / %d sidewalks / %d buildings" % [result["roads"], result["sidewalks"], result["buildings"]], Color("#42f5a7"))
+	_popup("Image Imported", "Placed from the image (replacing the current map):\n  roads: %d\n  sidewalks: %d\n  buildings: %d\n\nThe image is shown underneath as a tracing guide (Toggle Underlay).\nNext: fix roads with drag-paint, then place a Police Spawn and Thief Spawn on road cells, Validate, and Test Map.\n\nToo much/little road? Adjust 'road≥' (lower = more road) or 'cells across', and Import again." % [result["roads"], result["sidewalks"], result["buildings"]])
+
+
+func _load_image(path: String) -> Image:
+	if path.begins_with("res://") or path.begins_with("user://"):
+		var res := load(path)
+		if res is Texture2D:
+			return (res as Texture2D).get_image()
+		if res is Image:
+			return res as Image
+		return null
+	return Image.load_from_file(path)
+
+
+func _show_underlay(img: Image, cols: int, rows: int) -> void:
+	if _underlay:
+		_underlay.queue_free()
+	_underlay = MeshInstance3D.new()
+	_underlay.name = "Underlay"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(cols * GRID, rows * GRID)
+	_underlay.mesh = plane
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = ImageTexture.create_from_image(img)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(1, 1, 1, 0.5)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_underlay.material_override = mat
+	# Sit just below the grid/tiles so placed geometry renders on top.
+	_underlay.position = Vector3(cols * GRID * 0.5, -0.12, rows * GRID * 0.5)
+	add_child(_underlay)
+
+
+func _toggle_underlay() -> void:
+	if _underlay:
+		_underlay.visible = not _underlay.visible
+		_set_status("Underlay %s" % ("shown" if _underlay.visible else "hidden"))
+	else:
+		_set_status("No image imported yet")
 
 
 func _add_button(parent: Node, text: String, handler: Callable) -> void:
