@@ -47,6 +47,7 @@ var _underlay: MeshInstance3D
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
+var _rotate_edit: LineEdit
 
 
 func _ready() -> void:
@@ -712,6 +713,12 @@ func _build_ui() -> void:
 	_bright_edit.tooltip_text = "Roads are grey lines darker than this; whiter background is land and lighter-grey blobs are buildings. Raise if streets are missed; lower if building footprints get taken as road."
 	_bright_edit.custom_minimum_size = Vector2(56, 0)
 	ibar.add_child(_bright_edit)
+	ibar.add_child(_mini_label("rotate°"))
+	_rotate_edit = LineEdit.new()
+	_rotate_edit.placeholder_text = "auto"
+	_rotate_edit.tooltip_text = "Leave blank to auto-straighten the map to the street grid, or type degrees to rotate manually (e.g. -16). Re-import to apply."
+	_rotate_edit.custom_minimum_size = Vector2(52, 0)
+	ibar.add_child(_rotate_edit)
 	_add_button(ibar, "Import Image", _import_image)
 	_add_button(ibar, "Toggle Underlay", _toggle_underlay)
 
@@ -819,15 +826,18 @@ func _import_image() -> void:
 	var ceiling := 0.90
 	if _bright_edit and _bright_edit.text.is_valid_float():
 		ceiling = clampf(_bright_edit.text.to_float(), 0.3, 1.0)
-	var result: Dictionary = ImageImport.build_map_from_image(img, {"cells_across": cells, "road_ceiling": ceiling})
+	var import_opts := {"cells_across": cells, "road_ceiling": ceiling}
+	if _rotate_edit and _rotate_edit.text.strip_edges().is_valid_float():
+		import_opts["rotation_override"] = _rotate_edit.text.to_float()
+	var result: Dictionary = ImageImport.build_map_from_image(img, import_opts)
 	_begin_edit()
 	_map = result["data"]
 	_current_route.clear()
 	_rebuild()
 	_show_underlay(img, int(result["cells_across"]), int(result["cells_down"]))
 	_focus_on_content()
-	_set_status("Imported %d roads (%d major) / %d sidewalks / %d buildings" % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"]], Color("#42f5a7"))
-	_popup("Image Imported", "Placed from the image (replacing the current map):\n  roads: %d  (%d major two-lane)\n  sidewalks: %d\n  buildings: %d\n\nRoad tiles are rotated to follow each street; thick roads use lane-line tiles, normal streets a centre line; corners/junctions use plain asphalt.\n\nThe image is shown underneath as a tracing guide (Toggle Underlay).\nNext: place a Police Spawn and Thief Spawn on road cells, Validate, and Test Map.\n\nToo much/little road? Adjust 'road grey<' or 'cells across'. Not enough major roads? Lower major_fill in the importer." % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"]])
+	_set_status("Imported %d roads (%d major) / %d sidewalks / %d buildings  (deskew %.0f°)" % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"], result.get("rotation_deg", 0.0)], Color("#42f5a7"))
+	_popup("Image Imported", "Placed from the image (replacing the current map):\n  roads: %d  (%d major two-lane)\n  sidewalks: %d\n  buildings: %d\n  map rotated %.0f° to align streets to the grid\n\nThe map was deskewed so the majority of streets run N/S/E/W; diagonal/curved roads that don't fit the box grid are dropped. Road tiles follow each street; thick roads use lane-line tiles, normal streets a centre line; corners/junctions use plain asphalt.\n\nThe image is shown underneath as a tracing guide (Toggle Underlay).\nNext: place a Police Spawn and Thief Spawn on road cells, Validate, and Test Map." % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"], result.get("rotation_deg", 0.0)])
 
 
 func _load_image(path: String) -> Image:

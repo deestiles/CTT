@@ -42,6 +42,12 @@ static func default_options() -> Dictionary:
 		"place_buildings": true,
 		"building_cap": 500,
 		"building_ids": BUILDING_IDS,
+		# Deskew: detect the dominant street direction and sample the map along that
+		# rotated frame, so most roads land on N/S/E/W. Diagonal/curved streets that
+		# don't fit the box grid then drop out as fragments (kept: the largest
+		# connected axis-aligned network).
+		"auto_rotate": true,
+		"max_skew_deg": 30,   # only correct tilt within +/- this; ignore diagonals
 	}
 
 
@@ -62,6 +68,19 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 	var cells_across: int = maxi(4, int(opts["cells_across"]))
 	var cells_down: int = maxi(4, int(round(cells_across * float(h) / float(maxi(1, w)))))
 
+	# 0) Deskew: find the dominant street angle and sample along it, so most roads
+	# land axis-aligned (box world). Diagonals then fall out as fragments.
+	var rot_deg := 0.0
+	var override = opts.get("rotation_override", null)
+	if override != null and is_finite(float(override)):
+		rot_deg = float(override)              # user-set angle wins over auto-detect
+	elif bool(opts.get("auto_rotate", true)):
+		rot_deg = _detect_grid_angle(image, opts)
+	var rot := deg_to_rad(-rot_deg)   # sample the source along the road direction
+	var rc := cos(rot)
+	var rs := sin(rot)
+	var center := Vector2(w * 0.5, h * 0.5)
+
 	# 1) Classify every cell from its pixels (fraction-based, so thin streets on
 	# near-white land are still caught).
 	var kind := {}       # Vector2i -> Kind
@@ -70,7 +89,7 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 	for cz in cells_down:
 		for cx in cells_across:
 			var cell := Vector2i(cx, cz)
-			var res := _classify_cell(image, cx, cz, cells_across, cells_down, opts)
+			var res := _classify_cell(image, cx, cz, cells_across, cells_down, opts, rc, rs, center)
 			kind[cell] = int(res["kind"])
 			road_frac[cell] = float(res["road_frac"])
 			tally[int(res["kind"])] += 1
@@ -152,6 +171,7 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 		"data": data,
 		"cells_across": cells_across,
 		"cells_down": cells_down,
+		"rotation_deg": rot_deg,
 		"roads": road_cells.size(),
 		"major_roads": major_count,
 		"sidewalks": sidewalk_cells.size(),
@@ -166,16 +186,17 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 ## Scan the cell's pixels and decide its kind by category fractions. This beats
 ## averaging: a thin white street inside a mostly-land cell still registers as
 ## road, and green pins / blue labels don't tint a whole cell into a false class.
-static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int, opts: Dictionary) -> Dictionary:
+static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int, opts: Dictionary, rc: float, rs: float, center: Vector2) -> Dictionary:
 	var w := image.get_width()
 	var h := image.get_height()
-	var x0 := int(float(cx) / cells_across * w)
-	var x1 := maxi(x0 + 1, int(float(cx + 1) / cells_across * w))
-	var y0 := int(float(cz) / cells_down * h)
-	var y1 := maxi(y0 + 1, int(float(cz + 1) / cells_down * h))
-	# Cap samples per axis so large cells stay cheap.
-	var step_x := maxi(1, (x1 - x0) / 24)
-	var step_y := maxi(1, (y1 - y0) / 24)
+	# Cell box in the (deskewed) aligned pixel frame; each sample is rotated back
+	# into the source image, so the output grid follows the dominant road angle.
+	var ax0 := float(cx) / cells_across * w
+	var ax1 := float(cx + 1) / cells_across * w
+	var ay0 := float(cz) / cells_down * h
+	var ay1 := float(cz + 1) / cells_down * h
+	var step_x := maxf(1.0, (ax1 - ax0) / 24.0)
+	var step_y := maxf(1.0, (ay1 - ay0) / 24.0)
 	var road_ceiling := float(opts["road_ceiling"])
 	var road_floor := float(opts["road_floor"])
 	var road_neutral := float(opts["road_neutral"])
@@ -183,11 +204,18 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 	var road := 0
 	var water := 0
 	var park := 0
-	var py := y0
-	while py < y1:
-		var px := x0
-		while px < x1:
-			var c := image.get_pixel(mini(px, w - 1), mini(py, h - 1))
+	var ay := ay0
+	while ay < ay1:
+		var ax := ax0
+		while ax < ax1:
+			var dx := ax - center.x
+			var dy := ay - center.y
+			var sx := int(center.x + dx * rc - dy * rs)
+			var sy := int(center.y + dx * rs + dy * rc)
+			ax += step_x
+			if sx < 0 or sy < 0 or sx >= w or sy >= h:
+				continue
+			var c := image.get_pixel(sx, sy)
 			total += 1
 			var bright := (c.r + c.g + c.b) / 3.0
 			var spread: float = max(c.r, max(c.g, c.b)) - min(c.r, min(c.g, c.b))
@@ -201,8 +229,7 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 				road += 1                                  # neutral grey road line
 			elif c.r > 0.80 and c.g > 0.60 and c.b < 0.60:
 				road += 1                                  # yellow/orange arterial
-			px += step_x
-		py += step_y
+		ay += step_y
 	if total == 0:
 		return {"kind": Kind.OTHER, "road_frac": 0.0}
 	var rf := float(road) / total
@@ -213,6 +240,73 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 	if float(park) / total > 0.40:
 		return {"kind": Kind.PARK, "road_frac": rf}
 	return {"kind": Kind.OTHER, "road_frac": rf}
+
+
+static func _is_road_pixel(c: Color, road_ceiling: float, road_floor: float, road_neutral: float) -> bool:
+	if c.b - c.r > 0.12 and c.b - c.g > 0.05 and c.b > 0.55:
+		return false                                       # water
+	if c.g > c.r + 0.04 and c.g > c.b + 0.04 and c.g > 0.5:
+		return false                                       # park
+	var bright := (c.r + c.g + c.b) / 3.0
+	var spread: float = max(c.r, max(c.g, c.b)) - min(c.r, min(c.g, c.b))
+	if bright <= road_ceiling and bright >= road_floor and spread <= road_neutral:
+		return true
+	if c.r > 0.80 and c.g > 0.60 and c.b < 0.60:
+		return true
+	return false
+
+
+## Estimate the map's skew (small tilt) and return the angle to straighten it.
+## For each candidate angle in a LIMITED range (default +/-30 deg -- a screenshot
+## is roughly upright, so we only correct the grid's tilt and never swing onto a
+## diagonal), it bins the road pixels into a coarse rotated grid and measures the
+## LARGEST 4-connected road component. The angle that connects the most road wins
+## -- directly the "majority of streets on the box grid" goal. A gentle bias
+## keeps 0 deg unless a tilt is clearly better, so near-upright maps stay put.
+static func _detect_grid_angle(image: Image, opts: Dictionary) -> float:
+	var w := image.get_width()
+	var h := image.get_height()
+	var road_ceiling := float(opts["road_ceiling"])
+	var road_floor := float(opts["road_floor"])
+	var road_neutral := float(opts["road_neutral"])
+	var step := maxi(1, int(w / 220.0))
+	var pts := PackedVector2Array()
+	var y := 0
+	while y < h:
+		var x := 0
+		while x < w:
+			if _is_road_pixel(image.get_pixel(x, y), road_ceiling, road_floor, road_neutral):
+				pts.append(Vector2(x, y))
+			x += step
+		y += step
+	if pts.size() < 50:
+		return 0.0
+	# Coarse cell size roughly matches a street-grid cell so a road line fills a
+	# coarse cell but a diagonal only clips cell corners (breaking 4-connectivity).
+	var cell_px := float(step) * 4.0
+	var max_skew := int(opts.get("max_skew_deg", 30))
+	var best_score := -1
+	var best_deg := 0.0
+	for deg in range(-max_skew, max_skew + 1):
+		var th := deg_to_rad(float(deg))
+		var c := cos(th)
+		var s := sin(th)
+		var road_cells := {}
+		for p in pts:
+			var cxi := int(floor((p.x * c - p.y * s) / cell_px))
+			var cyi := int(floor((p.x * s + p.y * c) / cell_px))
+			road_cells[Vector2i(cxi, cyi)] = true
+		var comp: Dictionary = _largest_component(road_cells)
+		# Bias toward 0: a tilt must beat upright by >2% of connected cells.
+		var score := comp.size()
+		if deg == 0:
+			score = int(score * 1.02) + 1
+		if score > best_score:
+			best_score = score
+			best_deg = float(deg)
+	if absf(best_deg) <= 1.0:
+		return 0.0
+	return best_deg
 
 
 static func _largest_component(cells: Dictionary) -> Dictionary:
