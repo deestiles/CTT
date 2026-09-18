@@ -1084,12 +1084,17 @@ func _update_chase(delta: float) -> void:
 	_update_vehicle_smoke(_thief, _thief_damage)
 	_apply_world_impact_damage(_car, true)
 	_apply_world_impact_damage(_thief, false)
-	# The combined vehicle length is a little over five metres. Lateral gating
-	# prevents a parallel lane from counting as a ram.
+	# Register a ram when the cars physically touch (definitive, any angle) OR are
+	# closely aligned. The contact path matters because the long cars touch bumpers
+	# with their centres ~5.7 m apart -- just outside a pure distance gate -- and
+	# angled/T-bone hits break a tight lateral gate. Lateral 3.0 m stays under the
+	# ~5 m lane spacing so a parallel lane still won't count as a ram.
 	var local_offset := _car.global_transform.basis.inverse() * separation
-	if _capture_cooldown <= 0.0 and distance < 5.6 and absf(local_offset.x) < 2.25:
+	var touching := _cars_touching(_car, _thief) or _cars_touching(_thief, _car)
+	var aligned := distance < 6.5 and absf(local_offset.x) < 3.0
+	if _capture_cooldown <= 0.0 and (touching or aligned):
 		var relative_speed := absf(_car.speed - _thief.speed)
-		if relative_speed > 1.5 or absf(_car.speed) > 8.0:
+		if relative_speed > 1.0 or absf(_car.speed) > 6.0:
 			_register_thief_hit(relative_speed)
 
 func _update_thief_indicator(distance: float) -> void:
@@ -1125,6 +1130,16 @@ func _update_thief_indicator(distance: float) -> void:
 	_thief_indicator.position = indicator_center - _thief_indicator.size * 0.5
 	_thief_arrow.rotation = direction.angle() + PI * 0.5
 	_thief_indicator_label.text = "%d m" % int(round(distance))
+
+## True when `a`'s move_and_slide reported `b` as a collider this frame.
+func _cars_touching(a: ArcadeCar, b: ArcadeCar) -> bool:
+	if a == null or b == null:
+		return false
+	for i in a.get_slide_collision_count():
+		if a.get_slide_collision(i).get_collider() == b:
+			return true
+	return false
+
 
 func _register_thief_hit(relative_speed: float) -> void:
 	var hit_damage := clampf(7.0 + relative_speed * 1.35, 9.0, 28.0)
