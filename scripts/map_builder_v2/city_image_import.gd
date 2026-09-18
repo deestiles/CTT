@@ -21,9 +21,12 @@ const BUILDING_IDS := ["SM_Bld_Shop_01", "SM_Bld_Apartment_01", "SM_Bld_Apartmen
 static func default_options() -> Dictionary:
 	return {
 		"cells_across": 80,
-		"road_brightness": 0.965,  # avg brightness above which a neutral cell is road
-		                           # (roads are near-white ~1.0; light land is ~0.95)
-		"neutral_spread": 0.12,    # max(rgb)-min(rgb) below which a cell is neutral
+		# A pixel counts as road when its darkest channel is at least this bright
+		# (roads are near-white ~1.0; light map land is ~0.95, so keep this high).
+		"road_brightness": 0.965,
+		# A cell becomes road when at least this fraction of its pixels are road
+		# pixels. Low, because streets are thin lines inside a mostly-land cell.
+		"road_fill": 0.06,
 		"place_sidewalks": true,
 		"place_buildings": true,
 		"building_cap": 500,
@@ -48,11 +51,12 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 	var cells_across: int = maxi(4, int(opts["cells_across"]))
 	var cells_down: int = maxi(4, int(round(cells_across * float(h) / float(maxi(1, w)))))
 
-	# 1) Classify every cell by sampling a small set of pixels.
+	# 1) Classify every cell from its pixels (fraction-based, so thin streets on
+	# near-white land are still caught).
 	var kind := {}   # Vector2i -> Kind
 	for cz in cells_down:
 		for cx in cells_across:
-			kind[Vector2i(cx, cz)] = _classify(_sample_cell(image, cx, cz, cells_across, cells_down), opts)
+			kind[Vector2i(cx, cz)] = _classify_cell(image, cx, cz, cells_across, cells_down, opts)
 
 	# 2) Road cells, reduced to the largest connected component (drivable + valid).
 	var road_cells := {}
@@ -107,39 +111,47 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 	}
 
 
-static func _sample_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int) -> Color:
+## Scan the cell's pixels and decide its kind by category fractions. This beats
+## averaging: a thin white street inside a mostly-land cell still registers as
+## road, and green pins / blue labels don't tint a whole cell into a false class.
+static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int, opts: Dictionary) -> int:
 	var w := image.get_width()
 	var h := image.get_height()
 	var x0 := int(float(cx) / cells_across * w)
-	var x1 := int(float(cx + 1) / cells_across * w)
+	var x1 := maxi(x0 + 1, int(float(cx + 1) / cells_across * w))
 	var y0 := int(float(cz) / cells_down * h)
-	var y1 := int(float(cz + 1) / cells_down * h)
-	var acc := Color(0, 0, 0, 0)
-	var n := 0
-	var steps := 4
-	for sx in steps:
-		for sy in steps:
-			var px := clampi(x0 + int((x1 - x0) * (sx + 0.5) / steps), 0, w - 1)
-			var py := clampi(y0 + int((y1 - y0) * (sy + 0.5) / steps), 0, h - 1)
-			acc += image.get_pixel(px, py)
-			n += 1
-	return acc / maxi(1, n)
-
-
-static func _classify(c: Color, opts: Dictionary) -> int:
-	var mx: float = max(c.r, max(c.g, c.b))
-	var mn: float = min(c.r, min(c.g, c.b))
-	var bright := (c.r + c.g + c.b) / 3.0
-	# Water: blue clearly dominant.
-	if c.b > c.r + 0.06 and c.b > c.g + 0.02 and c.b > 0.45:
+	var y1 := maxi(y0 + 1, int(float(cz + 1) / cells_down * h))
+	# Cap samples per axis so large cells stay cheap.
+	var step_x := maxi(1, (x1 - x0) / 24)
+	var step_y := maxi(1, (y1 - y0) / 24)
+	var white_cut := float(opts["road_brightness"])
+	var total := 0
+	var road := 0
+	var water := 0
+	var park := 0
+	var py := y0
+	while py < y1:
+		var px := x0
+		while px < x1:
+			var c := image.get_pixel(mini(px, w - 1), mini(py, h - 1))
+			total += 1
+			if c.b > c.r + 0.06 and c.b > c.g + 0.02 and c.b > 0.45:
+				water += 1
+			elif c.g > c.r + 0.04 and c.g > c.b + 0.04 and c.g > 0.5:
+				park += 1
+			elif min(c.r, min(c.g, c.b)) >= white_cut:
+				road += 1
+			elif c.r > 0.80 and c.g > 0.60 and c.b < 0.60:
+				road += 1                                  # yellow/orange arterial
+			px += step_x
+		py += step_y
+	if total == 0:
+		return Kind.OTHER
+	if float(water) / total > 0.40:
 		return Kind.WATER
-	# Roads: bright + neutral (white/light), or yellow/orange arterials.
-	if bright >= float(opts["road_brightness"]) and (mx - mn) <= float(opts["neutral_spread"]):
+	if float(road) / total >= float(opts["road_fill"]):
 		return Kind.ROAD
-	if c.r > 0.80 and c.g > 0.60 and c.b < 0.60:
-		return Kind.ROAD
-	# Parks/greens.
-	if c.g > c.r + 0.05 and c.g > c.b + 0.05:
+	if float(park) / total > 0.40:
 		return Kind.PARK
 	return Kind.OTHER
 
