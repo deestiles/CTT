@@ -15,6 +15,7 @@ const Validator := preload("res://scripts/map_builder_v2/city_map_validator.gd")
 const Loader := preload("res://scripts/drive/generated_city_loader.gd")
 const GeneratedCity := preload("res://scripts/drive/generated_city.gd")
 const ImageImport := preload("res://scripts/map_builder_v2/city_image_import.gd")
+const RandomGen := preload("res://scripts/map_builder_v2/city_random_generator.gd")
 
 const TEST_SCENE := "res://scenes/drive/generated_city_test.tscn"
 const GRID := 5.0
@@ -836,6 +837,7 @@ func _build_ui() -> void:
 	ibar.add_child(_rotate_edit)
 	_add_button(ibar, "Import Image", _import_image)
 	_add_button(ibar, "Toggle Underlay", _toggle_underlay)
+	_add_button(ibar, "Generate City", _generate_city)
 
 	# Left palette: collapsible (accordion) category sections with 3D thumbnails.
 	var pstyle := PanelContainer.new()
@@ -1030,6 +1032,23 @@ func _deactivate_cameras(node: Node) -> void:
 		(node as Camera3D).current = false
 	for c in node.get_children():
 		_deactivate_cameras(c)
+
+
+## Procedurally generate a whole new city (replaces the current map, undoable).
+## A fresh random layout each click.
+func _generate_city() -> void:
+	var result: Dictionary = RandomGen.generate({})
+	_begin_edit()
+	_map = result["data"]
+	_current_route.clear()
+	if _underlay:
+		_underlay.visible = false
+	_rebuild()
+	_focus_on_content()
+	_set_status("Generated city: %d roads (%d major), %d buildings, %d trees (seed %d)" % [
+		result["roads"], result["major_roads"], result["buildings"], result["trees"], result["seed"]], Color("#42f5a7"))
+	_popup("City Generated", "A new random city (seed %d):\n  roads: %d  (%d major)\n  sidewalks: %d\n  buildings: %d\n  trees: %d\n\nRoads follow the grid with lamps/props/signals grouped on the sidewalks and blocks of buildings, like the reference city. Police + thief spawns and a boundary are set.\n\nClick 'Generate City' again for a different layout. Validate + Test Map to drive it, or edit by hand. Save to keep it." % [
+		result["seed"], result["roads"], result["major_roads"], result["sidewalks"], result["buildings"], result["trees"]])
 
 
 func _toggle_underlay() -> void:
