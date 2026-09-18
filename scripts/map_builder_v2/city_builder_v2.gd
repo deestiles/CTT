@@ -826,8 +826,8 @@ func _import_image() -> void:
 	_rebuild()
 	_show_underlay(img, int(result["cells_across"]), int(result["cells_down"]))
 	_focus_on_content()
-	_set_status("Imported %d roads / %d sidewalks / %d buildings" % [result["roads"], result["sidewalks"], result["buildings"]], Color("#42f5a7"))
-	_popup("Image Imported", "Placed from the image (replacing the current map):\n  roads: %d\n  sidewalks: %d\n  buildings: %d\n\nThe image is shown underneath as a tracing guide (Toggle Underlay).\nNext: fix roads with drag-paint, then place a Police Spawn and Thief Spawn on road cells, Validate, and Test Map.\n\nToo much/little road? Adjust 'road≥' (lower = more road) or 'cells across', and Import again." % [result["roads"], result["sidewalks"], result["buildings"]])
+	_set_status("Imported %d roads (%d major) / %d sidewalks / %d buildings" % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"]], Color("#42f5a7"))
+	_popup("Image Imported", "Placed from the image (replacing the current map):\n  roads: %d  (%d major two-lane)\n  sidewalks: %d\n  buildings: %d\n\nRoad tiles are rotated to follow each street; thick roads use lane-line tiles, normal streets a centre line; corners/junctions use plain asphalt.\n\nThe image is shown underneath as a tracing guide (Toggle Underlay).\nNext: place a Police Spawn and Thief Spawn on road cells, Validate, and Test Map.\n\nToo much/little road? Adjust 'road grey<' or 'cells across'. Not enough major roads? Lower major_fill in the importer." % [result["roads"], result.get("major_roads", 0), result["sidewalks"], result["buildings"]])
 
 
 func _load_image(path: String) -> Image:

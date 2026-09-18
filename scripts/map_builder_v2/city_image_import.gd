@@ -9,6 +9,7 @@ extends RefCounted
 ## cells_across captures streets better than a very fine one.
 
 const Schema := preload("res://scripts/map_builder_v2/city_map_schema.gd")
+const Tiling := preload("res://scripts/map_builder_v2/city_road_tiling.gd")
 
 enum Kind { OTHER, ROAD, WATER, PARK }
 
@@ -33,6 +34,10 @@ static func default_options() -> Dictionary:
 		# A cell becomes road when at least this fraction of its pixels are road
 		# pixels. Low, because streets are thin lines inside a mostly-land cell.
 		"road_fill": 0.05,
+		# A road cell counts as a MAJOR road (lane-line tile) rather than a normal
+		# two-way street (center-line tile) when this fraction of it is road pixels
+		# -- thick boulevards fill a cell far more than a thin residential street.
+		"major_fill": 0.55,
 		"place_sidewalks": true,
 		"place_buildings": true,
 		"building_cap": 500,
@@ -59,13 +64,16 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 
 	# 1) Classify every cell from its pixels (fraction-based, so thin streets on
 	# near-white land are still caught).
-	var kind := {}   # Vector2i -> Kind
+	var kind := {}       # Vector2i -> Kind
+	var road_frac := {}  # Vector2i -> fraction of road pixels (for major/minor)
 	var tally := {Kind.OTHER: 0, Kind.ROAD: 0, Kind.WATER: 0, Kind.PARK: 0}
 	for cz in cells_down:
 		for cx in cells_across:
-			var k := _classify_cell(image, cx, cz, cells_across, cells_down, opts)
-			kind[Vector2i(cx, cz)] = k
-			tally[k] += 1
+			var cell := Vector2i(cx, cz)
+			var res := _classify_cell(image, cx, cz, cells_across, cells_down, opts)
+			kind[cell] = int(res["kind"])
+			road_frac[cell] = float(res["road_frac"])
+			tally[int(res["kind"])] += 1
 
 	# 2) Road cells, reduced to the largest connected component (drivable + valid).
 	var road_cells := {}
@@ -112,12 +120,25 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 				break
 			building_cells[cell] = true
 
-	# 5) Emit items.
-	var items: Array = []
+	# 4b) Major roads: connected road cells that are mostly-filled (thick lines).
+	var majors := {}
+	var major_fill := float(opts["major_fill"])
 	for cell in road_cells:
-		items.append({"id": ROAD_ID, "cell": [cell.x, cell.y], "turns": 0})
+		if float(road_frac.get(cell, 0.0)) >= major_fill:
+			majors[cell] = true
+
+	# 5) Emit items with neighbour-aware tile + rotation (paint follows the street;
+	# corners/junctions use plain asphalt; sidewalks run parallel to their road).
+	var items: Array = []
+	var major_count := 0
+	for cell in road_cells:
+		var t: Dictionary = Tiling.road_tile(cell, road_cells, majors)
+		items.append({"id": t["id"], "cell": [cell.x, cell.y], "turns": int(t["turns"])})
+		if majors.has(cell):
+			major_count += 1
 	for cell in sidewalk_cells:
-		items.append({"id": SIDEWALK_ID, "cell": [cell.x, cell.y], "turns": 0})
+		var st: Dictionary = Tiling.sidewalk_tile(cell, road_cells)
+		items.append({"id": st["id"], "cell": [cell.x, cell.y], "turns": int(st["turns"])})
 	var bids: Array = opts["building_ids"]
 	var bi := 0
 	for cell in building_cells:
@@ -132,6 +153,7 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 		"cells_across": cells_across,
 		"cells_down": cells_down,
 		"roads": road_cells.size(),
+		"major_roads": major_count,
 		"sidewalks": sidewalk_cells.size(),
 		"buildings": building_cells.size(),
 		"road_cells_raw": tally[Kind.ROAD],
@@ -144,7 +166,7 @@ static func build_map_from_image(img: Image, options: Dictionary = {}) -> Dictio
 ## Scan the cell's pixels and decide its kind by category fractions. This beats
 ## averaging: a thin white street inside a mostly-land cell still registers as
 ## road, and green pins / blue labels don't tint a whole cell into a false class.
-static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int, opts: Dictionary) -> int:
+static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, cells_down: int, opts: Dictionary) -> Dictionary:
 	var w := image.get_width()
 	var h := image.get_height()
 	var x0 := int(float(cx) / cells_across * w)
@@ -182,14 +204,15 @@ static func _classify_cell(image: Image, cx: int, cz: int, cells_across: int, ce
 			px += step_x
 		py += step_y
 	if total == 0:
-		return Kind.OTHER
+		return {"kind": Kind.OTHER, "road_frac": 0.0}
+	var rf := float(road) / total
 	if float(water) / total > 0.40:
-		return Kind.WATER
-	if float(road) / total >= float(opts["road_fill"]):
-		return Kind.ROAD
+		return {"kind": Kind.WATER, "road_frac": rf}
+	if rf >= float(opts["road_fill"]):
+		return {"kind": Kind.ROAD, "road_frac": rf}
 	if float(park) / total > 0.40:
-		return Kind.PARK
-	return Kind.OTHER
+		return {"kind": Kind.PARK, "road_frac": rf}
+	return {"kind": Kind.OTHER, "road_frac": rf}
 
 
 static func _largest_component(cells: Dictionary) -> Dictionary:
