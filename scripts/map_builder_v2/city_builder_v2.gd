@@ -43,6 +43,7 @@ var _markers: Node3D
 var _hover: MeshInstance3D
 var _sel_box: MeshInstance3D
 var _selected_placed := -1     # index into _map.items of the clicked placed item
+var _item_nodes: Array = []    # instanced node per _map["items"] entry (index-aligned)
 var _grid: MeshInstance3D
 var _status: Label
 var _sel_label: Label
@@ -227,14 +228,34 @@ func _build_hover() -> void:
 
 # --- Rebuild preview ------------------------------------------------------
 
+## Full rebuild of all geometry. Only for bulk changes (undo/redo/load/import/
+## generate/clear); per-edit ops touch single nodes incrementally instead, so a
+## click no longer re-instances the whole city. _item_nodes stays index-aligned
+## with _map["items"] so a single item can be updated/removed in place.
 func _rebuild() -> void:
 	if _geometry:
 		_geometry.queue_free()
-	var built: Dictionary = Loader.build_city(_map)
-	_geometry = built["city"]
+	_geometry = Node3D.new()
 	_geometry.name = "Geometry"
 	add_child(_geometry)
+	_item_nodes.clear()
+	for raw in _map.get("items", []):
+		_item_nodes.append(_spawn_item_node(raw))
 	_rebuild_markers()
+
+
+## Instance one map item's prefab and add it under _geometry; returns the node
+## (or null if the id/prefab is missing, e.g. a marker).
+func _spawn_item_node(raw: Variant) -> Node3D:
+	if not (raw is Dictionary) or _geometry == null:
+		return null
+	var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+	if module.is_empty() or String(module.get("prefab", "")) == "":
+		return null
+	var node := Loader.instance_item(module, _cell(raw.get("cell", [0, 0])), int(raw.get("turns", 0)), 0.0)
+	if node:
+		_geometry.add_child(node)
+	return node
 
 
 func _rebuild_markers() -> void:
@@ -531,8 +552,9 @@ func _paint_step() -> void:
 	_paint_seen[cell] = true
 	if _cell_has_layer(cell, [Catalog.Layer.SURFACE, Catalog.Layer.STRUCTURE]):
 		return
-	_map["items"].append({"id": _selected["id"], "cell": [cell.x, cell.y], "turns": _turns})
-	_add_item_visual(_selected, cell, _turns)
+	var item := {"id": _selected["id"], "cell": [cell.x, cell.y], "turns": _turns}
+	_map["items"].append(item)
+	_item_nodes.append(_spawn_item_node(item))    # incremental: one tile, no full rebuild
 	_set_status("Painted %d tile(s)" % _paint_seen.size())
 
 
@@ -549,14 +571,6 @@ func _cell_has_layer(cell: Vector2i, layers: Array) -> bool:
 	return false
 
 
-func _add_item_visual(module: Dictionary, cell: Vector2i, turns: int) -> void:
-	if _geometry == null or String(module.get("prefab", "")) == "":
-		return
-	var node := Loader.instance_item(module, cell, turns, 0.0)
-	if node:
-		_geometry.add_child(node)
-
-
 func _place_at_hover() -> void:
 	if _selected.is_empty():
 		return
@@ -566,13 +580,14 @@ func _place_at_hover() -> void:
 		return
 	_begin_edit()
 	var layer: int = _selected.get("layer", Catalog.Layer.SURFACE)
-	var footprint: Vector2i = _selected.get("footprint", Vector2i.ONE)
+	var footprint: Vector2i = _real_footprint(_selected)
 	var cells := Schema.covered_cells(_hover_cell, footprint, _turns)
 	# Surfaces and structures are exclusive per cell; remove anything overlapping.
 	if layer == Catalog.Layer.SURFACE or layer == Catalog.Layer.STRUCTURE:
 		_remove_items_on_cells(cells, [Catalog.Layer.SURFACE, Catalog.Layer.STRUCTURE])
-	_map["items"].append({"id": _selected["id"], "cell": [_hover_cell.x, _hover_cell.y], "turns": _turns})
-	_rebuild()
+	var item := {"id": _selected["id"], "cell": [_hover_cell.x, _hover_cell.y], "turns": _turns}
+	_map["items"].append(item)
+	_item_nodes.append(_spawn_item_node(item))    # incremental: one item, no full rebuild
 	_set_status("Placed %s @ (%d,%d)" % [_selected["display_name"], _hover_cell.x, _hover_cell.y])
 
 
@@ -633,7 +648,12 @@ func _rotate_selected_placed() -> void:
 	_begin_edit()
 	var raw = items[_selected_placed]
 	raw["turns"] = posmod(int(raw.get("turns", 0)) + 1, 4)
-	_rebuild()                       # item order preserved, so the index stays valid
+	# Re-instance only this item's node (no full rebuild).
+	if _selected_placed < _item_nodes.size():
+		var old = _item_nodes[_selected_placed]
+		if is_instance_valid(old):
+			old.queue_free()
+		_item_nodes[_selected_placed] = _spawn_item_node(raw)
 	_update_sel_box()
 	_set_status("Rotated to %d°  (R again to keep turning)" % (int(raw["turns"]) * 90), Color("#ffce54"))
 
@@ -673,12 +693,11 @@ func _delete_at_hover() -> void:
 		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
 		if module.is_empty():
 			continue
-		var cells := Schema.covered_cells(_cell(raw.get("cell", [0, 0])), module.get("footprint", Vector2i.ONE), int(raw.get("turns", 0)))
+		var cells := Schema.covered_cells(_cell(raw.get("cell", [0, 0])), Loader.asset_footprint(module), int(raw.get("turns", 0)))
 		if _hover_cell in cells:
 			_begin_edit()
-			items.remove_at(i)
 			_deselect_placed()
-			_rebuild()
+			_remove_item_at(i)              # incremental: frees one node, no full rebuild
 			_set_status("Deleted %s" % module.get("display_name", "item"))
 			return
 	# No geometry: try markers on the cell.
@@ -720,11 +739,21 @@ func _remove_items_on_cells(cells: Array, layers: Array) -> void:
 		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
 		if module.is_empty() or not (int(module.get("layer", -1)) in layers):
 			continue
-		var occ := Schema.covered_cells(_cell(raw.get("cell", [0, 0])), module.get("footprint", Vector2i.ONE), int(raw.get("turns", 0)))
+		var occ := Schema.covered_cells(_cell(raw.get("cell", [0, 0])), Loader.asset_footprint(module), int(raw.get("turns", 0)))
 		for c in occ:
 			if c in cells:
-				items.remove_at(i)
+				_remove_item_at(i)
 				break
+
+
+## Remove item i from the map AND its instanced node, keeping the arrays aligned.
+func _remove_item_at(i: int) -> void:
+	if i >= 0 and i < _item_nodes.size():
+		var node = _item_nodes[i]
+		if is_instance_valid(node):
+			node.queue_free()
+		_item_nodes.remove_at(i)
+	(_map["items"] as Array).remove_at(i)
 
 
 func _do_undo() -> void:
