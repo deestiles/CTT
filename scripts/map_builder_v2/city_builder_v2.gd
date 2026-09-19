@@ -43,6 +43,7 @@ var _markers: Node3D
 var _hover: MeshInstance3D
 var _sel_box: MeshInstance3D
 var _selected_placed := -1     # index into _map.items of the clicked placed item
+var _sel_cell := Vector2i(2147483647, 2147483647)   # cell the current selection was clicked on
 var _item_nodes: Array = []    # instanced node per _map["items"] entry (index-aligned)
 var _grid: MeshInstance3D
 var _status: Label
@@ -466,7 +467,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
 				# Click a placed item -> select it (for rotate); empty cell -> place.
-				var idx := _item_index_at(_current_cell())
+				var idx := _select_index_for(_current_cell())
 				if idx >= 0:
 					_select_placed(idx)
 				elif _is_surface_selected():
@@ -610,8 +611,9 @@ func _place_marker(kind: String) -> void:
 
 # --- Select / rotate a placed item ---------------------------------------
 
-## Index of the topmost placed geometry item covering `cell`, or -1.
-func _item_index_at(cell: Vector2i) -> int:
+## All placed item indices covering `cell`, topmost (last-placed) first.
+func _items_at(cell: Vector2i) -> Array:
+	var out: Array = []
 	var items: Array = _map.get("items", [])
 	for i in range(items.size() - 1, -1, -1):
 		var raw = items[i]
@@ -620,10 +622,28 @@ func _item_index_at(cell: Vector2i) -> int:
 		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
 		if module.is_empty():
 			continue
-		var fp := Loader.asset_footprint(module)
-		if cell in Schema.covered_cells(_cell(raw.get("cell", [0, 0])), fp, int(raw.get("turns", 0))):
-			return i
-	return -1
+		if cell in Schema.covered_cells(_cell(raw.get("cell", [0, 0])), Loader.asset_footprint(module), int(raw.get("turns", 0))):
+			out.append(i)
+	return out
+
+
+## Topmost item covering `cell`, or -1.
+func _item_index_at(cell: Vector2i) -> int:
+	var stack := _items_at(cell)
+	return stack[0] if not stack.is_empty() else -1
+
+
+## Which item to select on a click: the topmost, unless we're clicking the same
+## cell again and the current selection is in its stack -- then advance (cycle).
+func _select_index_for(cell: Vector2i) -> int:
+	var stack := _items_at(cell)
+	if stack.is_empty():
+		return -1
+	var chosen: int = stack[0]
+	if cell == _sel_cell and stack.has(_selected_placed):
+		chosen = stack[(stack.find(_selected_placed) + 1) % stack.size()]
+	_sel_cell = cell
+	return chosen
 
 
 func _select_placed(idx: int) -> void:
@@ -631,11 +651,17 @@ func _select_placed(idx: int) -> void:
 	_update_sel_box()
 	var raw = _map["items"][idx]
 	var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
-	_set_status("Selected: %s  ·  R rotate · right-click remove" % module.get("display_name", "item"), Color("#ffce54"))
+	var here := _items_at(_cell(raw.get("cell", [0, 0])))
+	var extra := ""
+	if here.size() > 1:
+		var pos := here.find(idx)
+		extra = "  ·  item %d/%d (click to cycle)" % [pos + 1 if pos >= 0 else 1, here.size()]
+	_set_status("Selected: %s%s  ·  R rotate · right-click remove" % [module.get("display_name", "item"), extra], Color("#ffce54"))
 
 
 func _deselect_placed() -> void:
 	_selected_placed = -1
+	_sel_cell = Vector2i(2147483647, 2147483647)
 	if _sel_box:
 		_sel_box.visible = false
 
@@ -684,8 +710,20 @@ func _update_sel_box() -> void:
 
 
 func _delete_at_hover() -> void:
-	# Remove the last item covering the hovered cell, else a marker on it.
 	var items: Array = _map.get("items", [])
+	# If a specific item is selected and it's under the cursor, remove THAT one
+	# (so you can cycle-select a stacked item and delete exactly it).
+	if _selected_placed >= 0 and _selected_placed < items.size():
+		var sraw = items[_selected_placed]
+		var sm: Dictionary = Catalog.by_id(String(sraw.get("id", "")))
+		if not sm.is_empty() and _hover_cell in Schema.covered_cells(_cell(sraw.get("cell", [0, 0])), Loader.asset_footprint(sm), int(sraw.get("turns", 0))):
+			var idx := _selected_placed
+			_begin_edit()
+			_deselect_placed()
+			_remove_item_at(idx)
+			_set_status("Deleted %s" % sm.get("display_name", "item"))
+			return
+	# Otherwise remove the topmost item covering the hovered cell, else a marker.
 	for i in range(items.size() - 1, -1, -1):
 		var raw = items[i]
 		if not (raw is Dictionary):
@@ -1418,5 +1456,15 @@ func _run_builder_test() -> void:
 		_rotate_selected_placed()
 		print("[SELECT TEST] sel_idx=%d turns %d->%d sel_visible=%s" % [
 			_selected_placed, t0, int(_map["items"][0]["turns"]), _sel_box.visible])
+	# Stacked-cell cycling: two items on one square -> clicks cycle between them.
+	_map["items"].append({"id": "SM_Env_Sidewalk_Straight_01", "cell": [7, 7], "turns": 0})
+	_item_nodes.append(_spawn_item_node(_map["items"].back()))
+	_map["items"].append({"id": "SM_Prop_LightPole_Base_01", "cell": [7, 7], "turns": 0})
+	_item_nodes.append(_spawn_item_node(_map["items"].back()))
+	var st := _items_at(Vector2i(7, 7))
+	var a := _select_index_for(Vector2i(7, 7))
+	_selected_placed = a
+	var b := _select_index_for(Vector2i(7, 7))
+	print("[STACK TEST] stack=%d first=%d cycled=%d differ=%s" % [st.size(), a, b, a != b])
 	print("[BUILDER TEST] DONE")
 	get_tree().quit()
