@@ -45,6 +45,7 @@ var _sel_box: MeshInstance3D
 var _selected_placed := -1     # index into _map.items of the clicked placed item
 var _sel_cell := Vector2i(2147483647, 2147483647)   # cell the current selection was clicked on
 var _item_nodes: Array = []    # instanced node per _map["items"] entry (index-aligned)
+var _select_mode := false      # when true (or Alt held), left-click selects instead of placing
 var _grid: MeshInstance3D
 var _status: Label
 var _sel_label: Label
@@ -57,6 +58,7 @@ var _ui: CanvasLayer
 var _dialog: AcceptDialog
 var _stack_menu: PanelContainer
 var _stack_menu_box: VBoxContainer
+var _mode_button: Button
 var _underlay: MeshInstance3D
 var _reference: Node3D
 var _ref_label: Label
@@ -469,7 +471,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
 				# Click a placed item -> select it (for rotate); empty cell -> place.
-				_handle_left_click(_current_cell())
+				_handle_left_click(_current_cell(), mb.alt_pressed)
 			else:
 				_painting = false
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
@@ -661,23 +663,45 @@ func _deselect_placed() -> void:
 	_hide_stack_menu()
 
 
-## One item on the cell -> select it; several -> show a pick menu; empty -> place.
-## A world click while the menu is open just closes it.
-func _handle_left_click(cell: Vector2i) -> void:
+## Default: left-click PLACES the palette asset (props layer on top, surfaces
+## replace), so you can stack a lamp/prop onto an existing sidewalk. Selecting a
+## placed item is explicit: Select mode on, or hold Alt -- then one item selects,
+## several show a pick menu. A world click while the menu is open just closes it.
+func _handle_left_click(cell: Vector2i, alt: bool) -> void:
 	if _stack_menu != null and _stack_menu.visible:
 		_hide_stack_menu()
 		return
-	var stack := _items_at(cell)
-	if stack.size() > 1:
-		_show_stack_menu(stack)
-	elif stack.size() == 1:
-		_select_placed(stack[0])
-	elif _is_surface_selected():
-		_deselect_placed()
+	if _select_mode or alt:
+		var stack := _items_at(cell)
+		if stack.size() > 1:
+			_show_stack_menu(stack)
+		elif stack.size() == 1:
+			_select_placed(stack[0])
+		else:
+			_deselect_placed()
+		return
+	# Place mode (default).
+	_deselect_placed()
+	if _is_surface_selected():
 		_begin_paint()
 	else:
-		_deselect_placed()
 		_place_at_hover()
+
+
+func _toggle_select_mode() -> void:
+	_select_mode = not _select_mode
+	if not _select_mode:
+		_deselect_placed()
+	_update_mode_button()
+	_set_status("Select mode %s  ·  %s" % [
+		"ON — click a placed item to edit it" if _select_mode else "OFF — click places assets",
+		"Alt+click also selects"], Color("#ffce54") if _select_mode else Color.WHITE)
+
+
+func _update_mode_button() -> void:
+	if _mode_button:
+		_mode_button.text = "Mode: SELECT" if _select_mode else "Mode: PLACE"
+		_mode_button.add_theme_color_override("font_color", Color("#ffce54") if _select_mode else Color.WHITE)
 
 
 func _show_stack_menu(indices: Array) -> void:
@@ -1029,6 +1053,10 @@ func _build_ui() -> void:
 	_add_button(bar, "Redo", _do_redo)
 	_add_button(bar, "Finish Route", _finish_route)
 	_add_button(bar, "Clear", _clear_map)
+	_mode_button = Button.new()
+	_mode_button.text = "Mode: PLACE"
+	_mode_button.pressed.connect(_toggle_select_mode)
+	bar.add_child(_mode_button)
 	_add_button(bar, "Fit View (F)", _focus_on_content)
 	_add_button(bar, "Tilt (V)", _cycle_tilt)
 	_add_button(bar, "Reference City", _toggle_reference)
@@ -1128,7 +1156,7 @@ func _build_ui() -> void:
 	_sel_label.text = "Selected: —"
 	bbox.add_child(_sel_label)
 	_status = Label.new()
-	_status.text = "L-click place (empty) or select (placed) · R rotate (selected item or brush) · R-click delete · drag paint roads · wheel zoom · MMB/WASD pan · F fit · V tilt · H panels"
+	_status.text = "L-click places (props layer on top) · Alt+click or Mode:SELECT to edit a placed item · R rotate · R-click delete · drag paint roads · wheel zoom · MMB/WASD pan · F fit · V tilt"
 	bbox.add_child(_status)
 
 
@@ -1528,11 +1556,20 @@ func _run_builder_test() -> void:
 	_map["items"].append({"id": "SM_Prop_LightPole_Base_01", "cell": [7, 7], "turns": 0})
 	_item_nodes.append(_spawn_item_node(_map["items"].back()))
 	var st := _items_at(Vector2i(7, 7))
-	_handle_left_click(Vector2i(7, 7))
+	_handle_left_click(Vector2i(7, 7), true)     # Alt+click -> select mode
 	var menu_shown := _stack_menu.visible
 	var entries := _stack_menu_box.get_child_count()   # header + one per item
 	_on_stack_pick(st[1])
 	print("[STACK TEST] stack=%d menu_shown=%s entries=%d picked_sel=%d menu_hidden=%s" % [
 		st.size(), menu_shown, entries, _selected_placed, not _stack_menu.visible])
+	# Place-over: with a sidewalk already down, place-mode click adds a lamp on top.
+	_deselect_placed()
+	_selected = Catalog.by_id("SM_Env_Sidewalk_Straight_01")
+	_hover_cell = Vector2i(9, 9)
+	_place_at_hover()
+	_selected = Catalog.by_id("SM_Prop_LightPole_Base_01")
+	_hover_cell = Vector2i(9, 9)
+	_handle_left_click(Vector2i(9, 9), false)      # place mode: should layer, not select
+	print("[LAYER TEST] items_on_cell=%d (expect 2) selected=%d" % [_items_at(Vector2i(9, 9)).size(), _selected_placed])
 	print("[BUILDER TEST] DONE")
 	get_tree().quit()
