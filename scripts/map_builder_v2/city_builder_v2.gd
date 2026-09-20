@@ -1412,8 +1412,9 @@ func _capture_end_marquee() -> void:
 	if r.size.length() < 6.0:
 		_capture_pick()
 		return
+	var candidates := _reference_prefab_nodes()
 	var added := 0
-	for asset in _reference_prefab_nodes():
+	for asset in candidates:
 		if _cam.is_position_behind(asset.global_transform.origin):
 			continue
 		if not r.has_point(_cam.unproject_position(asset.global_transform.origin)):
@@ -1424,9 +1425,11 @@ func _capture_end_marquee() -> void:
 		_add_capture_marker(asset)
 		added += 1
 	_update_capture_panel()
-	_set_status("Box-selected %d asset(s)  ·  total %d" % [added, _captured.size()], Color("#8be0ff"))
+	_set_status("Box-selected %d of %d reference assets  ·  total %d" % [added, candidates.size(), _captured.size()], Color("#8be0ff"))
 
 
+## Every prefab-instance node under the reference (its scene_file_path points into
+## /Prefabs/). Skips the Demo scene root itself so we descend into its assets.
 func _reference_prefab_nodes() -> Array:
 	var out: Array = []
 	if _reference == null:
@@ -1434,7 +1437,7 @@ func _reference_prefab_nodes() -> Array:
 	var stack: Array = [_reference]
 	while not stack.is_empty():
 		var n: Node = stack.pop_back()
-		if n is Node3D and (n as Node3D).scene_file_path != "":
+		if n is Node3D and String((n as Node3D).scene_file_path).contains("/Prefabs/"):
 			out.append(n)
 			continue   # its children belong to this prefab instance
 		for c in n.get_children():
@@ -1452,7 +1455,7 @@ func _is_captured(asset: Node3D) -> bool:
 func _prefab_instance_ancestor(collider: Variant) -> Node3D:
 	var n := collider as Node
 	while n != null and n != _reference:
-		if n is Node3D and (n as Node3D).scene_file_path != "":
+		if n is Node3D and String((n as Node3D).scene_file_path).contains("/Prefabs/"):
 			return n as Node3D
 		n = n.get_parent()
 	return null
