@@ -253,7 +253,7 @@ func _spawn_item_node(raw: Variant) -> Node3D:
 	if not (raw is Dictionary) or _geometry == null:
 		return null
 	var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
-	if module.is_empty() or String(module.get("prefab", "")) == "":
+	if module.is_empty() or not Loader.is_placeable(module):
 		return null
 	var node := Loader.instance_item(module, _cell(raw.get("cell", [0, 0])), int(raw.get("turns", 0)), 0.0)
 	if node:
@@ -1352,7 +1352,7 @@ func _build_section_items(sec: Dictionary) -> void:
 # --- Lazy 3D thumbnails ---------------------------------------------------
 
 func _queue_thumb(module: Dictionary, button: Button) -> void:
-	if bool(module.get("is_marker", false)) or String(module.get("prefab", "")) == "":
+	if not Loader.is_placeable(module):
 		button.icon = _marker_icon(module.get("gizmo_color", Color(0.8, 0.8, 0.85)))
 		return
 	if _thumb_cache.has(module["id"]):

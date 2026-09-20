@@ -59,6 +59,7 @@ static func _scan() -> Array:
 	var out: Array = []
 	_scan_dir(PREFAB_ROOT, out)
 	out.append_array(_composite_buildings())
+	out.append_array(_group_modules())
 	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		var ca := _CATEGORY_ORDER.find(String(a["category"]))
 		var cb := _CATEGORY_ORDER.find(String(b["category"]))
@@ -172,6 +173,40 @@ static func _pretty(base_name: String) -> String:
 			text = text.substr(prefix.length())
 			break
 	return text.replace("_", " ")
+
+
+## Asset GROUPS: several sub-prefabs dropped together as one placeable (assembled
+## by generated_city_loader from the "parts" list). Synty's kit pieces are modelled
+## in place, so the parts sit at the same origin. Add more here to make new combos
+## without a separate asset-builder UI.
+static func _group_modules() -> Array:
+	var props := "%s/Props/" % PREFAB_ROOT
+	var base := {
+		"category": "Street Fixtures", "footprint": Vector2i.ONE, "layer": Layer.PROP,
+		"corner_pivot": false, "scale": Vector3.ONE, "offset": Vector3.ZERO,
+		"is_marker": false, "marker_kind": "", "gizmo_color": Color("#cfd8e3"), "prefab": "",
+	}
+	var traffic := base.duplicate()
+	traffic["id"] = "CTT_TrafficLight_Full"
+	traffic["display_name"] = "Traffic Light (full)"
+	traffic["is_signal"] = true
+	traffic["group_root"] = "TrafficLightGroup"
+	traffic["parts"] = [
+		{"prefab": props + "SM_Prop_LightPole_Base_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+		{"prefab": props + "SM_Prop_LightPole_Arm_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+		{"prefab": props + "SM_Prop_LightPole_Lights_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+		{"prefab": props + "SM_Prop_LightPole_Box_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+	]
+	var lamp := base.duplicate()
+	lamp["id"] = "CTT_StreetLamp_Full"
+	lamp["display_name"] = "Street Lamp (full)"
+	lamp["is_signal"] = false
+	lamp["group_root"] = "StreetLampGroup"
+	lamp["parts"] = [
+		{"prefab": props + "SM_Prop_LightPole_Base_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+		{"prefab": props + "SM_Prop_Light_Attachment_01.tscn", "pos": Vector3.ZERO, "turns": 0},
+	]
+	return [traffic, lamp]
 
 
 static func _markers() -> Array:

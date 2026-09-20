@@ -41,7 +41,7 @@ static func build_city(map_data: Variant) -> Dictionary:
 		if not (raw is Dictionary):
 			continue
 		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
-		if module.is_empty() or String(module.get("prefab", "")) == "":
+		if module.is_empty() or not is_placeable(module):
 			continue
 		var cell := _to_cell(raw.get("cell", [0, 0]))
 		var turns := int(raw.get("turns", 0))
@@ -95,6 +95,27 @@ static func instance_item(module: Dictionary, cell: Vector2i, turns: int, ground
 ## placement). Composite multi-level buildings stack extra floor/roof modules on
 ## top of the base prefab -- this is how the Demo builds tall apartments.
 static func _build_raw(module: Dictionary) -> Node3D:
+	# A group module assembles several sub-prefabs (each with its own relative
+	# offset/rotation) under one root -- e.g. a full traffic light from pole +
+	# arm + lights + box. Child prefabs keep their Synty names, so the runtime's
+	# name-driven passes (signals etc.) still find them.
+	var parts: Array = module.get("parts", [])
+	if not parts.is_empty():
+		var root := Node3D.new()
+		root.name = String(module.get("group_root", "Group"))
+		for part in parts:
+			if not (part is Dictionary):
+				continue
+			var pscene: PackedScene = load(String(part.get("prefab", "")))
+			if pscene == null:
+				continue
+			var pnode := pscene.instantiate() as Node3D
+			if pnode == null:
+				continue
+			var ppos: Vector3 = part.get("pos", Vector3.ZERO)
+			pnode.transform = Transform3D(Schema.basis_for(int(part.get("turns", 0))), ppos)
+			root.add_child(pnode)
+		return root
 	var scene: PackedScene = load(String(module["prefab"]))
 	if scene == null:
 		return null
@@ -111,12 +132,17 @@ static func _build_raw(module: Dictionary) -> Node3D:
 ## Shared by the runtime and the editor so both agree on size and placement.
 static var _fp_cache := {}
 
+## A module can be instanced as geometry if it has a prefab or a parts group.
+static func is_placeable(module: Dictionary) -> bool:
+	return String(module.get("prefab", "")) != "" or not (module.get("parts", []) as Array).is_empty()
+
+
 static func asset_footprint(module: Dictionary) -> Vector2i:
 	var id := String(module.get("id", ""))
 	if _fp_cache.has(id):
 		return _fp_cache[id]
 	var fp := Vector2i.ONE
-	if String(module.get("prefab", "")) != "":
+	if is_placeable(module):
 		var node := _build_raw(module)
 		if node != null:
 			fp = footprint_from_aabb(_local_aabb(node))
