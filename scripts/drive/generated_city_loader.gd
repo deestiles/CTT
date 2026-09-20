@@ -112,8 +112,9 @@ static func _build_raw(module: Dictionary) -> Node3D:
 			var pnode := pscene.instantiate() as Node3D
 			if pnode == null:
 				continue
-			var ppos: Vector3 = part.get("pos", Vector3.ZERO)
-			pnode.transform = Transform3D(Schema.basis_for(int(part.get("turns", 0))), ppos)
+			var ppos := _to_vec3(part.get("pos", Vector3.ZERO))
+			var yaw := float(part.get("rot_deg", int(part.get("turns", 0)) * 90))
+			pnode.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(yaw)), ppos)
 			root.add_child(pnode)
 		return root
 	var scene: PackedScene = load(String(module["prefab"]))
@@ -241,6 +242,14 @@ static func _parse_boundary(data: Dictionary, ground_y: float) -> PackedVector3A
 	for raw_cell in data.get("boundary", []):
 		ring.append(Schema.cell_center(_to_cell(raw_cell), ground_y))
 	return ring
+
+
+static func _to_vec3(raw: Variant) -> Vector3:
+	if raw is Vector3:
+		return raw
+	if raw is Array and (raw as Array).size() >= 3:
+		return Vector3(float(raw[0]), float(raw[1]), float(raw[2]))
+	return Vector3.ZERO
 
 
 static func _to_cell(raw: Variant) -> Vector2i:

@@ -62,6 +62,15 @@ var _mode_button: Button
 var _underlay: MeshInstance3D
 var _reference: Node3D
 var _ref_label: Label
+var _palette_list: VBoxContainer
+
+# Capture-group-from-reference state.
+var _capture_mode := false
+var _captured: Array = []       # [{prefab, xform:Transform3D, node}]
+var _capture_markers: Node3D
+var _capture_panel: PanelContainer
+var _capture_list: VBoxContainer
+var _capture_name: LineEdit
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
@@ -93,6 +102,9 @@ func _ready() -> void:
 	_markers = Node3D.new()
 	_markers.name = "Markers"
 	add_child(_markers)
+	_capture_markers = Node3D.new()
+	_capture_markers.name = "CaptureMarkers"
+	add_child(_capture_markers)
 	_build_hover()
 	_build_ui()
 	var mods: Array = Catalog.modules()
@@ -470,8 +482,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_panning = mb.pressed
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
-				# Click a placed item -> select it (for rotate); empty cell -> place.
-				_handle_left_click(_current_cell(), mb.alt_pressed)
+				# Capture from the reference city, or place/select on the grid.
+				if _capture_mode:
+					_capture_pick()
+				else:
+					_handle_left_click(_current_cell(), mb.alt_pressed)
 			else:
 				_painting = false
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
@@ -1029,6 +1044,44 @@ func _build_ui() -> void:
 	_stack_menu_box.add_theme_constant_override("separation", 2)
 	_stack_menu.add_child(_stack_menu_box)
 	layer.add_child(_stack_menu)
+	# Capture-group panel (shown in capture mode).
+	_capture_panel = PanelContainer.new()
+	_capture_panel.visible = false
+	_capture_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_capture_panel.offset_left = -270
+	_capture_panel.offset_top = 92
+	_capture_panel.offset_right = -12
+	var cap_style := StyleBoxFlat.new()
+	cap_style.bg_color = Color(0.05, 0.08, 0.12, 0.96)
+	cap_style.border_color = Color("#8be0ff")
+	cap_style.set_border_width_all(2)
+	cap_style.set_corner_radius_all(8)
+	cap_style.set_content_margin_all(8)
+	_capture_panel.add_theme_stylebox_override("panel", cap_style)
+	var cap_box := VBoxContainer.new()
+	cap_box.add_theme_constant_override("separation", 4)
+	_capture_panel.add_child(cap_box)
+	var cap_title := Label.new()
+	cap_title.text = "CAPTURE GROUP"
+	cap_title.add_theme_color_override("font_color", Color("#8be0ff"))
+	cap_box.add_child(cap_title)
+	var cap_help := Label.new()
+	cap_help.text = "Click assets in the reference city to add them (click again to remove)."
+	cap_help.autowrap_mode = TextServer.AUTOWRAP_WORD
+	cap_help.custom_minimum_size = Vector2(246, 0)
+	cap_help.add_theme_font_size_override("font_size", 11)
+	cap_box.add_child(cap_help)
+	_capture_list = VBoxContainer.new()
+	cap_box.add_child(_capture_list)
+	_capture_name = LineEdit.new()
+	_capture_name.placeholder_text = "group name"
+	cap_box.add_child(_capture_name)
+	var cap_buttons := HBoxContainer.new()
+	cap_box.add_child(cap_buttons)
+	_add_button(cap_buttons, "Save Group", _save_group)
+	_add_button(cap_buttons, "Clear", _clear_capture)
+	_add_button(cap_buttons, "Done", _toggle_capture_mode)
+	layer.add_child(_capture_panel)
 
 	# Top toolbar.
 	var top := PanelContainer.new()
@@ -1060,6 +1113,7 @@ func _build_ui() -> void:
 	_add_button(bar, "Fit View (F)", _focus_on_content)
 	_add_button(bar, "Tilt (V)", _cycle_tilt)
 	_add_button(bar, "Reference City", _toggle_reference)
+	_add_button(bar, "Capture Group", _toggle_capture_mode)
 	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
 	# Import toolbar (second row): trace/generate a city from a map image.
@@ -1113,37 +1167,11 @@ func _build_ui() -> void:
 	palette.custom_minimum_size = Vector2(PALETTE_W, 0)
 	palette.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	layer.add_child(palette)
-	var plist := VBoxContainer.new()
-	plist.add_theme_constant_override("separation", 2)
-	plist.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	palette.add_child(plist)
-	# Group modules by category, preserving catalog order.
-	var by_cat := {}
-	var cat_order: Array = []
-	for module in Catalog.modules():
-		var category := String(module["category"])
-		if not by_cat.has(category):
-			by_cat[category] = []
-			cat_order.append(category)
-		by_cat[category].append(module)
-	_sections.clear()
-	for ci in cat_order.size():
-		var category: String = cat_order[ci]
-		var header := Button.new()
-		header.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		header.add_theme_font_size_override("font_size", 15)
-		header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		plist.add_child(header)
-		var grid := GridContainer.new()
-		grid.columns = 2
-		grid.visible = false
-		plist.add_child(grid)
-		var section := {"header": header, "grid": grid, "category": category, "modules": by_cat[category], "built": false}
-		_sections.append(section)
-		header.text = "▶ %s (%d)" % [category, (by_cat[category] as Array).size()]
-		header.pressed.connect(_toggle_section.bind(ci))
-	if not _sections.is_empty():
-		_toggle_section(0)   # open the first section by default
+	_palette_list = VBoxContainer.new()
+	_palette_list.add_theme_constant_override("separation", 2)
+	_palette_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	palette.add_child(_palette_list)
+	_rebuild_palette()
 
 	# Bottom status + selection.
 	var bottom := PanelContainer.new()
@@ -1295,6 +1323,149 @@ func _deactivate_cameras(node: Node) -> void:
 		_deactivate_cameras(c)
 
 
+# --- Capture a group from the reference city ------------------------------
+
+func _toggle_capture_mode() -> void:
+	if not _capture_mode and (_reference == null or not _reference.visible):
+		_popup("Capture Group", "Load the Reference City first (button), then Capture Group and click assets in it.")
+		return
+	_capture_mode = not _capture_mode
+	_capture_panel.visible = _capture_mode
+	if _capture_mode:
+		_deselect_placed()
+		_set_status("Capture ON — click assets in the reference city, then Save Group", Color("#8be0ff"))
+	else:
+		_clear_capture()
+		_set_status("Capture off")
+
+
+## Raycast the cursor into the reference and add/remove the hit prefab asset.
+func _capture_pick() -> void:
+	if _cam == null:
+		return
+	var mouse := get_viewport().get_mouse_position()
+	var from := _cam.project_ray_origin(mouse)
+	var to := from + _cam.project_ray_normal(mouse) * 6000.0
+	var hit := get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(from, to))
+	if hit.is_empty():
+		return
+	var asset := _prefab_instance_ancestor(hit.get("collider"))
+	if asset == null or asset.scene_file_path == "":
+		_set_status("That isn't a placeable prefab asset")
+		return
+	for k in _captured.size():
+		if _captured[k]["node"] == asset:
+			_captured.remove_at(k)
+			_rebuild_capture_markers()
+			_update_capture_panel()
+			return
+	_captured.append({"prefab": asset.scene_file_path, "xform": asset.global_transform, "node": asset})
+	_add_capture_marker(asset)
+	_update_capture_panel()
+	_set_status("Captured %d asset(s)" % _captured.size(), Color("#8be0ff"))
+
+
+func _prefab_instance_ancestor(collider: Variant) -> Node3D:
+	var n := collider as Node
+	while n != null and n != _reference:
+		if n is Node3D and (n as Node3D).scene_file_path != "":
+			return n as Node3D
+		n = n.get_parent()
+	return null
+
+
+func _add_capture_marker(asset: Node3D) -> void:
+	var aabb := _combined_aabb(asset)
+	if aabb.size == Vector3.ZERO:
+		aabb = AABB(asset.global_position - Vector3(1, 1, 1), Vector3(2, 2, 2))
+	var mi := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = aabb.size + Vector3(0.4, 0.4, 0.4)
+	mi.mesh = box
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(0.3, 0.9, 1.0, 0.35)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mi.material_override = mat
+	_capture_markers.add_child(mi)
+	mi.global_position = aabb.get_center()
+
+
+func _rebuild_capture_markers() -> void:
+	for c in _capture_markers.get_children():
+		c.queue_free()
+	for c in _captured:
+		if is_instance_valid(c["node"]):
+			_add_capture_marker(c["node"])
+
+
+func _update_capture_panel() -> void:
+	if _capture_list == null:
+		return
+	for c in _capture_list.get_children():
+		c.queue_free()
+	var head := Label.new()
+	head.text = "Captured (%d):" % _captured.size()
+	head.add_theme_font_size_override("font_size", 12)
+	_capture_list.add_child(head)
+	for c in _captured:
+		var l := Label.new()
+		l.text = "  • " + String(c["prefab"]).get_file().trim_suffix(".tscn")
+		l.add_theme_font_size_override("font_size", 11)
+		_capture_list.add_child(l)
+
+
+func _clear_capture() -> void:
+	_captured.clear()
+	_rebuild_capture_markers()
+	_update_capture_panel()
+
+
+func _save_group() -> void:
+	if _captured.is_empty():
+		_popup("Save Group", "Pick at least one asset from the reference city first.")
+		return
+	var name := _capture_name.text.strip_edges()
+	if name.is_empty():
+		name = "My Group"
+	# Anchor: ground-projected centroid (x,z average; y at the lowest asset base).
+	var sx := 0.0
+	var sz := 0.0
+	var min_y := INF
+	for c in _captured:
+		var o: Vector3 = c["xform"].origin
+		sx += o.x
+		sz += o.z
+		var ab := _combined_aabb(c["node"])
+		min_y = minf(min_y, ab.position.y)
+	var n := _captured.size()
+	var anchor := Vector3(sx / n, min_y if min_y != INF else 0.0, sz / n)
+	var parts: Array = []
+	var is_signal := false
+	for c in _captured:
+		var xf: Transform3D = c["xform"]
+		var rel := xf.origin - anchor
+		var yaw := rad_to_deg(xf.basis.get_euler().y)
+		parts.append({"prefab": String(c["prefab"]), "pos": [rel.x, rel.y, rel.z], "rot_deg": yaw})
+		var pl := String(c["prefab"])
+		if pl.contains("LightPole_Lights") or pl.contains("LightPole_Arm"):
+			is_signal = true
+	var gid := "GRP_" + name.validate_filename()
+	if gid == "GRP_":
+		gid = "GRP_My_Group"
+	var group := {"id": gid, "display_name": name, "is_signal": is_signal, "group_root": name.validate_filename() + "Group", "parts": parts}
+	var err := Catalog.save_custom_group(group)
+	if err != OK:
+		_popup("Save Failed", "Could not write the groups file (error %d)." % err)
+		return
+	_rebuild_palette()
+	_clear_capture()
+	_capture_mode = false
+	_capture_panel.visible = false
+	_set_status("Saved group '%s' (%d parts) to My Groups" % [name, n], Color("#42f5a7"))
+	_popup("Group Saved", "Saved \"%s\" (%d assets) to the palette under \"My Groups\".\nPlace it on any map like any other asset. Save again with the same name to update it." % [name, n])
+
+
 ## Procedurally generate a whole new city (replaces the current map, undoable).
 ## A fresh random layout each click.
 func _generate_city() -> void:
@@ -1336,6 +1507,41 @@ func _select_module(module: Dictionary) -> void:
 
 
 # --- Accordion palette ----------------------------------------------------
+
+## (Re)build the category accordion from the current catalog (picks up newly
+## saved custom groups). Fresh Catalog scan each time it is refreshed.
+func _rebuild_palette() -> void:
+	if _palette_list == null:
+		return
+	for c in _palette_list.get_children():
+		c.queue_free()
+	_sections.clear()
+	_open_section = -1
+	var by_cat := {}
+	var cat_order: Array = []
+	for module in Catalog.modules():
+		var category := String(module["category"])
+		if not by_cat.has(category):
+			by_cat[category] = []
+			cat_order.append(category)
+		by_cat[category].append(module)
+	for ci in cat_order.size():
+		var category: String = cat_order[ci]
+		var header := Button.new()
+		header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		header.add_theme_font_size_override("font_size", 15)
+		header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_palette_list.add_child(header)
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.visible = false
+		_palette_list.add_child(grid)
+		_sections.append({"header": header, "grid": grid, "category": category, "modules": by_cat[category], "built": false})
+		header.text = "▶ %s (%d)" % [category, (by_cat[category] as Array).size()]
+		header.pressed.connect(_toggle_section.bind(ci))
+	if not _sections.is_empty():
+		_toggle_section(0)
+
 
 func _toggle_section(idx: int) -> void:
 	if idx < 0 or idx >= _sections.size():

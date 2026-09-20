@@ -16,6 +16,8 @@ extends RefCounted
 
 const GRID_SIZE := 5.0
 const PREFAB_ROOT := "res://Assets/Synty/PolygonCity/Prefabs"
+## Custom groups the owner saves (captured from the reference city, or composed).
+const GROUPS_FILE := "res://maps_v2/groups.json"
 
 enum Layer { SURFACE, STRUCTURE, PROP, VEHICLE, MARKER }
 
@@ -33,6 +35,11 @@ static func modules() -> Array:
 	if _cache.is_empty():
 		_cache = _scan()
 	return _cache
+
+
+## Drop the cache so a newly saved custom group is picked up on the next call.
+static func refresh() -> void:
+	_cache = []
 
 
 static func by_id(module_id: String) -> Dictionary:
@@ -60,6 +67,7 @@ static func _scan() -> Array:
 	_scan_dir(PREFAB_ROOT, out)
 	out.append_array(_composite_buildings())
 	out.append_array(_group_modules())
+	out.append_array(_load_custom_groups())
 	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		var ca := _CATEGORY_ORDER.find(String(a["category"]))
 		var cb := _CATEGORY_ORDER.find(String(b["category"]))
@@ -207,6 +215,71 @@ static func _group_modules() -> Array:
 		{"prefab": props + "SM_Prop_Light_Attachment_01.tscn", "pos": Vector3.ZERO, "turns": 0},
 	]
 	return [traffic, lamp]
+
+
+## Load the owner's saved custom groups (a JSON array of group dicts) into palette
+## modules under "My Groups". Missing/invalid file -> none.
+static func _load_custom_groups() -> Array:
+	if not FileAccess.file_exists(GROUPS_FILE):
+		return []
+	var file := FileAccess.open(GROUPS_FILE, FileAccess.READ)
+	if file == null:
+		return []
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if not (parsed is Array):
+		return []
+	var out: Array = []
+	for g in parsed:
+		if not (g is Dictionary) or not g.has("id") or not g.has("parts"):
+			continue
+		out.append({
+			"id": String(g["id"]),
+			"display_name": String(g.get("display_name", g["id"])),
+			"category": "My Groups",
+			"footprint": Vector2i.ONE,
+			"layer": Layer.PROP,
+			"corner_pivot": false,
+			"scale": Vector3.ONE,
+			"offset": Vector3.ZERO,
+			"is_signal": bool(g.get("is_signal", false)),
+			"is_marker": false,
+			"marker_kind": "",
+			"gizmo_color": Color("#8be0ff"),
+			"prefab": "",
+			"group_root": String(g.get("group_root", "CustomGroup")),
+			"parts": g["parts"],
+		})
+	return out
+
+
+## Append a group to the saved-groups file and refresh the palette cache. `group`
+## is {id, display_name, is_signal?, parts:[{prefab, pos:[x,y,z], rot_deg}]}.
+static func save_custom_group(group: Dictionary) -> int:
+	var groups: Array = []
+	if FileAccess.file_exists(GROUPS_FILE):
+		var rf := FileAccess.open(GROUPS_FILE, FileAccess.READ)
+		if rf:
+			var parsed: Variant = JSON.parse_string(rf.get_as_text())
+			if parsed is Array:
+				groups = parsed
+	# Replace an existing group with the same id, else append.
+	var replaced := false
+	for i in groups.size():
+		if groups[i] is Dictionary and String(groups[i].get("id", "")) == String(group.get("id", "")):
+			groups[i] = group
+			replaced = true
+			break
+	if not replaced:
+		groups.append(group)
+	var dir := GROUPS_FILE.get_base_dir()
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+	var wf := FileAccess.open(GROUPS_FILE, FileAccess.WRITE)
+	if wf == null:
+		return FileAccess.get_open_error()
+	wf.store_string(JSON.stringify(groups, "\t"))
+	wf.close()
+	refresh()
+	return OK
 
 
 static func _markers() -> Array:
