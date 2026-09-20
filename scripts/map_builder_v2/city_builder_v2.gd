@@ -71,6 +71,9 @@ var _capture_markers: Node3D
 var _capture_panel: PanelContainer
 var _capture_list: VBoxContainer
 var _capture_name: LineEdit
+var _marquee_active := false
+var _marquee_start := Vector2.ZERO
+var _marquee_rect: Panel
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
@@ -484,11 +487,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			if mb.pressed:
 				# Capture from the reference city, or place/select on the grid.
 				if _capture_mode:
-					_capture_pick()
+					_capture_begin_marquee()
 				else:
 					_handle_left_click(_current_cell(), mb.alt_pressed)
 			else:
-				_painting = false
+				if _marquee_active:
+					_capture_end_marquee()
+				else:
+					_painting = false
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
 			_delete_at_hover()
 	elif event is InputEventMouseMotion:
@@ -496,6 +502,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _panning:
 			_cam_center -= Vector3(mm.relative.x, 0, mm.relative.y) * (_cam_size * 0.0016)
 			_update_camera()
+		elif _marquee_active:
+			_capture_update_marquee()
 		elif _painting:
 			_paint_step()
 	elif event is InputEventKey and event.pressed and not event.echo:
@@ -1066,7 +1074,7 @@ func _build_ui() -> void:
 	cap_title.add_theme_color_override("font_color", Color("#8be0ff"))
 	cap_box.add_child(cap_title)
 	var cap_help := Label.new()
-	cap_help.text = "Click assets in the reference city to add them (click again to remove)."
+	cap_help.text = "Drag a box over the reference to select many assets, or click one (click again to remove)."
 	cap_help.autowrap_mode = TextServer.AUTOWRAP_WORD
 	cap_help.custom_minimum_size = Vector2(246, 0)
 	cap_help.add_theme_font_size_override("font_size", 11)
@@ -1082,6 +1090,17 @@ func _build_ui() -> void:
 	_add_button(cap_buttons, "Clear", _clear_capture)
 	_add_button(cap_buttons, "Done", _toggle_capture_mode)
 	layer.add_child(_capture_panel)
+	# Rubber-band selection rectangle (capture mode).
+	_marquee_rect = Panel.new()
+	_marquee_rect.visible = false
+	_marquee_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_marquee_rect.z_index = 35
+	var mq_style := StyleBoxFlat.new()
+	mq_style.bg_color = Color(0.3, 0.9, 1.0, 0.15)
+	mq_style.border_color = Color("#8be0ff")
+	mq_style.set_border_width_all(1)
+	_marquee_rect.add_theme_stylebox_override("panel", mq_style)
+	layer.add_child(_marquee_rect)
 
 	# Top toolbar.
 	var top := PanelContainer.new()
@@ -1363,6 +1382,71 @@ func _capture_pick() -> void:
 	_add_capture_marker(asset)
 	_update_capture_panel()
 	_set_status("Captured %d asset(s)" % _captured.size(), Color("#8be0ff"))
+
+
+func _capture_begin_marquee() -> void:
+	_marquee_active = true
+	_marquee_start = get_viewport().get_mouse_position()
+	if _marquee_rect:
+		_marquee_rect.position = _marquee_start
+		_marquee_rect.size = Vector2.ZERO
+		_marquee_rect.visible = true
+
+
+func _capture_update_marquee() -> void:
+	if _marquee_rect == null:
+		return
+	var r := Rect2(_marquee_start, Vector2.ZERO).expand(get_viewport().get_mouse_position())
+	_marquee_rect.position = r.position
+	_marquee_rect.size = r.size
+
+
+## On release: a tiny drag is a single-click pick; a real box selects every
+## reference asset whose on-screen position falls inside it (including ones
+## hidden behind others, since this projects positions rather than raycasting).
+func _capture_end_marquee() -> void:
+	_marquee_active = false
+	if _marquee_rect:
+		_marquee_rect.visible = false
+	var r := Rect2(_marquee_start, Vector2.ZERO).expand(get_viewport().get_mouse_position())
+	if r.size.length() < 6.0:
+		_capture_pick()
+		return
+	var added := 0
+	for asset in _reference_prefab_nodes():
+		if _cam.is_position_behind(asset.global_transform.origin):
+			continue
+		if not r.has_point(_cam.unproject_position(asset.global_transform.origin)):
+			continue
+		if _is_captured(asset):
+			continue
+		_captured.append({"prefab": asset.scene_file_path, "xform": asset.global_transform, "node": asset})
+		_add_capture_marker(asset)
+		added += 1
+	_update_capture_panel()
+	_set_status("Box-selected %d asset(s)  ·  total %d" % [added, _captured.size()], Color("#8be0ff"))
+
+
+func _reference_prefab_nodes() -> Array:
+	var out: Array = []
+	if _reference == null:
+		return out
+	var stack: Array = [_reference]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is Node3D and (n as Node3D).scene_file_path != "":
+			out.append(n)
+			continue   # its children belong to this prefab instance
+		for c in n.get_children():
+			stack.append(c)
+	return out
+
+
+func _is_captured(asset: Node3D) -> bool:
+	for c in _captured:
+		if c["node"] == asset:
+			return true
+	return false
 
 
 func _prefab_instance_ancestor(collider: Variant) -> Node3D:
