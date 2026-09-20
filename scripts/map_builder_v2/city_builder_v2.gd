@@ -55,6 +55,8 @@ var _cam_size := 160.0
 var _panning := false
 var _ui: CanvasLayer
 var _dialog: AcceptDialog
+var _stack_menu: PanelContainer
+var _stack_menu_box: VBoxContainer
 var _underlay: MeshInstance3D
 var _reference: Node3D
 var _ref_label: Label
@@ -467,15 +469,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
 				# Click a placed item -> select it (for rotate); empty cell -> place.
-				var idx := _select_index_for(_current_cell())
-				if idx >= 0:
-					_select_placed(idx)
-				elif _is_surface_selected():
-					_deselect_placed()
-					_begin_paint()
-				else:
-					_deselect_placed()
-					_place_at_hover()
+				_handle_left_click(_current_cell())
 			else:
 				_painting = false
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
@@ -664,6 +658,63 @@ func _deselect_placed() -> void:
 	_sel_cell = Vector2i(2147483647, 2147483647)
 	if _sel_box:
 		_sel_box.visible = false
+	_hide_stack_menu()
+
+
+## One item on the cell -> select it; several -> show a pick menu; empty -> place.
+## A world click while the menu is open just closes it.
+func _handle_left_click(cell: Vector2i) -> void:
+	if _stack_menu != null and _stack_menu.visible:
+		_hide_stack_menu()
+		return
+	var stack := _items_at(cell)
+	if stack.size() > 1:
+		_show_stack_menu(stack)
+	elif stack.size() == 1:
+		_select_placed(stack[0])
+	elif _is_surface_selected():
+		_deselect_placed()
+		_begin_paint()
+	else:
+		_deselect_placed()
+		_place_at_hover()
+
+
+func _show_stack_menu(indices: Array) -> void:
+	for c in _stack_menu_box.get_children():
+		c.queue_free()
+	var header := Label.new()
+	header.text = "This square (%d):" % indices.size()
+	header.add_theme_font_size_override("font_size", 12)
+	header.add_theme_color_override("font_color", Color("#ffce54"))
+	_stack_menu_box.add_child(header)
+	for idx in indices:
+		var raw = _map["items"][idx]
+		var module: Dictionary = Catalog.by_id(String(raw.get("id", "")))
+		var b := Button.new()
+		b.text = String(module.get("display_name", "item"))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.custom_minimum_size = Vector2(180, 0)
+		b.pressed.connect(_on_stack_pick.bind(idx))
+		_stack_menu_box.add_child(b)
+	_stack_menu.reset_size()
+	var vp := get_viewport().get_visible_rect().size
+	var pos := get_viewport().get_mouse_position() + Vector2(12, 12)
+	pos.x = clampf(pos.x, 0.0, vp.x - _stack_menu.size.x)
+	pos.y = clampf(pos.y, 0.0, vp.y - _stack_menu.size.y)
+	_stack_menu.position = pos
+	_stack_menu.visible = true
+
+
+func _on_stack_pick(idx: int) -> void:
+	_hide_stack_menu()
+	if idx >= 0 and idx < (_map.get("items", []) as Array).size():
+		_select_placed(idx)
+
+
+func _hide_stack_menu() -> void:
+	if _stack_menu:
+		_stack_menu.visible = false
 
 
 func _rotate_selected_placed() -> void:
@@ -939,6 +990,21 @@ func _build_ui() -> void:
 	_ref_label.add_theme_constant_override("outline_size", 6)
 	_ref_label.add_theme_font_size_override("font_size", 15)
 	layer.add_child(_ref_label)
+	# Pick menu shown when clicking a square that holds several assets.
+	_stack_menu = PanelContainer.new()
+	_stack_menu.visible = false
+	_stack_menu.z_index = 40
+	var menu_style := StyleBoxFlat.new()
+	menu_style.bg_color = Color(0.05, 0.07, 0.11, 0.97)
+	menu_style.border_color = Color("#ffce54")
+	menu_style.set_border_width_all(2)
+	menu_style.set_corner_radius_all(8)
+	menu_style.set_content_margin_all(6)
+	_stack_menu.add_theme_stylebox_override("panel", menu_style)
+	_stack_menu_box = VBoxContainer.new()
+	_stack_menu_box.add_theme_constant_override("separation", 2)
+	_stack_menu.add_child(_stack_menu_box)
+	layer.add_child(_stack_menu)
 
 	# Top toolbar.
 	var top := PanelContainer.new()
@@ -1456,15 +1522,17 @@ func _run_builder_test() -> void:
 		_rotate_selected_placed()
 		print("[SELECT TEST] sel_idx=%d turns %d->%d sel_visible=%s" % [
 			_selected_placed, t0, int(_map["items"][0]["turns"]), _sel_box.visible])
-	# Stacked-cell cycling: two items on one square -> clicks cycle between them.
+	# Stacked-cell menu: two items on one square -> click shows a pick menu.
 	_map["items"].append({"id": "SM_Env_Sidewalk_Straight_01", "cell": [7, 7], "turns": 0})
 	_item_nodes.append(_spawn_item_node(_map["items"].back()))
 	_map["items"].append({"id": "SM_Prop_LightPole_Base_01", "cell": [7, 7], "turns": 0})
 	_item_nodes.append(_spawn_item_node(_map["items"].back()))
 	var st := _items_at(Vector2i(7, 7))
-	var a := _select_index_for(Vector2i(7, 7))
-	_selected_placed = a
-	var b := _select_index_for(Vector2i(7, 7))
-	print("[STACK TEST] stack=%d first=%d cycled=%d differ=%s" % [st.size(), a, b, a != b])
+	_handle_left_click(Vector2i(7, 7))
+	var menu_shown := _stack_menu.visible
+	var entries := _stack_menu_box.get_child_count()   # header + one per item
+	_on_stack_pick(st[1])
+	print("[STACK TEST] stack=%d menu_shown=%s entries=%d picked_sel=%d menu_hidden=%s" % [
+		st.size(), menu_shown, entries, _selected_placed, not _stack_menu.visible])
 	print("[BUILDER TEST] DONE")
 	get_tree().quit()
