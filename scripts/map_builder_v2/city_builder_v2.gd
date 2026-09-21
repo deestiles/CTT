@@ -74,6 +74,8 @@ var _capture_name: LineEdit
 var _marquee_active := false
 var _marquee_start := Vector2.ZERO
 var _marquee_rect: Panel
+var _groups_dialog: AcceptDialog
+var _groups_dialog_box: VBoxContainer
 var _image_edit: LineEdit
 var _cells_edit: LineEdit
 var _bright_edit: LineEdit
@@ -1027,6 +1029,13 @@ func _build_ui() -> void:
 	_dialog.title = "City Builder"
 	_dialog.dialog_hide_on_ok = true
 	layer.add_child(_dialog)
+	_groups_dialog = AcceptDialog.new()
+	_groups_dialog.title = "My Groups"
+	_groups_dialog.min_size = Vector2i(320, 240)
+	_groups_dialog_box = VBoxContainer.new()
+	_groups_dialog_box.add_theme_constant_override("separation", 4)
+	_groups_dialog.add_child(_groups_dialog_box)
+	layer.add_child(_groups_dialog)
 	# Floating label naming the asset under the cursor in the reference city.
 	_ref_label = Label.new()
 	_ref_label.visible = false
@@ -1145,6 +1154,7 @@ func _build_ui() -> void:
 	_add_button(bar, "Tilt (V)", _cycle_tilt)
 	_add_button(bar, "Reference City", _toggle_reference)
 	_add_button(bar, "Capture Group", _toggle_capture_mode)
+	_add_button(bar, "Manage Groups", _manage_groups)
 	_add_button(bar, "Hide Panels (H)", _toggle_panels)
 
 	# Import toolbar (second row): trace/generate a city from a map image.
@@ -1354,6 +1364,48 @@ func _deactivate_cameras(node: Node) -> void:
 		_deactivate_cameras(c)
 
 
+# --- Manage (delete) custom groups ---------------------------------------
+
+func _manage_groups() -> void:
+	for c in _groups_dialog_box.get_children():
+		c.queue_free()
+	var groups := Catalog.custom_groups_list()
+	var head := Label.new()
+	head.text = "Custom groups (%d) — saved in maps_v2/groups.json" % groups.size()
+	head.add_theme_color_override("font_color", Color("#8be0ff"))
+	_groups_dialog_box.add_child(head)
+	if groups.is_empty():
+		var none := Label.new()
+		none.text = "None yet. Capture a group from the reference city to add one."
+		_groups_dialog_box.add_child(none)
+	for g in groups:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		var name_label := Label.new()
+		name_label.text = String(g["display_name"])
+		name_label.custom_minimum_size = Vector2(210, 0)
+		name_label.clip_text = true
+		row.add_child(name_label)
+		var del := Button.new()
+		del.text = "Delete"
+		del.add_theme_color_override("font_color", Color("#ff6b6b"))
+		del.pressed.connect(_delete_group.bind(String(g["id"]), String(g["display_name"])))
+		row.add_child(del)
+		_groups_dialog_box.add_child(row)
+	_groups_dialog.reset_size()
+	_groups_dialog.popup_centered()
+
+
+func _delete_group(id: String, disp: String) -> void:
+	var err := Catalog.delete_custom_group(id)
+	if err != OK:
+		_set_status("Delete failed (%d)" % err, Color("#ff5a4d"))
+		return
+	_rebuild_palette()
+	_set_status("Deleted group '%s'" % disp, Color("#ffce54"))
+	_manage_groups()   # refresh the dialog list
+
+
 # --- Capture a group from the reference city ------------------------------
 
 func _toggle_capture_mode() -> void:
@@ -1527,18 +1579,17 @@ func _save_group() -> void:
 	var name := _capture_name.text.strip_edges()
 	if name.is_empty():
 		name = "My Group"
-	# Anchor: ground-projected centroid (x,z average; y at the lowest asset base).
+	# Anchor at the reference STREET level (y=0 after the Demo's ground offset), not
+	# the lowest asset, so each part keeps its true height -- assets below street
+	# level stay below, elevated ones stay up. x,z = centroid of the picks.
 	var sx := 0.0
 	var sz := 0.0
-	var min_y := INF
 	for c in _captured:
 		var o: Vector3 = c["xform"].origin
 		sx += o.x
 		sz += o.z
-		var ab := _combined_aabb(c["node"])
-		min_y = minf(min_y, ab.position.y)
 	var n := _captured.size()
-	var anchor := Vector3(sx / n, min_y if min_y != INF else 0.0, sz / n)
+	var anchor := Vector3(sx / n, 0.0, sz / n)
 	var parts: Array = []
 	var is_signal := false
 	for c in _captured:

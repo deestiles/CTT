@@ -282,6 +282,45 @@ static func save_custom_group(group: Dictionary) -> int:
 	return OK
 
 
+## [{id, display_name}] of the saved custom groups.
+static func custom_groups_list() -> Array:
+	var out: Array = []
+	if not FileAccess.file_exists(GROUPS_FILE):
+		return out
+	var f := FileAccess.open(GROUPS_FILE, FileAccess.READ)
+	if f == null:
+		return out
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	if not (parsed is Array):
+		return out
+	for g in parsed:
+		if g is Dictionary and g.has("id"):
+			out.append({"id": String(g["id"]), "display_name": String(g.get("display_name", g["id"]))})
+	return out
+
+
+## Remove a saved custom group by id and refresh the palette cache.
+static func delete_custom_group(id: String) -> int:
+	if not FileAccess.file_exists(GROUPS_FILE):
+		return OK
+	var rf := FileAccess.open(GROUPS_FILE, FileAccess.READ)
+	if rf == null:
+		return FileAccess.get_open_error()
+	var parsed: Variant = JSON.parse_string(rf.get_as_text())
+	var kept: Array = []
+	if parsed is Array:
+		for g in parsed:
+			if not (g is Dictionary) or String(g.get("id", "")) != id:
+				kept.append(g)
+	var wf := FileAccess.open(GROUPS_FILE, FileAccess.WRITE)
+	if wf == null:
+		return FileAccess.get_open_error()
+	wf.store_string(JSON.stringify(kept, "\t"))
+	wf.close()
+	refresh()
+	return OK
+
+
 static func _markers() -> Array:
 	return [
 		_marker("spawn_police", "Police Spawn", "police_spawn", Color("#28a9ff")),
