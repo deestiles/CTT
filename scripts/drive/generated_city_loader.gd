@@ -103,6 +103,19 @@ static func _build_raw(module: Dictionary) -> Node3D:
 	if not parts.is_empty():
 		var root := Node3D.new()
 		root.name = String(module.get("group_root", "Group"))
+		# Normalize vertically: rest the group's lowest captured part on the
+		# ground plane. Capture stored raw world y (offset by the reference's
+		# ground constant), which is unreliable per-building and dropped groups
+		# far below the road. Anchoring to the group's own minimum makes it sit
+		# on the surface no matter what y was recorded; below-street levels still
+		# read correctly because they come from the prefab meshes extending below
+		# their origins, not from a negative origin y.
+		var min_y := INF
+		for part in parts:
+			if part is Dictionary:
+				min_y = minf(min_y, _to_vec3(part.get("pos", Vector3.ZERO)).y)
+		if not is_finite(min_y):
+			min_y = 0.0
 		for part in parts:
 			if not (part is Dictionary):
 				continue
@@ -113,6 +126,7 @@ static func _build_raw(module: Dictionary) -> Node3D:
 			if pnode == null:
 				continue
 			var ppos := _to_vec3(part.get("pos", Vector3.ZERO))
+			ppos.y -= min_y
 			var yaw := float(part.get("rot_deg", int(part.get("turns", 0)) * 90))
 			pnode.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(yaw)), ppos)
 			root.add_child(pnode)

@@ -1579,17 +1579,23 @@ func _save_group() -> void:
 	var name := _capture_name.text.strip_edges()
 	if name.is_empty():
 		name = "My Group"
-	# Anchor at the reference STREET level (y=0 after the Demo's ground offset), not
-	# the lowest asset, so each part keeps its true height -- assets below street
-	# level stay below, elevated ones stay up. x,z = centroid of the picks.
+	# Anchor x,z at the centroid of the picks; anchor y at the LOWEST captured
+	# part so stored heights are relative to the group's own base (portable, not
+	# tied to the Demo's ground constant, which is unreliable per-building). The
+	# loader rests that base on the ground plane; relative floor heights and any
+	# below-street mesh detail are preserved.
 	var sx := 0.0
 	var sz := 0.0
+	var min_y := INF
 	for c in _captured:
 		var o: Vector3 = c["xform"].origin
 		sx += o.x
 		sz += o.z
+		min_y = minf(min_y, o.y)
 	var n := _captured.size()
-	var anchor := Vector3(sx / n, 0.0, sz / n)
+	if not is_finite(min_y):
+		min_y = 0.0
+	var anchor := Vector3(sx / n, min_y, sz / n)
 	var parts: Array = []
 	var is_signal := false
 	for c in _captured:
