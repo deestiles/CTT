@@ -103,19 +103,14 @@ static func _build_raw(module: Dictionary) -> Node3D:
 	if not parts.is_empty():
 		var root := Node3D.new()
 		root.name = String(module.get("group_root", "Group"))
-		# Normalize vertically: rest the group's lowest captured part on the
-		# ground plane. Capture stored raw world y (offset by the reference's
-		# ground constant), which is unreliable per-building and dropped groups
-		# far below the road. Anchoring to the group's own minimum makes it sit
-		# on the surface no matter what y was recorded; below-street levels still
-		# read correctly because they come from the prefab meshes extending below
-		# their origins, not from a negative origin y.
-		var min_y := INF
-		for part in parts:
-			if part is Dictionary:
-				min_y = minf(min_y, _to_vec3(part.get("pos", Vector3.ZERO)).y)
-		if not is_finite(min_y):
-			min_y = 0.0
+		# Normalize vertically so the group's GROUND FLOOR rests on the ground
+		# plane. Capture stored raw world y (offset by the reference's ground
+		# constant), which is unreliable per-building. Anchoring to the absolute
+		# lowest part is wrong when a stoop/basement piece dips below the ground
+		# floor -- it lifts the whole facade into the air. _group_floor_y finds
+		# the lowest floor that carries a real share of the parts, so the ground
+		# floor sits on the road while genuine sub-street pieces stay below it.
+		var floor_y := _group_floor_y(parts)
 		for part in parts:
 			if not (part is Dictionary):
 				continue
@@ -126,7 +121,7 @@ static func _build_raw(module: Dictionary) -> Node3D:
 			if pnode == null:
 				continue
 			var ppos := _to_vec3(part.get("pos", Vector3.ZERO))
-			ppos.y -= min_y
+			ppos.y -= floor_y
 			var yaw := float(part.get("rot_deg", int(part.get("turns", 0)) * 90))
 			pnode.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(yaw)), ppos)
 			root.add_child(pnode)
@@ -141,6 +136,37 @@ static func _build_raw(module: Dictionary) -> Node3D:
 	if not stack.is_empty():
 		_add_stack(node, stack)
 	return node
+
+
+## The y to treat as a captured group's ground floor: the LOWEST 0.5 m level that
+## holds a real share of the parts. This ignores a few sunken outlier pieces (a
+## stoop or basement entry) so they drop below street instead of hoisting the
+## whole facade off the road. Returns the minimum y within that level so its base
+## rests exactly on the ground plane. Falls back to the absolute minimum for
+## groups too small to have a clear floor.
+static func _group_floor_y(parts: Array) -> float:
+	var ys: Array[float] = []
+	for part in parts:
+		if part is Dictionary:
+			ys.append(_to_vec3(part.get("pos", Vector3.ZERO)).y)
+	if ys.is_empty():
+		return 0.0
+	var counts := {}                              # bucket(int, 0.5 m) -> count
+	for y in ys:
+		var b := int(round(y * 2.0))
+		counts[b] = int(counts.get(b, 0)) + 1
+	var threshold := maxf(2.0, 0.05 * ys.size())
+	var floor_bucket := 2147483647
+	for b in counts:
+		if float(counts[b]) >= threshold and b < floor_bucket:
+			floor_bucket = b
+	if floor_bucket == 2147483647:
+		return ys.min()                           # no substantial floor: rest on lowest
+	var floor_y := INF
+	for y in ys:
+		if int(round(y * 2.0)) == floor_bucket:
+			floor_y = minf(floor_y, y)
+	return floor_y
 
 
 ## Cached real footprint (in cells) of a module, from its prefab mesh extent.
