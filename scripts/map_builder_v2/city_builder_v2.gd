@@ -1055,10 +1055,16 @@ func _build_ui() -> void:
 	# Capture-group panel (shown in capture mode).
 	_capture_panel = PanelContainer.new()
 	_capture_panel.visible = false
-	_capture_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	# Right-side panel spanning most of the height so the list can scroll while the
+	# name field and buttons stay pinned at the bottom.
+	_capture_panel.anchor_left = 1.0
+	_capture_panel.anchor_right = 1.0
+	_capture_panel.anchor_top = 0.0
+	_capture_panel.anchor_bottom = 1.0
 	_capture_panel.offset_left = -270
-	_capture_panel.offset_top = 92
 	_capture_panel.offset_right = -12
+	_capture_panel.offset_top = 92
+	_capture_panel.offset_bottom = -12
 	var cap_style := StyleBoxFlat.new()
 	cap_style.bg_color = Color(0.05, 0.08, 0.12, 0.96)
 	cap_style.border_color = Color("#8be0ff")
@@ -1079,8 +1085,14 @@ func _build_ui() -> void:
 	cap_help.custom_minimum_size = Vector2(246, 0)
 	cap_help.add_theme_font_size_override("font_size", 11)
 	cap_box.add_child(cap_help)
+	var cap_scroll := ScrollContainer.new()
+	cap_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	cap_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL   # take the middle space
+	cap_scroll.custom_minimum_size = Vector2(246, 120)
+	cap_box.add_child(cap_scroll)
 	_capture_list = VBoxContainer.new()
-	cap_box.add_child(_capture_list)
+	_capture_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cap_scroll.add_child(_capture_list)
 	_capture_name = LineEdit.new()
 	_capture_name.placeholder_text = "group name"
 	cap_box.add_child(_capture_name)
