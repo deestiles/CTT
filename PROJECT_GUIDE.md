@@ -340,6 +340,20 @@ Unresolved / next: author a full demo city (or build it in the editor) to exerci
 
 When finishing new work, append a dated entry here with branch/commit, files changed, test performed, observed result, and any unresolved issue.
 
+### 2026-09-21 — branch `developer/synty-capture-cutscene` (arrest cutscene on thief capture)
+
+Owner-requested: when the thief is caught, a police officer gets out of the car, draws a revolver, and points it at the thief car. Branched from the map-builder branch HEAD (`5f2ab66`) because that carries the newest gameplay `drive_city.gd` (incl. the ram/capture fix); `claude/synty-drive-city` was 8 days stale. Commit `c845bab`.
+
+Files: added `scripts/drive/capture_cutscene.gd` (+ 4 Mixamo clips `Assets/Animations/{Exiting Car,Drawing Gun,Aiming,pistol idle}.fbx`); edited `scripts/core/game_state.gd` (new persisted `player_character` "male"|"female") and `scripts/drive/drive_city.gd` (`_win_chase` now starts the cutscene and defers the overlay).
+
+Design: `CaptureCutscene` builds a police officer via `MixamoChar` (shared 48-bone skeleton, no retargeting), gender-matched to `GameState.player_character` (default male) so the future customization screen drives who appears. The builder force-loops clips, so the cutscene overrides `loop_mode = NONE` on the one-shot beats and chains them via `animation_finished`: Exiting Car (5.8s) → Drawing Gun (2s) → Aiming (2s) → hold `pistol idle`. Officer is seated at the driver door (`_grounded_y` road height) and yaw-faced at the thief (Synty chars face +Z, so `look_at` + 180°). A `RevolverMount` BoneAttachment3D is created on `Hand_R` so the **handgun mesh (not yet owned)** drops in later with no code change. The "THIEF CAPTURED" overlay is held until `aim_ready`; a 12s watchdog reveals it anyway if the chain ever stalls.
+
+Tests (Godot 4.7.2 headless, mechanical): all clips import clean; `CTT_CAPTURE_TEST` reports `officer=true`, the chain plays to the aimed hold, overlay reveals on aim, and the officer faces the thief (`facing_dot=1.00`). No GDScript/runtime errors on scene load.
+
+Visual tests still required by the owner: interactive review of the officer's door-side placement (tune `SIDE_OFFSET` sign / `BACK_OFFSET` if he stands on the wrong side or clips the car), aim readability, and camera framing of the beat. `drive_city.gd`/`.tscn` were edited here only for the owner-approved capture hook — this branch is gameplay, kept separate from map-builder work.
+
+Unresolved / next: supply a revolver prop mesh (mounts to `RevolverMount`/`Hand_R`); optional `Shooting` beat if the officer should fire; wire the character-customization screen to set `GameState.player_character`.
+
 ## Claude onboarding prompt
 
 Copy the prompt below into Claude at the beginning of a new development conversation:
