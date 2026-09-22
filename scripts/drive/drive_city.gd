@@ -17,6 +17,7 @@ const PED_CHARS: Array[String] = [
 ]
 const PED_SCRIPT := preload("res://scripts/drive/pedestrian.gd")
 const ARCADE_CAR_SCRIPT := preload("res://scripts/drive/arcade_car.gd")
+const CAPTURE_CUTSCENE := preload("res://scripts/drive/capture_cutscene.gd")
 
 # Stroll loops on the two sidewalk strips flanking the drive avenue, verified by
 # raycast probe (north strip z=-13, south strip z=2.5, floor y=0). Each loop is a
@@ -90,6 +91,7 @@ var _thief_damage: float = 0.0
 var _player_damage: float = 0.0
 var _capture_cooldown: float = 0.0
 var _chase_won: bool = false
+var _capture_cutscene  # CaptureCutscene (see capture_cutscene.gd)
 var _distance_label: Label
 var _damage_label: Label
 var _damage_bar: ProgressBar
@@ -1297,12 +1299,20 @@ func _win_chase() -> void:
 	_thief.velocity = Vector3.ZERO
 	_car.set_physics_process(false)
 	_thief.set_physics_process(false)
-	if _win_overlay:
-		_win_overlay.visible = true
 	if _thief_indicator:
 		_thief_indicator.visible = false
+	# Play the arrest cutscene: an officer steps out, draws, and aims at the thief car.
+	# The "THIEF CAPTURED" overlay is held back until the officer settles into the aim,
+	# so the reveal lands on the drawn revolver rather than the instant of contact.
+	_capture_cutscene = CAPTURE_CUTSCENE.start(self, _car, _thief)
+	_capture_cutscene.aim_ready.connect(_on_capture_aim_ready)
 	if OS.has_environment("CTT_CAPTURE_TEST"):
-		print("[CAPTURE TEST] won=true overlay=%s" % (_win_overlay != null and _win_overlay.visible))
+		print("[CAPTURE TEST] won=true officer=%s" % (_capture_cutscene != null and _capture_cutscene.has_officer()))
+
+
+func _on_capture_aim_ready() -> void:
+	if _win_overlay:
+		_win_overlay.visible = true
 
 func _on_joystick(v: Vector2) -> void:
 	if _car:
@@ -1337,6 +1347,20 @@ func _run_capture_test() -> void:
 	var forward := -_car.global_transform.basis.z.normalized()
 	_thief.global_position = _car.global_position + forward * 4.8
 	_update_chase(0.016)
+	# Let the cutscene play out and confirm the officer ends aimed at the thief.
+	await get_tree().create_timer(11.0).timeout
+	var officer_ok: bool = _capture_cutscene != null and _capture_cutscene.has_officer()
+	var facing := -1.0
+	if officer_ok:
+		var to_thief: Vector3 = _thief.global_position - _capture_cutscene._officer.global_position
+		to_thief.y = 0.0
+		if to_thief.length() > 0.01:
+			# Synty characters face +Z (see pedestrian.gd yaw = atan2(dir.x, dir.z)).
+			var face: Vector3 = _capture_cutscene._officer.global_transform.basis.z
+			face.y = 0.0
+			facing = face.normalized().dot(to_thief.normalized())
+	print("[CAPTURE TEST] officer=%s overlay=%s facing_dot=%.2f" % [
+		officer_ok, _win_overlay != null and _win_overlay.visible, facing])
 
 func _run_damage_test() -> void:
 	await get_tree().create_timer(0.5).timeout

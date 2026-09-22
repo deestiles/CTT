@@ -12,6 +12,10 @@ var credits := 500
 var rank_xp := 0
 var completed_cases := 0
 var selected_role := "police"
+# Player-chosen officer identity. Drives which police character appears in-world
+# (e.g. the capture cutscene). "male" | "female"; the future customization screen
+# writes this field. See scripts/drive/capture_cutscene.gd.
+var player_character := "male"
 var ad_free := false
 var current_case := 1
 var vehicle_id := "patrol"
@@ -87,6 +91,7 @@ func save_game() -> void:
 		"rank_xp": rank_xp,
 		"completed_cases": completed_cases,
 		"selected_role": selected_role,
+		"player_character": player_character,
 		"ad_free": ad_free,
 		"current_case": current_case,
 		"vehicle_id": vehicle_id,
@@ -113,6 +118,7 @@ func load_save() -> void:
 	rank_xp = int(parsed.get("rank_xp", 0))
 	completed_cases = int(parsed.get("completed_cases", 0))
 	selected_role = str(parsed.get("selected_role", "police"))
+	player_character = str(parsed.get("player_character", "male"))
 	ad_free = bool(parsed.get("ad_free", false))
 	current_case = int(parsed.get("current_case", completed_cases + 1))
 	vehicle_id = str(parsed.get("vehicle_id", "patrol"))
