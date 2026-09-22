@@ -1304,7 +1304,7 @@ func _win_chase() -> void:
 	# Play the arrest cutscene: an officer steps out, draws, and aims at the thief car.
 	# The "THIEF CAPTURED" overlay is held back until the officer settles into the aim,
 	# so the reveal lands on the drawn revolver rather than the instant of contact.
-	_capture_cutscene = CAPTURE_CUTSCENE.start(self, _car, _thief)
+	_capture_cutscene = CAPTURE_CUTSCENE.start(self, _car, _thief, _cam)
 	_capture_cutscene.aim_ready.connect(_on_capture_aim_ready)
 	if OS.has_environment("CTT_CAPTURE_TEST"):
 		print("[CAPTURE TEST] won=true officer=%s" % (_capture_cutscene != null and _capture_cutscene.has_officer()))
@@ -1355,7 +1355,7 @@ func _run_capture_test() -> void:
 		var to_thief: Vector3 = _thief.global_position - _capture_cutscene._officer.global_position
 		to_thief.y = 0.0
 		if to_thief.length() > 0.01:
-			# Synty characters face +Z (see pedestrian.gd yaw = atan2(dir.x, dir.z)).
+			# The officer's front / gun direction is +Z (clips are +Z-facing; CLIP_FACE=PI).
 			var face: Vector3 = _capture_cutscene._officer.global_transform.basis.z
 			face.y = 0.0
 			facing = face.normalized().dot(to_thief.normalized())
