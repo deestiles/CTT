@@ -1344,8 +1344,20 @@ func _run_capture_test() -> void:
 	_thief_damage = 92.0
 	_car.speed = 20.0
 	_thief.speed = 4.0
+	# Place the thief relative to the police car so we can see the officer react from any
+	# geometry. CTT_THIEF_DIR = front (default, police behind thief) | back (police in
+	# FRONT of thief) | left | right.
 	var forward := -_car.global_transform.basis.z.normalized()
-	_thief.global_position = _car.global_position + forward * 4.8
+	var right := _car.global_transform.basis.x.normalized()
+	var dir := forward
+	match OS.get_environment("CTT_THIEF_DIR") if OS.has_environment("CTT_THIEF_DIR") else "front":
+		"back": dir = -forward
+		"left": dir = -right
+		"right": dir = right
+		_: dir = forward
+	_thief.global_position = _car.global_position + dir * 4.8
+	# Face the thief so its window faces roughly toward the police car.
+	_thief.look_at(_car.global_position, Vector3.UP)
 	_update_chase(0.016)
 	# Let the cutscene play out and confirm the officer ends aimed at the thief.
 	await get_tree().create_timer(11.0).timeout

@@ -40,6 +40,12 @@ const FACE_OFFSET := PI
 # Reference aim point on the thief: cabin/window height, biased toward the rear window
 # that faces the pursuing officer. Local offset from the thief origin.
 const AIM_WINDOW_OFFSET := Vector3(0.0, 1.15, 0.55)
+# The officer first faces the police car's own front window (the car he is stepping out
+# of -- the door stays shut, so this sells the exit), then turns onto the thief as he
+# draws. Front-window point = police car forward * FWD + up * UP.
+const FRONT_WINDOW_FWD := 1.7
+const FRONT_WINDOW_UP := 1.1
+const TURN_SECONDS := 0.6
 # Beat between the pistol coming up (idle hold starts) and the end-game overlay, so the
 # officer is visibly pointing the gun before the screen appears.
 const OVERLAY_DELAY := 0.5
@@ -63,7 +69,9 @@ var _seq_index: int = 0
 var _aim_emitted: bool = false
 var _stand_pos: Vector3     # spot beside the driver door where he stands
 var _thief: Node3D          # target the officer aims at
+var _police_car: Node3D     # the car he steps out of (faced during the exit)
 var _aim_marker: Node3D     # reference point on the thief window we point the gun at
+var _turn_tween: Tween      # exit-window -> thief turn during the draw
 var _cam: Camera3D          # camera taken over for the cinematic (may be null)
 var _cam_phase: String = "" # "closeup" while he exits/turns, "pov" for the aim hold
 
@@ -161,6 +169,7 @@ func _is_female() -> bool:
 ## window, and orient him to face it for the exit.
 func _place_officer(police_car: Node3D, thief_car: Node3D) -> void:
 	_thief = thief_car
+	_police_car = police_car
 	var xf := police_car.global_transform
 	var side := xf.basis.x.normalized()           # car local +X
 	var back := xf.basis.z.normalized()            # car local +Z (rearward; forward is -Z)
@@ -173,9 +182,9 @@ func _place_officer(police_car: Node3D, thief_car: Node3D) -> void:
 	_aim_marker.name = "GunAimTarget"
 	thief_car.add_child(_aim_marker)
 	_aim_marker.position = AIM_WINDOW_OFFSET
-	# Orient ONCE toward the window marker; the clips then play in sequence without any
-	# further re-rotation (matching the character preview, where they chain cleanly).
-	_officer.rotation.y = _yaw_to(_aim_point() - _stand_pos) + FACE_OFFSET
+	# Exit facing: look at the police car's own front window (the car he is exiting). He
+	# turns onto the thief as he draws (see _play_current / _turn_to_thief).
+	_officer.rotation.y = _yaw_to(_exit_point() - _stand_pos) + FACE_OFFSET
 
 
 ## World-space reference point on the thief window the gun should track.
@@ -185,6 +194,15 @@ func _aim_point() -> Vector3:
 	if _thief:
 		return _thief.global_position + Vector3.UP * AIM_WINDOW_OFFSET.y
 	return _stand_pos + Vector3.FORWARD
+
+
+## World-space point at the police car's front window, faced during the exit.
+func _exit_point() -> Vector3:
+	if _police_car == null:
+		return _aim_point()
+	var xf := _police_car.global_transform
+	var forward := -xf.basis.z.normalized()
+	return _police_car.global_position + forward * FRONT_WINDOW_FWD + Vector3.UP * FRONT_WINDOW_UP
 
 
 ## Yaw that points the officer's front along `dir` (before FACE_OFFSET).
@@ -228,20 +246,37 @@ func _play_current() -> void:
 	if _anim == null:
 		return
 	if _seq_index >= SEQUENCE.size():
-		_anim.play("act/idle")   # looped hold; orientation is already set once at placement
+		# Make sure he is settled onto the thief for the hold.
+		if _turn_tween and _turn_tween.is_valid():
+			_turn_tween.kill()
+		_officer.rotation.y = _yaw_to(_aim_point() - _officer.global_position) + FACE_OFFSET
+		_anim.play("act/idle")
 		if OS.has_environment("CTT_CAPTURE_TEST"):
 			print("[CUTSCENE] hold idle (aimed)")
 		# Let him point the gun for a beat before the end-game overlay appears.
 		get_tree().create_timer(OVERLAY_DELAY).timeout.connect(_emit_aim_ready)
 		return
 	var beat: String = SEQUENCE[_seq_index]
-	# He has the gun out from the draw onward -> ease the camera into the POV then.
+	# As he draws: gun comes out -> ease the camera into the POV and turn from the police
+	# car's window onto the thief.
 	if beat == "draw":
 		_cam_phase = "pov"
+		_turn_to_thief()
 	if OS.has_environment("CTT_CAPTURE_TEST"):
 		var a := _anim.get_animation("act/" + beat)
 		print("[CUTSCENE] play %s len=%.2f" % [beat, a.length if a else -1.0])
 	_anim.play("act/" + beat)
+
+
+## Smoothly turn the officer from the police-car window onto the thief as he draws.
+func _turn_to_thief() -> void:
+	var target := _yaw_to(_aim_point() - _officer.global_position) + FACE_OFFSET
+	var target_y := _officer.rotation.y + angle_difference(_officer.rotation.y, target)
+	if _turn_tween and _turn_tween.is_valid():
+		_turn_tween.kill()
+	_turn_tween = create_tween()
+	_turn_tween.tween_property(_officer, "rotation:y", target_y, TURN_SECONDS) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _on_clip_finished(anim_name: StringName) -> void:
